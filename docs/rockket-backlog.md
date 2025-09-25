@@ -3662,6 +3662,17 @@ This document contains all epics, user stories, and relevant details extracted f
 - `epic-13-notifications-messaging`
 - `epic-14-security-compliance`
 - `epic-15-developer-experience`
+- `epic-16-billing-subscription`
+- `epic-17-infrastructure-devops`
+- `epic-18-performance-optimization`
+- `epic-19-data-management-analytics`
+- `epic-20-integration-webhooks`
+- `epic-21-subframe-design-system`
+- `epic-22-subframe-ai-design-workflow`
+- `epic-23-enhanced-visual-builder`
+- `epic-24-business-intelligence`
+- `epic-25-mobile-cross-platform`
+- `epic-26-workflow-automation`
 - `pre-implementation`
 - `technical-debt`
 - `bug-fix`
@@ -3706,45 +3717,56 @@ This document contains all epics, user stories, and relevant details extracted f
 
 ### Epic Summary & Story Point Totals
 
-| Epic                               | Priority    | Phase    | Story Points | RICE Score |
-| ---------------------------------- | ----------- | -------- | ------------ | ---------- |
-| Epic 0: Authentication & Security  | Must Have   | 0        | 12           | 9.2        |
-| Epic 0.5: API Foundation           | Must Have   | 0        | 15           | 8.8        |
-| Epic 1: Multi-Tenant Platform      | Must Have   | 1        | 15           | 8.5        |
-| Epic 1.5: Documentation & DevEx    | Must Have   | 1        | 12           | 7.8        |
-| Epic 1.8: Client Dashboard         | Must Have   | 2        | 12           | 7.2        |
-| Epic 2: Feature Management         | Must Have   | 2        | 9            | 7.5        |
-| Epic 2.5: Analytics & Monitoring   | Should Have | 2        | 15           | 6.8        |
-| Epic 2.8: Analytics & Reporting    | Should Have | 3        | 18           | 6.8        |
-| Epic 3: AI Generator Platform      | Must Have   | 2        | 18           | 6.2        |
-| Epic 3.5: shadcn/ui Integration    | Should Have | 3        | 18           | 6.5        |
-| Epic 4: Visual Builder System      | Should Have | 3        | 24           | 5.8        |
-| Epic 4.5: In-Product Guidance      | Should Have | 3        | 12           | 5.5        |
-| Epic 5: Admin Dashboard            | Should Have | 3        | 12           | 6.5        |
-| Epic 5.5: Legal Compliance         | Should Have | 3        | 9            | 5.2        |
-| Epic 6: CMS Integration            | Could Have  | 4        | 18           | 4.2        |
-| Epic 6.5: Vertical Solution Packs  | Could Have  | 4        | 15           | 4.8        |
-| Epic 7: E-commerce Platform        | Could Have  | 4        | 24           | 3.8        |
-| Epic 7.5: Public Roadmap           | Should Have | 3        | 9            | 4.5        |
-| Epic 8: SSO & Enterprise Auth      | Won't Have  | Post-MVP | 15           | 2.5        |
-| Epic 8.5: Mobile App Pipeline      | Won't Have  | Post-MVP | 18           | 3.5        |
-| Epic 9: Advanced Security          | Won't Have  | Post-MVP | 18           | 3.2        |
-| Epic 9.5: AI Agents & Assistants   | Won't Have  | Post-MVP | 21           | 3.8        |
-| Epic 10: API Marketplace           | Won't Have  | Post-MVP | 21           | 2.8        |
-| Epic 11: Education & Community     | Could Have  | 4        | 18           | 4.5        |
-| Epic 12: Content & Media Services  | Could Have  | 4        | 15           | 4.2        |
-| Epic 13: Notifications & Messaging | Should Have | 3        | 12           | 5.8        |
-| Epic 14: Security, Compliance      | Must Have   | 0        | 15           | 8.5        |
-| Epic 15: Developer Experience      | Should Have | 1        | 16           | 6.8        |
-| Pre-Implementation Readiness       | Must Have   | 0        | 15           | 9.5        |
+| Epic                                 | Priority    | Phase    | Story Points | RICE Score |
+| ------------------------------------ | ----------- | -------- | ------------ | ---------- |
+| Epic 0: Authentication & Security    | Must Have   | 0        | 12           | 9.2        |
+| Epic 0.5: API Foundation             | Must Have   | 0        | 15           | 8.8        |
+| Epic 1: Multi-Tenant Platform        | Must Have   | 1        | 15           | 8.5        |
+| Epic 1.5: Documentation & DevEx      | Must Have   | 1        | 12           | 7.8        |
+| Epic 1.8: Client Dashboard           | Must Have   | 2        | 12           | 7.2        |
+| Epic 2: Feature Management           | Must Have   | 2        | 9            | 7.5        |
+| Epic 2.5: Analytics & Monitoring     | Should Have | 2        | 15           | 6.8        |
+| Epic 2.8: Analytics & Reporting      | Should Have | 3        | 18           | 6.8        |
+| Epic 3: AI Generator Platform        | Must Have   | 2        | 18           | 6.2        |
+| Epic 3.5: shadcn/ui Integration      | Should Have | 3        | 18           | 6.5        |
+| Epic 4: Visual Builder System        | Should Have | 3        | 24           | 5.8        |
+| Epic 4.5: In-Product Guidance        | Should Have | 3        | 12           | 5.5        |
+| Epic 5: Admin Dashboard              | Should Have | 3        | 12           | 6.5        |
+| Epic 5.5: Legal Compliance           | Should Have | 3        | 9            | 5.2        |
+| Epic 6: CMS Integration              | Could Have  | 4        | 18           | 4.2        |
+| Epic 6.5: Vertical Solution Packs    | Could Have  | 4        | 15           | 4.8        |
+| Epic 7: E-commerce Platform          | Could Have  | 4        | 24           | 3.8        |
+| Epic 7.5: Public Roadmap             | Should Have | 3        | 9            | 4.5        |
+| Epic 8: SSO & Enterprise Auth        | Won't Have  | Post-MVP | 15           | 2.5        |
+| Epic 8.5: Mobile App Pipeline        | Won't Have  | Post-MVP | 18           | 3.5        |
+| Epic 9: Advanced Security            | Won't Have  | Post-MVP | 18           | 3.2        |
+| Epic 9.5: AI Agents & Assistants     | Won't Have  | Post-MVP | 21           | 3.8        |
+| Epic 10: API Marketplace             | Won't Have  | Post-MVP | 21           | 2.8        |
+| Epic 11: Education & Community       | Could Have  | 4        | 18           | 4.5        |
+| Epic 12: Content & Media Services    | Could Have  | 4        | 15           | 4.2        |
+| Epic 13: Notifications & Messaging   | Should Have | 3        | 12           | 5.8        |
+| Epic 14: Security, Compliance        | Must Have   | 0        | 15           | 8.5        |
+| Epic 15: Developer Experience        | Should Have | 1        | 16           | 6.8        |
+| Epic 16: Billing & Subscription      | Must Have   | 2        | 15           | 8.0        |
+| Epic 17: Infrastructure & DevOps     | Must Have   | 0        | 18           | 7.5        |
+| Epic 18: Performance & Optimization  | Should Have | 3        | 12           | 6.5        |
+| Epic 19: Data Management & Analytics | Should Have | 2        | 15           | 6.8        |
+| Epic 20: Integration & Webhooks      | Should Have | 3        | 12           | 6.2        |
+| Epic 21: Subframe Design System      | Should Have | 2        | 12           | 7.2        |
+| Epic 22: Subframe AI Design Workflow | Should Have | 3        | 9            | 6.8        |
+| Epic 23: Enhanced Visual Builder     | Should Have | 3        | 15           | 6.5        |
+| Epic 24: Business Intelligence       | Should Have | 3        | 15           | 6.8        |
+| Epic 25: Mobile & Cross-Platform     | Could Have  | 4        | 18           | 5.5        |
+| Epic 26: Workflow Automation         | Could Have  | 4        | 12           | 5.2        |
+| Pre-Implementation Readiness         | Must Have   | 0        | 15           | 9.5        |
 
 **Total Pre-Implementation Story Points**: 15 (Environment Setup, Stakeholder Approval, Readiness Gates)  
-**Total Foundation Story Points**: 42 (Epics 0, 0.5, 14)  
-**Total MVP Story Points**: 150 (Epics 1-3)  
-**Total Should Have Story Points**: 145 (Epics 1.8, 2.5, 2.8, 3.5, 4, 4.5, 5, 5.5, 7.5, 13, 15)  
-**Total Could Have Story Points**: 90 (Epics 6, 6.5, 7, 11, 12)  
+**Total Foundation Story Points**: 60 (Epics 0, 0.5, 14, 17)  
+**Total MVP Story Points**: 165 (Epics 1-3, 16)  
+**Total Should Have Story Points**: 250 (Epics 1.8, 2.5, 2.8, 3.5, 4, 4.5, 5, 5.5, 7.5, 13, 15, 18, 19, 20, 21, 22, 23, 24)  
+**Total Could Have Story Points**: 120 (Epics 6, 6.5, 7, 11, 12, 25, 26)  
 **Total Post-MVP Story Points**: 93 (Epics 8-10)  
-**Grand Total**: 535 story points
+**Grand Total**: 703 story points
 
 ## 🚀 Implementation Readiness Summary
 
@@ -3754,8 +3776,8 @@ The Rockket platform backlog is now comprehensive and ready for implementation. 
 
 **📊 Complete Coverage:**
 
-- **29 Epics** covering all aspects of the platform
-- **535 Story Points** across all phases
+- **39 Epics** covering all aspects of the platform
+- **703 Story Points** across all phases
 - **Pre-Implementation Phase** with environment setup and readiness gates
 - **5 Development Phases** with clear deliverables and exit criteria
 - **Post-MVP Roadmap** for enterprise features
@@ -3845,6 +3867,1222 @@ The Rockket platform backlog is now comprehensive and ready for implementation. 
 
 ---
 
+## Epic 16: Billing & Subscription Management
+
+**Priority:** Must Have  
+**RICE Score:** 8.0  
+**Phase:** 2 (Days 8-14)  
+**Story Points:** 15  
+**Prerequisites:** Epic 0 (Authentication & Security), Epic 1 (Multi-Tenant Platform)
+
+### User Stories
+
+#### US-16.1: Subscription Plan Management
+
+**Story Points:** 3  
+**Priority:** Must Have  
+**User Story:** As an admin, I want to manage subscription plans so that I can offer different pricing tiers to customers
+
+**Acceptance Criteria:**
+
+- [ ] Subscription plans can be created and configured
+- [ ] Plan features and limits are defined
+- [ ] Plan pricing is configurable
+- [ ] Plan changes are audited
+- [ ] Plan activation/deactivation works
+
+**Technical Requirements:**
+
+- Subscription plan schema in D1
+- Plan configuration UI
+- Plan validation system
+- Audit logging
+- Plan lifecycle management
+
+#### US-16.2: Payment Processing Integration
+
+**Story Points:** 4  
+**Priority:** Must Have  
+**User Story:** As a customer, I want to pay for subscriptions securely so that I can access premium features
+
+**Acceptance Criteria:**
+
+- [ ] Multiple payment methods are supported
+- [ ] Payment processing is secure and PCI compliant
+- [ ] Payment failures are handled gracefully
+- [ ] Payment receipts are generated
+- [ ] Refund processing works
+
+**Technical Requirements:**
+
+- Stripe integration
+- Payment gateway abstraction
+- PCI compliance measures
+- Receipt generation
+- Refund management system
+
+#### US-16.3: Usage-Based Billing
+
+**Story Points:** 3  
+**Priority:** Must Have  
+**User Story:** As a billing manager, I want usage-based billing so that I can charge customers based on their actual usage
+
+**Acceptance Criteria:**
+
+- [ ] Usage metrics are tracked accurately
+- [ ] Billing calculations are correct
+- [ ] Usage alerts are sent at thresholds
+- [ ] Overage billing is handled
+- [ ] Usage reports are available
+
+**Technical Requirements:**
+
+- Usage tracking system
+- Billing calculation engine
+- Alert system
+- Overage management
+- Reporting system
+
+#### US-16.4: Invoice Management
+
+**Story Points:** 3  
+**Priority:** Must Have  
+**User Story:** As a customer, I want to view and manage my invoices so that I can track my billing history
+
+**Acceptance Criteria:**
+
+- [ ] Invoices are generated automatically
+- [ ] Invoice history is accessible
+- [ ] Invoice downloads are available
+- [ ] Payment status is tracked
+- [ ] Invoice disputes can be raised
+
+**Technical Requirements:**
+
+- Invoice generation system
+- Invoice storage and retrieval
+- PDF generation
+- Payment status tracking
+- Dispute management
+
+#### US-16.5: Revenue Analytics
+
+**Story Points:** 2  
+**Priority:** Must Have  
+**User Story:** As a business analyst, I want revenue analytics so that I can track business performance and growth
+
+**Acceptance Criteria:**
+
+- [ ] Revenue metrics are tracked
+- [ ] Revenue trends are displayed
+- [ ] Customer lifetime value is calculated
+- [ ] Churn analysis is available
+- [ ] Revenue forecasting is provided
+
+**Technical Requirements:**
+
+- Revenue tracking system
+- Analytics dashboard
+- LTV calculation engine
+- Churn analysis
+- Forecasting algorithms
+
+---
+
+## Epic 17: Infrastructure & DevOps
+
+**Priority:** Must Have  
+**RICE Score:** 7.5  
+**Phase:** 0 (Days 1-3)  
+**Story Points:** 18  
+**Prerequisites:** None (Foundation Epic)
+
+### User Stories
+
+#### US-17.1: Docker Development Environment
+
+**Story Points:** 4  
+**Priority:** Must Have  
+**User Story:** As a developer, I want a containerized local development environment so that I can develop consistently before deploying to Cloudflare
+
+**Acceptance Criteria:**
+
+- [ ] Docker Compose configuration for local development services
+- [ ] Local database services (SQLite) run in containers (simulating D1)
+- [ ] Hot reloading works across all containerized services
+- [ ] Development scripts work with Docker
+- [ ] Environment variables are properly configured for local containers (.dev.vars)
+- [ ] Database migrations work in containerized environment
+- [ ] Local environment simulates Cloudflare Workers runtime
+
+**Technical Requirements:**
+
+- Docker Compose configuration for local development
+- Multi-service container setup (Workers simulation)
+- Volume mounts for hot reloading
+- Environment variable management (.dev.vars)
+- Local SQLite database container (D1 simulation)
+- Development script integration
+- Local Workers runtime simulation
+
+#### US-17.2: CI/CD Pipeline
+
+**Story Points:** 4  
+**Priority:** Must Have  
+**User Story:** As a DevOps engineer, I want automated CI/CD pipeline so that code changes are tested and deployed automatically
+
+**Acceptance Criteria:**
+
+- [ ] GitHub Actions workflows are configured
+- [ ] Quality gates are implemented
+- [ ] Automated testing is integrated
+- [ ] Deployment to Cloudflare sandbox is automated
+- [ ] Production deployment to Cloudflare Workers is automated
+- [ ] Environment promotion workflow is defined
+
+**Technical Requirements:**
+
+- GitHub Actions workflows
+- Quality gate automation
+- Test automation integration
+- Cloudflare Wrangler deployment
+- Environment promotion workflow
+- Workers for Platforms deployment
+
+#### US-17.3: Infrastructure Monitoring
+
+**Story Points:** 3  
+**Priority:** Must Have  
+**User Story:** As a DevOps engineer, I want infrastructure monitoring so that I can track system health and performance
+
+**Acceptance Criteria:**
+
+- [ ] System metrics are collected
+- [ ] Performance monitoring is active
+- [ ] Alerting rules are configured
+- [ ] Monitoring dashboards are available
+- [ ] Incident response procedures are documented
+
+**Technical Requirements:**
+
+- Metrics collection system
+- Performance monitoring
+- Alerting configuration
+- Dashboard creation
+- Incident response documentation
+
+#### US-17.4: Database Management
+
+**Story Points:** 3  
+**Priority:** Must Have  
+**User Story:** As a database administrator, I want database management tools so that I can maintain data integrity and performance
+
+**Acceptance Criteria:**
+
+- [ ] Database migrations are automated
+- [ ] Database backups are scheduled
+- [ ] Database performance is monitored
+- [ ] Database scaling is handled
+- [ ] Database security is enforced
+
+**Technical Requirements:**
+
+- Migration automation
+- Backup scheduling
+- Performance monitoring
+- Scaling mechanisms
+- Security enforcement
+
+#### US-17.5: Environment Management
+
+**Story Points:** 2  
+**Priority:** Must Have  
+**User Story:** As a DevOps engineer, I want environment management so that I can maintain consistent environments across development, staging, and production
+
+**Acceptance Criteria:**
+
+- [ ] Environment configurations are managed
+- [ ] Environment promotion is automated
+- [ ] Environment isolation is enforced
+- [ ] Environment monitoring is active
+- [ ] Environment rollback is supported
+
+**Technical Requirements:**
+
+- Configuration management
+- Promotion automation
+- Isolation enforcement
+- Environment monitoring
+- Rollback mechanisms
+
+#### US-17.6: Security Scanning & Compliance
+
+**Story Points:** 2  
+**Priority:** Must Have  
+**User Story:** As a security engineer, I want automated security scanning so that I can identify and fix vulnerabilities early
+
+**Acceptance Criteria:**
+
+- [ ] Code security scanning is automated
+- [ ] Dependency vulnerability scanning works
+- [ ] Container security scanning is active
+- [ ] Security compliance checks pass
+- [ ] Security reports are generated
+
+**Technical Requirements:**
+
+- SAST/DAST integration
+- Dependency scanning
+- Container scanning
+- Compliance checking
+- Security reporting
+
+---
+
+## Epic 18: Performance & Optimization
+
+**Priority:** Should Have  
+**RICE Score:** 6.5  
+**Phase:** 3 (Days 15-21)  
+**Story Points:** 12  
+**Prerequisites:** Epic 0 (Authentication & Security), Epic 1 (Multi-Tenant Platform)
+
+### User Stories
+
+#### US-18.1: Caching Strategy
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a performance engineer, I want a comprehensive caching strategy so that I can improve application response times
+
+**Acceptance Criteria:**
+
+- [ ] Redis caching is implemented
+- [ ] CDN caching is configured
+- [ ] Application-level caching works
+- [ ] Cache invalidation is handled
+- [ ] Cache performance is monitored
+
+**Technical Requirements:**
+
+- Redis integration
+- CDN configuration
+- Application caching
+- Invalidation strategies
+- Performance monitoring
+
+#### US-18.2: Database Optimization
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a database administrator, I want database optimization so that I can improve query performance and reduce latency
+
+**Acceptance Criteria:**
+
+- [ ] Database indexes are optimized
+- [ ] Query performance is monitored
+- [ ] Database connection pooling works
+- [ ] Slow query detection is active
+- [ ] Database scaling is automated
+
+**Technical Requirements:**
+
+- Index optimization
+- Query monitoring
+- Connection pooling
+- Slow query detection
+- Auto-scaling
+
+#### US-18.3: Frontend Performance
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a frontend developer, I want frontend performance optimization so that users experience fast page loads
+
+**Acceptance Criteria:**
+
+- [ ] Code splitting is implemented
+- [ ] Lazy loading works
+- [ ] Image optimization is active
+- [ ] Bundle size is optimized
+- [ ] Performance metrics are tracked
+
+**Technical Requirements:**
+
+- Code splitting
+- Lazy loading
+- Image optimization
+- Bundle optimization
+- Performance tracking
+
+#### US-18.4: API Performance
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a backend developer, I want API performance optimization so that API responses are fast and efficient
+
+**Acceptance Criteria:**
+
+- [ ] API response times are optimized
+- [ ] API rate limiting is implemented
+- [ ] API caching is active
+- [ ] API monitoring is configured
+- [ ] API scaling is automated
+
+**Technical Requirements:**
+
+- Response optimization
+- Rate limiting
+- API caching
+- Performance monitoring
+- Auto-scaling
+
+---
+
+## Epic 19: Data Management & Analytics
+
+**Priority:** Should Have  
+**RICE Score:** 6.8  
+**Phase:** 2 (Days 8-14)  
+**Story Points:** 15  
+**Prerequisites:** Epic 1 (Multi-Tenant Platform), Epic 2 (Feature Management)
+
+### User Stories
+
+#### US-19.1: Data Pipeline
+
+**Story Points:** 4  
+**Priority:** Should Have  
+**User Story:** As a data engineer, I want a data pipeline so that I can process and analyze large volumes of data efficiently
+
+**Acceptance Criteria:**
+
+- [ ] Data ingestion is automated
+- [ ] Data transformation works
+- [ ] Data validation is performed
+- [ ] Data processing is scalable
+- [ ] Data quality is monitored
+
+**Technical Requirements:**
+
+- Data ingestion system
+- ETL processes
+- Data validation
+- Scalable processing
+- Quality monitoring
+
+#### US-19.2: Real-time Analytics
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a business analyst, I want real-time analytics so that I can make data-driven decisions quickly
+
+**Acceptance Criteria:**
+
+- [ ] Real-time data processing works
+- [ ] Analytics dashboards are updated in real-time
+- [ ] Real-time alerts are configured
+- [ ] Data streaming is implemented
+- [ ] Real-time performance is monitored
+
+**Technical Requirements:**
+
+- Stream processing
+- Real-time dashboards
+- Alert system
+- Data streaming
+- Performance monitoring
+
+#### US-19.3: Data Export & Import
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a data analyst, I want data export and import capabilities so that I can work with data in external tools
+
+**Acceptance Criteria:**
+
+- [ ] Data export in multiple formats works
+- [ ] Data import validation is performed
+- [ ] Bulk data operations are supported
+- [ ] Data transformation during import/export works
+- [ ] Export/import performance is optimized
+
+**Technical Requirements:**
+
+- Multi-format export
+- Import validation
+- Bulk operations
+- Data transformation
+- Performance optimization
+
+#### US-19.4: Data Privacy & Compliance
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a compliance officer, I want data privacy controls so that I can ensure GDPR and other regulatory compliance
+
+**Acceptance Criteria:**
+
+- [ ] Data anonymization works
+- [ ] Data retention policies are enforced
+- [ ] Data deletion requests are handled
+- [ ] Data access controls are implemented
+- [ ] Compliance reporting is available
+
+**Technical Requirements:**
+
+- Data anonymization
+- Retention policies
+- Deletion workflows
+- Access controls
+- Compliance reporting
+
+#### US-19.5: Machine Learning Pipeline
+
+**Story Points:** 2  
+**Priority:** Should Have  
+**User Story:** As a data scientist, I want a machine learning pipeline so that I can build and deploy ML models
+
+**Acceptance Criteria:**
+
+- [ ] ML model training is automated
+- [ ] Model deployment works
+- [ ] Model monitoring is active
+- [ ] Model versioning is supported
+- [ ] ML performance is tracked
+
+**Technical Requirements:**
+
+- Training automation
+- Model deployment
+- Model monitoring
+- Version control
+- Performance tracking
+
+---
+
+## Epic 20: Integration & Webhooks
+
+**Priority:** Should Have  
+**RICE Score:** 6.2  
+**Phase:** 3 (Days 15-21)  
+**Story Points:** 12  
+**Prerequisites:** Epic 0.5 (API Foundation), Epic 1 (Multi-Tenant Platform)
+
+### User Stories
+
+#### US-20.1: Webhook System
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a developer, I want webhook functionality so that I can receive real-time notifications when events occur
+
+**Acceptance Criteria:**
+
+- [ ] Webhooks can be configured for events
+- [ ] Webhook delivery is reliable
+- [ ] Webhook retry logic is implemented
+- [ ] Webhook security is enforced
+- [ ] Webhook analytics are available
+
+**Technical Requirements:**
+
+- Webhook configuration system
+- Delivery system
+- Retry mechanisms
+- Security enforcement
+- Analytics tracking
+
+#### US-20.2: Third-Party Integrations
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a user, I want third-party integrations so that I can connect with popular services and tools
+
+**Acceptance Criteria:**
+
+- [ ] Popular integrations are available
+- [ ] Integration setup is simplified
+- [ ] Integration health is monitored
+- [ ] Integration updates are managed
+- [ ] Integration support is provided
+
+**Technical Requirements:**
+
+- Integration framework
+- Setup automation
+- Health monitoring
+- Update management
+- Support system
+
+#### US-20.3: API Rate Limiting
+
+**Story Points:** 2  
+**Priority:** Should Have  
+**User Story:** As a platform administrator, I want API rate limiting so that I can control API usage and prevent abuse
+
+**Acceptance Criteria:**
+
+- [ ] Rate limits are enforced per API key
+- [ ] Rate limit headers are returned
+- [ ] Rate limit bypass is available for admins
+- [ ] Rate limit analytics are available
+- [ ] Rate limit configuration is flexible
+
+**Technical Requirements:**
+
+- Rate limiting middleware
+- Header management
+- Admin override system
+- Analytics tracking
+- Configuration system
+
+#### US-20.4: Integration Testing
+
+**Story Points:** 2  
+**Priority:** Should Have  
+**User Story:** As a QA engineer, I want integration testing so that I can ensure all integrations work correctly
+
+**Acceptance Criteria:**
+
+- [ ] Integration tests are automated
+- [ ] Test environments are available
+- [ ] Test data is managed
+- [ ] Test results are reported
+- [ ] Test coverage is measured
+
+**Technical Requirements:**
+
+- Test automation
+- Environment management
+- Test data management
+- Result reporting
+- Coverage measurement
+
+#### US-20.5: Integration Monitoring
+
+**Story Points:** 2  
+**Priority:** Should Have  
+**User Story:** As a DevOps engineer, I want integration monitoring so that I can track integration health and performance
+
+**Acceptance Criteria:**
+
+- [ ] Integration health is monitored
+- [ ] Integration performance is tracked
+- [ ] Integration alerts are configured
+- [ ] Integration dashboards are available
+- [ ] Integration troubleshooting is supported
+
+**Technical Requirements:**
+
+- Health monitoring
+- Performance tracking
+- Alert configuration
+- Dashboard creation
+- Troubleshooting tools
+
+---
+
+## Epic 21: Subframe Design System Integration
+
+**Priority:** Should Have  
+**RICE Score:** 7.2  
+**Phase:** 2 (Days 8-14)  
+**Story Points:** 12  
+**Prerequisites:** Epic 0 (Authentication & Security), Epic 1 (Multi-Tenant Platform), Epic 3.5 (shadcn/ui Integration)
+
+### User Stories
+
+#### US-21.1: Subframe Project Setup & Configuration
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a developer, I want to set up Subframe project configuration so that I can integrate AI-powered design capabilities with our existing shadcn/ui components
+
+**Acceptance Criteria:**
+
+- [ ] Subframe CLI is installed and configured
+- [ ] Project authentication is set up
+- [ ] Import aliases are configured for component access
+- [ ] Tailwind CSS integration is working
+- [ ] Initial component sync is successful
+
+**Technical Requirements:**
+
+- Subframe CLI installation
+- Project authentication setup
+- Import alias configuration
+- Tailwind CSS integration
+- Component sync system
+
+#### US-21.2: AI-Powered Component Generation
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a designer, I want to use AI to generate components so that I can create new UI elements quickly and maintain design consistency
+
+**Acceptance Criteria:**
+
+- [ ] AI can generate components based on descriptions
+- [ ] Generated components follow design system patterns
+- [ ] Components are properly typed with TypeScript
+- [ ] Generated components integrate with existing theme
+- [ ] Component documentation is auto-generated
+
+**Technical Requirements:**
+
+- AI component generation system
+- Design system pattern recognition
+- TypeScript integration
+- Theme integration
+- Documentation generation
+
+#### US-21.3: Design System Management
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a design system manager, I want to manage the design system so that I can maintain consistency across all components and pages
+
+**Acceptance Criteria:**
+
+- [ ] Design system components are organized and categorized
+- [ ] Theme tokens are centralized and manageable
+- [ ] Component variants are properly defined
+- [ ] Design system documentation is maintained
+- [ ] Component updates propagate correctly
+
+**Technical Requirements:**
+
+- Component organization system
+- Theme token management
+- Variant definition system
+- Documentation system
+- Update propagation mechanism
+
+#### US-21.4: Component Library Integration
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a developer, I want to integrate Subframe components with shadcn/ui so that I can use both design systems effectively
+
+**Acceptance Criteria:**
+
+- [ ] Subframe components work alongside shadcn/ui components
+- [ ] No conflicts between design systems
+- [ ] Consistent styling and theming
+- [ ] Proper component composition
+- [ ] Performance is optimized
+
+**Technical Requirements:**
+
+- Component compatibility system
+- Conflict resolution
+- Styling consistency
+- Composition patterns
+- Performance optimization
+
+---
+
+## Epic 22: Subframe AI Design Workflow
+
+**Priority:** Should Have  
+**RICE Score:** 6.8  
+**Phase:** 3 (Days 15-21)  
+**Story Points:** 9  
+**Prerequisites:** Epic 21 (Subframe Design System Integration), Epic 4 (Visual Builder System)
+
+### User Stories
+
+#### US-22.1: AI-Generated Page Layouts
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a designer, I want to generate page layouts using AI so that I can create new pages quickly and explore different design options
+
+**Acceptance Criteria:**
+
+- [ ] AI can generate complete page layouts
+- [ ] Generated layouts are responsive and mobile-friendly
+- [ ] Layouts use existing design system components
+- [ ] Multiple layout variations are provided
+- [ ] Layouts can be customized and refined
+
+**Technical Requirements:**
+
+- AI layout generation system
+- Responsive design integration
+- Component system integration
+- Variation generation
+- Customization interface
+
+#### US-22.2: Interactive Prototyping
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a product manager, I want to create interactive prototypes so that I can test user flows and gather feedback before development
+
+**Acceptance Criteria:**
+
+- [ ] Interactive prototypes can be created from designs
+- [ ] Prototypes include realistic user interactions
+- [ ] Prototypes are shareable with stakeholders
+- [ ] Prototype annotations are preserved in code
+- [ ] Prototypes can be updated when designs change
+
+**Technical Requirements:**
+
+- Prototype generation system
+- Interaction handling
+- Sharing mechanism
+- Annotation preservation
+- Update system
+
+#### US-22.3: Design-to-Code Workflow
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a developer, I want a seamless design-to-code workflow so that I can implement designs efficiently without manual translation
+
+**Acceptance Criteria:**
+
+- [ ] Designs can be exported directly to code
+- [ ] Generated code is production-ready
+- [ ] Code follows project conventions
+- [ ] Business logic can be added easily
+- [ ] Code updates when designs change
+
+**Technical Requirements:**
+
+- Code export system
+- Production-ready code generation
+- Convention adherence
+- Business logic integration
+- Update synchronization
+
+---
+
+## Epic 23: Enhanced Visual Builder with Subframe AI
+
+**Priority:** Should Have  
+**RICE Score:** 6.5  
+**Phase:** 3 (Days 15-21)  
+**Story Points:** 15  
+**Prerequisites:** Epic 4 (Visual Builder System), Epic 21 (Subframe Design System Integration)
+
+### User Stories
+
+#### US-23.1: AI-Assisted Page Building
+
+**Story Points:** 4  
+**Priority:** Should Have  
+**User Story:** As a content creator, I want AI assistance when building pages so that I can create better layouts and discover new design patterns
+
+**Acceptance Criteria:**
+
+- [ ] AI suggests layout improvements
+- [ ] AI recommends component combinations
+- [ ] AI provides design pattern suggestions
+- [ ] AI helps with responsive design
+- [ ] AI suggestions are contextual and relevant
+
+**Technical Requirements:**
+
+- AI suggestion engine
+- Layout analysis system
+- Component recommendation
+- Pattern recognition
+- Contextual assistance
+
+#### US-23.2: Smart Component Composition
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a designer, I want smart component composition so that I can build complex layouts by combining components intelligently
+
+**Acceptance Criteria:**
+
+- [ ] Components can be composed automatically
+- [ ] Composition follows design principles
+- [ ] Composed components are responsive
+- [ ] Composition can be customized
+- [ ] Performance is maintained
+
+**Technical Requirements:**
+
+- Automatic composition system
+- Design principle engine
+- Responsive composition
+- Customization interface
+- Performance optimization
+
+#### US-23.3: Real-Time Design Validation
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a designer, I want real-time design validation so that I can ensure my designs meet accessibility and usability standards
+
+**Acceptance Criteria:**
+
+- [ ] Accessibility issues are detected in real-time
+- [ ] Usability problems are identified
+- [ ] Design consistency is validated
+- [ ] Performance impact is assessed
+- [ ] Suggestions for improvements are provided
+
+**Technical Requirements:**
+
+- Real-time validation system
+- Accessibility checking
+- Usability analysis
+- Consistency validation
+- Performance assessment
+
+#### US-23.4: Collaborative Design Features
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a team member, I want collaborative design features so that I can work with others on designs and share feedback effectively
+
+**Acceptance Criteria:**
+
+- [ ] Multiple users can work on designs simultaneously
+- [ ] Comments and feedback can be added
+- [ ] Design versions are tracked
+- [ ] Changes are synchronized in real-time
+- [ ] Approval workflows are supported
+
+**Technical Requirements:**
+
+- Real-time collaboration system
+- Comment and feedback system
+- Version tracking
+- Synchronization mechanism
+- Approval workflow
+
+#### US-23.5: Design System Integration
+
+**Story Points:** 2  
+**Priority:** Should Have  
+**User Story:** As a developer, I want seamless design system integration so that I can use both Subframe and shadcn/ui components in the visual builder
+
+**Acceptance Criteria:**
+
+- [ ] Both design systems are available in the builder
+- [ ] Components can be mixed and matched
+- [ ] Styling is consistent across systems
+- [ ] Performance is optimized
+- [ ] No conflicts occur
+
+**Technical Requirements:**
+
+- Multi-system integration
+- Component mixing capability
+- Styling consistency
+- Performance optimization
+- Conflict resolution
+
+---
+
+## Epic 24: Business Intelligence & Advanced Analytics
+
+**Priority:** Should Have  
+**RICE Score:** 6.8  
+**Phase:** 3 (Days 15-21)  
+**Story Points:** 15  
+**Prerequisites:** Epic 1 (Multi-Tenant Platform), Epic 2 (Feature Management), Epic 19 (Data Management & Analytics)
+
+### User Stories
+
+#### US-24.1: Advanced Reporting & Dashboards
+
+**Story Points:** 4  
+**Priority:** Should Have  
+**User Story:** As a business analyst, I want advanced reporting capabilities so that I can analyze business performance and generate insights
+
+**Acceptance Criteria:**
+
+- [ ] Custom report builder is available
+- [ ] Advanced data visualization tools work
+- [ ] Scheduled reports can be generated
+- [ ] Report sharing and collaboration features work
+- [ ] Export functionality supports multiple formats
+
+**Technical Requirements:**
+
+- Report builder framework
+- Data visualization library
+- Scheduling system
+- Sharing and collaboration tools
+- Export functionality
+
+#### US-24.2: Data Warehousing Integration
+
+**Story Points:** 4  
+**Priority:** Should Have  
+**User Story:** As a data engineer, I want data warehousing capabilities so that I can store and analyze large datasets efficiently
+
+**Acceptance Criteria:**
+
+- [ ] Data warehouse integration is configured
+- [ ] ETL processes are automated
+- [ ] Data modeling tools are available
+- [ ] Query performance is optimized
+- [ ] Data governance policies are enforced
+
+**Technical Requirements:**
+
+- Data warehouse integration
+- ETL automation
+- Data modeling tools
+- Query optimization
+- Data governance system
+
+#### US-24.3: Machine Learning & Predictive Analytics
+
+**Story Points:** 4  
+**Priority:** Should Have  
+**User Story:** As a data scientist, I want machine learning capabilities so that I can generate predictive insights and automate analysis
+
+**Acceptance Criteria:**
+
+- [ ] ML model training pipeline is available
+- [ ] Predictive analytics models work
+- [ ] Model deployment and monitoring are automated
+- [ ] A/B testing for ML models is supported
+- [ ] Model performance tracking is available
+
+**Technical Requirements:**
+
+- ML training pipeline
+- Predictive analytics engine
+- Model deployment system
+- A/B testing framework
+- Performance monitoring
+
+#### US-24.4: Automated Insights & Recommendations
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a business user, I want automated insights so that I can understand my data and get actionable recommendations
+
+**Acceptance Criteria:**
+
+- [ ] Automated insight generation works
+- [ ] Recommendations are contextual and relevant
+- [ ] Insight delivery is customizable
+- [ ] Insight quality is monitored
+- [ ] User feedback is collected and used for improvement
+
+**Technical Requirements:**
+
+- Insight generation engine
+- Recommendation system
+- Delivery customization
+- Quality monitoring
+- Feedback collection system
+
+---
+
+## Epic 25: Mobile & Cross-Platform Development
+
+**Priority:** Could Have  
+**RICE Score:** 5.5  
+**Phase:** 4 (Weeks 7-8)  
+**Story Points:** 18  
+**Prerequisites:** Epic 1 (Multi-Tenant Platform), Epic 4 (Visual Builder System), Epic 21 (Subframe Design System)
+
+### User Stories
+
+#### US-25.1: Mobile App Generation
+
+**Story Points:** 5  
+**Priority:** Could Have  
+**User Story:** As a developer, I want to generate mobile apps so that I can reach mobile users without additional development effort
+
+**Acceptance Criteria:**
+
+- [ ] Mobile apps can be generated from web projects
+- [ ] Native mobile features are integrated
+- [ ] App store deployment is automated
+- [ ] Mobile-specific optimizations are applied
+- [ ] Cross-platform compatibility is maintained
+
+**Technical Requirements:**
+
+- Mobile app generation pipeline
+- Native feature integration
+- App store deployment automation
+- Mobile optimization
+- Cross-platform compatibility
+
+#### US-25.2: Progressive Web App (PWA) Capabilities
+
+**Story Points:** 3  
+**Priority:** Could Have  
+**User Story:** As a developer, I want PWA capabilities so that I can provide app-like experiences in web browsers
+
+**Acceptance Criteria:**
+
+- [ ] PWA generation is automated
+- [ ] Offline functionality works
+- [ ] Push notifications are supported
+- [ ] App-like navigation is implemented
+- [ ] Performance is optimized for mobile
+
+**Technical Requirements:**
+
+- PWA generation system
+- Offline functionality
+- Push notification system
+- App-like navigation
+- Mobile performance optimization
+
+#### US-25.3: Cross-Platform Component Library
+
+**Story Points:** 4  
+**Priority:** Could Have  
+**User Story:** As a developer, I want cross-platform components so that I can share code between web and mobile applications
+
+**Acceptance Criteria:**
+
+- [ ] Components work across web and mobile
+- [ ] Platform-specific adaptations are handled
+- [ ] Performance is optimized for each platform
+- [ ] Component library is well-documented
+- [ ] Testing is automated across platforms
+
+**Technical Requirements:**
+
+- Cross-platform component system
+- Platform adaptation layer
+- Performance optimization
+- Documentation system
+- Automated testing
+
+#### US-25.4: Mobile SDK & Integration
+
+**Story Points:** 3  
+**Priority:** Could Have  
+**User Story:** As a mobile developer, I want a mobile SDK so that I can integrate platform features into custom mobile applications
+
+**Acceptance Criteria:**
+
+- [ ] Mobile SDK is available for iOS and Android
+- [ ] SDK documentation is comprehensive
+- [ ] Integration examples are provided
+- [ ] SDK updates are managed automatically
+- [ ] Performance is optimized
+
+**Technical Requirements:**
+
+- Mobile SDK development
+- Documentation system
+- Example applications
+- Update management
+- Performance optimization
+
+#### US-25.5: Mobile Analytics & Tracking
+
+**Story Points:** 3  
+**Priority:** Could Have  
+**User Story:** As a product manager, I want mobile analytics so that I can understand mobile usage patterns and optimize the mobile experience
+
+**Acceptance Criteria:**
+
+- [ ] Mobile-specific metrics are tracked
+- [ ] User behavior analytics work
+- [ ] Performance monitoring is available
+- [ ] Mobile conversion tracking works
+- [ ] Analytics are integrated with web analytics
+
+**Technical Requirements:**
+
+- Mobile analytics system
+- Behavior tracking
+- Performance monitoring
+- Conversion tracking
+- Analytics integration
+
+---
+
+## Epic 26: Workflow Automation & Integration Platform
+
+**Priority:** Could Have  
+**RICE Score:** 5.2  
+**Phase:** 4 (Weeks 7-8)  
+**Story Points:** 12  
+**Prerequisites:** Epic 20 (Integration & Webhooks), Epic 1 (Multi-Tenant Platform)
+
+### User Stories
+
+#### US-26.1: Zapier Integration
+
+**Story Points:** 4  
+**Priority:** Could Have  
+**User Story:** As a user, I want Zapier integration so that I can automate workflows and connect with external services without coding
+
+**Acceptance Criteria:**
+
+- [ ] Zapier app is available and functional
+- [ ] Trigger and action support works
+- [ ] Workflow templates are provided
+- [ ] Integration setup is simplified
+- [ ] Error handling and monitoring work
+
+**Technical Requirements:**
+
+- Zapier app development
+- Trigger/action system
+- Template library
+- Setup automation
+- Error handling and monitoring
+
+#### US-26.2: Visual Workflow Builder
+
+**Story Points:** 4  
+**Priority:** Could Have  
+**User Story:** As a business user, I want a visual workflow builder so that I can create automated processes without technical knowledge
+
+**Acceptance Criteria:**
+
+- [ ] Drag-and-drop workflow builder works
+- [ ] Pre-built workflow templates are available
+- [ ] Workflow testing and debugging tools work
+- [ ] Workflow execution monitoring is available
+- [ ] Workflow sharing and collaboration features work
+
+**Technical Requirements:**
+
+- Visual workflow builder
+- Template system
+- Testing and debugging tools
+- Execution monitoring
+- Sharing and collaboration
+
+#### US-26.3: Pre-Built Service Integrations
+
+**Story Points:** 4  
+**Priority:** Could Have  
+**User Story:** As a user, I want pre-built integrations with popular services so that I can connect to external tools quickly
+
+**Acceptance Criteria:**
+
+- [ ] Popular service integrations are available
+- [ ] Integration setup is streamlined
+- [ ] Data synchronization works reliably
+- [ ] Integration health monitoring is available
+- [ ] Integration updates are managed automatically
+
+**Technical Requirements:**
+
+- Service integration library
+- Setup automation
+- Data synchronization
+- Health monitoring
+- Update management
+
+---
+
 ### Incremental Development Phases
 
 **Pre-Implementation (Day 0) - Setup & Readiness**: 15 story points
@@ -3856,11 +5094,12 @@ The Rockket platform backlog is now comprehensive and ready for implementation. 
 - Stakeholder approval and sign-off
 - Implementation readiness gates
 
-**Phase 0 (Days 1-3) - Foundation**: 42 story points
+**Phase 0 (Days 1-3) - Foundation**: 60 story points
 
 - Authentication and security foundation
 - API foundation and infrastructure
 - Security, compliance and reliability
+- Infrastructure and DevOps (Docker, CI/CD, monitoring)
 
 **Phase 1 (Days 4-7) - Platform Core**: 43 story points
 
@@ -3868,14 +5107,17 @@ The Rockket platform backlog is now comprehensive and ready for implementation. 
 - Documentation and developer experience
 - Developer experience tools (including Docker)
 
-**Phase 2 (Days 8-14) - Core Features**: 54 story points
+**Phase 2 (Days 8-14) - Core Features**: 81 story points
 
 - Client dashboard (customer-facing interface)
 - Feature management system
 - Analytics and monitoring integration
 - AI generator platform
+- Billing and subscription management
+- Data management and analytics
+- Subframe design system integration
 
-**Phase 3 (Days 15-21) - Advanced Features**: 123 story points
+**Phase 3 (Days 15-21) - Advanced Features**: 186 story points
 
 - Analytics and reporting platform
 - shadcn/ui integration and component library
@@ -3885,14 +5127,21 @@ The Rockket platform backlog is now comprehensive and ready for implementation. 
 - Legal compliance
 - Public roadmap
 - Notifications and messaging
+- Performance and optimization
+- Integration and webhooks
+- Subframe AI design workflow
+- Enhanced visual builder with Subframe AI
+- Business intelligence and advanced analytics
 
-**Phase 4 (Weeks 7-8) - Extended Features**: 90 story points
+**Phase 4 (Weeks 7-8) - Extended Features**: 120 story points
 
 - CMS integration
 - Vertical solution packs
 - E-commerce platform
 - Education and community modules
 - Content and media services
+- Mobile and cross-platform development
+- Workflow automation and integration platform
 
 **Post-MVP - Enterprise Features**: 93 story points
 
