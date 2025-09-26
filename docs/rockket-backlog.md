@@ -912,26 +912,28 @@ This document contains all epics, user stories, and relevant details extracted f
 - Health monitoring
 - Failover mechanism
 
-#### US-3.3: AI Usage Quotas
+#### US-3.3: AI Usage Quotas & Credit Integration
 
 **Story Points:** 3  
 **Priority:** Must Have  
-**User Story:** As a billing manager, I want AI usage quotas so that I can control costs and bill customers accurately
+**User Story:** As a billing manager, I want AI usage quotas integrated with credit system so that I can control costs and bill customers accurately
 
 **Acceptance Criteria:**
 
 - [ ] Usage is tracked per tenant and user
-- [ ] Quotas are enforced by plan
-- [ ] Usage alerts are sent at thresholds
-- [ ] Overage billing is accurate
+- [ ] Quotas are enforced by plan and credit balance
+- [ ] Credit consumption is calculated per AI operation
+- [ ] Usage alerts are sent at credit thresholds
+- [ ] Credit-based billing is accurate
 - [ ] Usage history is available
 
 **Technical Requirements:**
 
 - Usage tracking system
-- Quota enforcement
+- Credit-based quota enforcement
+- Credit consumption calculation
 - Alerting system
-- Billing integration
+- Credit billing integration
 
 #### US-3.4: AI Token Tracking
 
@@ -3748,6 +3750,7 @@ This document contains all epics, user stories, and relevant details extracted f
 | Epic 14: Security, Compliance        | Must Have   | 0        | 15           | 8.5        |
 | Epic 15: Developer Experience        | Should Have | 1        | 16           | 6.8        |
 | Epic 16: Billing & Subscription      | Must Have   | 2        | 15           | 8.0        |
+| Epic 16.5: Credit Management System  | Must Have   | 2        | 24           | 8.5        |
 | Epic 17: Infrastructure & DevOps     | Must Have   | 0        | 18           | 7.5        |
 | Epic 18: Performance & Optimization  | Should Have | 3        | 12           | 6.5        |
 | Epic 19: Data Management & Analytics | Should Have | 2        | 15           | 6.8        |
@@ -3758,15 +3761,16 @@ This document contains all epics, user stories, and relevant details extracted f
 | Epic 24: Business Intelligence       | Should Have | 3        | 15           | 6.8        |
 | Epic 25: Mobile & Cross-Platform     | Could Have  | 4        | 18           | 5.5        |
 | Epic 26: Workflow Automation         | Could Have  | 4        | 12           | 5.2        |
+| Epic 27: Market Research & Feedback  | Should Have | 3        | 18           | 7.8        |
 | Pre-Implementation Readiness         | Must Have   | 0        | 15           | 9.5        |
 
 **Total Pre-Implementation Story Points**: 15 (Environment Setup, Stakeholder Approval, Readiness Gates)  
 **Total Foundation Story Points**: 60 (Epics 0, 0.5, 14, 17)  
 **Total MVP Story Points**: 165 (Epics 1-3, 16)  
-**Total Should Have Story Points**: 250 (Epics 1.8, 2.5, 2.8, 3.5, 4, 4.5, 5, 5.5, 7.5, 13, 15, 18, 19, 20, 21, 22, 23, 24)  
+**Total Should Have Story Points**: 268 (Epics 1.8, 2.5, 2.8, 3.5, 4, 4.5, 5, 5.5, 7.5, 13, 15, 18, 19, 20, 21, 22, 23, 24, 27)  
 **Total Could Have Story Points**: 120 (Epics 6, 6.5, 7, 11, 12, 25, 26)  
 **Total Post-MVP Story Points**: 93 (Epics 8-10)  
-**Grand Total**: 703 story points
+**Grand Total**: 721 story points
 
 ## 🚀 Implementation Readiness Summary
 
@@ -3864,6 +3868,193 @@ The Rockket platform backlog is now comprehensive and ready for implementation. 
 - [ ] Begin Pre-Implementation Phase
 
 **Status: ✅ APPROVED FOR IMPLEMENTATION**
+
+---
+
+## 🎯 Credit System Implementation Plan
+
+### **Phase 2 Implementation Strategy (Days 8-14)**
+
+#### **Sprint 1: Credit Foundation (Days 8-10)**
+
+**Focus:** Core credit system infrastructure
+
+- **US-16.5.1:** Credit System Foundation (5 points)
+- **US-16.5.2:** Credit Consumption Tracking (4 points)
+- **US-3.3:** AI Usage Quotas & Credit Integration (3 points)
+
+**Deliverables:**
+
+- Credit allocation schema in D1
+- Real-time credit tracking system
+- AI operation credit consumption
+- Basic credit balance API
+
+#### **Sprint 2: Credit Management (Days 11-12)**
+
+**Focus:** Credit purchase and rollover management
+
+- **US-16.5.3:** Credit Purchase & Top-up System (4 points)
+- **US-16.5.4:** Credit Rollover & Expiration Management (3 points)
+- **US-16.5.6:** Credit Alerts & Notifications (2 points)
+
+**Deliverables:**
+
+- Credit package purchase flow
+- Rollover calculation engine
+- Alert notification system
+- Payment integration
+
+#### **Sprint 3: Credit Dashboard (Days 13-14)**
+
+**Focus:** User experience and monitoring
+
+- **US-16.5.5:** Credit Usage Dashboard (3 points)
+- **US-16.5.7:** Enterprise Credit Management (3 points)
+- **US-16.5.8:** Credit Cost Optimization (2 points)
+
+**Deliverables:**
+
+- Interactive credit dashboard
+- Enterprise credit management
+- Cost optimization features
+- Usage analytics
+
+### **Prerequisites & Dependencies**
+
+#### **Must Complete Before Credit System:**
+
+1. **Epic 0:** Authentication & Security Foundation
+2. **Epic 1:** Multi-Tenant Platform
+3. **Epic 16:** Billing & Subscription Management (basic)
+4. **Epic 3:** AI Generator Platform (basic)
+
+#### **Parallel Development:**
+
+- **Epic 2:** Feature Management Core
+- **Epic 0.5:** API Foundation
+
+### **Credit System Architecture**
+
+#### **Database Schema:**
+
+```sql
+-- Credit allocations per subscription plan
+CREATE TABLE credit_allocations (
+  id UUID PRIMARY KEY,
+  plan_id UUID REFERENCES subscription_plans(id),
+  monthly_credits INTEGER NOT NULL,
+  rollover_limit INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- User credit balances
+CREATE TABLE user_credits (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id),
+  tenant_id UUID REFERENCES tenants(id),
+  plan_credits INTEGER NOT NULL,
+  purchased_credits INTEGER DEFAULT 0,
+  used_credits INTEGER DEFAULT 0,
+  rollover_credits INTEGER DEFAULT 0,
+  expires_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Credit transactions
+CREATE TABLE credit_transactions (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id),
+  amount INTEGER NOT NULL,
+  type VARCHAR(20) NOT NULL, -- 'usage', 'purchase', 'refund', 'rollover'
+  feature VARCHAR(50),
+  metadata JSONB,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### **Credit Consumption Rates:**
+
+```typescript
+const CREDIT_RATES = {
+  aiGeneration: 10, // 10 credits per generation
+  codeReview: 5, // 5 credits per review
+  imageGeneration: 15, // 15 credits per image
+  chatCompletion: 2, // 2 credits per message
+  templateGeneration: 8, // 8 credits per template
+  codeOptimization: 6, // 6 credits per optimization
+};
+```
+
+#### **Subscription Plan Credit Allocation:**
+
+```typescript
+const PLAN_CREDITS = {
+  free: { monthly: 100, rollover: 0 },
+  starter: { monthly: 500, rollover: 1000 },
+  pro: { monthly: 2000, rollover: 4000 },
+  enterprise: { monthly: 10000, rollover: 20000 },
+};
+```
+
+### **Success Metrics**
+
+#### **Technical KPIs:**
+
+- Credit balance accuracy: 99.9%
+- Credit consumption tracking: Real-time
+- Payment processing: < 3 seconds
+- Dashboard load time: < 2 seconds
+
+#### **Business KPIs:**
+
+- Credit purchase conversion: > 15%
+- Credit rollover utilization: > 60%
+- Enterprise credit adoption: > 80%
+- Cost optimization savings: > 20%
+
+#### **User Experience KPIs:**
+
+- Credit dashboard usage: > 70% of active users
+- Alert effectiveness: < 5% service interruptions
+- Credit purchase flow completion: > 85%
+
+### **Risk Mitigation**
+
+#### **Technical Risks:**
+
+- **Credit Balance Inconsistency:** Implement atomic transactions
+- **Payment Processing Failures:** Implement retry mechanisms
+- **Real-time Tracking Performance:** Use caching and async processing
+
+#### **Business Risks:**
+
+- **Credit Abuse:** Implement rate limiting and fraud detection
+- **Revenue Impact:** Monitor credit consumption patterns
+- **User Experience:** Provide clear credit cost transparency
+
+### **Testing Strategy**
+
+#### **Unit Tests:**
+
+- Credit calculation accuracy
+- Rollover logic validation
+- Payment processing
+- Alert triggering
+
+#### **Integration Tests:**
+
+- AI operation credit consumption
+- Billing system integration
+- Payment gateway integration
+- Dashboard data accuracy
+
+#### **User Acceptance Tests:**
+
+- Credit purchase flow
+- Dashboard usability
+- Alert effectiveness
+- Enterprise management features
 
 ---
 
@@ -3986,6 +4177,194 @@ The Rockket platform backlog is now comprehensive and ready for implementation. 
 - LTV calculation engine
 - Churn analysis
 - Forecasting algorithms
+
+---
+
+## Epic 16.5: Credit Management System
+
+**Priority:** Must Have  
+**RICE Score:** 8.5  
+**Phase:** 2 (Days 8-14)  
+**Story Points:** 24  
+**Prerequisites:** Epic 16 (Billing & Subscription), Epic 3 (AI Generator Platform)
+
+### User Stories
+
+#### US-16.5.1: Credit System Foundation
+
+**Story Points:** 5  
+**Priority:** Must Have  
+**User Story:** As a platform architect, I want a credit system foundation so that I can manage AI feature usage and billing accurately
+
+**Acceptance Criteria:**
+
+- [ ] Credit allocation is managed per subscription plan
+- [ ] Credit consumption is tracked per AI operation
+- [ ] Credit balance is maintained in real-time
+- [ ] Credit transactions are audited
+- [ ] Credit system integrates with billing system
+
+**Technical Requirements:**
+
+- Credit allocation schema in D1
+- Real-time credit tracking
+- Transaction audit system
+- Billing system integration
+- Credit balance API
+
+#### US-16.5.2: Credit Consumption Tracking
+
+**Story Points:** 4  
+**Priority:** Must Have  
+**User Story:** As a billing manager, I want to track credit consumption so that I can monitor usage and optimize costs
+
+**Acceptance Criteria:**
+
+- [ ] AI operations consume credits based on complexity
+- [ ] Credit consumption is tracked per user and tenant
+- [ ] Usage patterns are analyzed
+- [ ] Credit consumption alerts are sent
+- [ ] Historical consumption data is preserved
+
+**Technical Requirements:**
+
+- Credit consumption engine
+- Usage pattern analysis
+- Alert system
+- Historical data storage
+- Analytics dashboard
+
+#### US-16.5.3: Credit Purchase & Top-up System
+
+**Story Points:** 4  
+**Priority:** Must Have  
+**User Story:** As a user, I want to purchase additional credits so that I can continue using AI features when my plan credits are exhausted
+
+**Acceptance Criteria:**
+
+- [ ] Credit packages are available for purchase
+- [ ] Payment processing is secure
+- [ ] Credits are added immediately after purchase
+- [ ] Purchase history is tracked
+- [ ] Refund processing works for unused credits
+
+**Technical Requirements:**
+
+- Credit package management
+- Payment gateway integration
+- Immediate credit allocation
+- Purchase tracking system
+- Refund processing
+
+#### US-16.5.4: Credit Rollover & Expiration Management
+
+**Story Points:** 3  
+**Priority:** Must Have  
+**User Story:** As a user, I want credit rollover so that I can carry forward unused credits to the next billing period
+
+**Acceptance Criteria:**
+
+- [ ] Unused credits roll over to next month
+- [ ] Rollover is capped at 2x monthly allocation
+- [ ] Credit expiration is handled gracefully
+- [ ] Rollover notifications are sent
+- [ ] Expired credits are clearly marked
+
+**Technical Requirements:**
+
+- Rollover calculation engine
+- Expiration management system
+- Notification system
+- Credit lifecycle management
+- User communication system
+
+#### US-16.5.5: Credit Usage Dashboard
+
+**Story Points:** 3  
+**Priority:** Must Have  
+**User Story:** As a user, I want a credit usage dashboard so that I can monitor my credit balance and usage patterns
+
+**Acceptance Criteria:**
+
+- [ ] Current credit balance is displayed
+- [ ] Usage history is shown
+- [ ] Projected usage is calculated
+- [ ] Top credit consumers are identified
+- [ ] Usage optimization suggestions are provided
+
+**Technical Requirements:**
+
+- Real-time dashboard
+- Usage analytics engine
+- Projection algorithms
+- Optimization recommendations
+- Interactive charts and graphs
+
+#### US-16.5.6: Credit Alerts & Notifications
+
+**Story Points:** 2  
+**Priority:** Must Have  
+**User Story:** As a user, I want credit alerts so that I can manage my usage and avoid service interruptions
+
+**Acceptance Criteria:**
+
+- [ ] Low credit warnings are sent at 20%, 10%, 5%
+- [ ] Credit exhaustion alerts are sent
+- [ ] Usage spike notifications are sent
+- [ ] Credit purchase reminders are sent
+- [ ] Alert preferences are configurable
+
+**Technical Requirements:**
+
+- Alert system
+- Notification engine
+- Preference management
+- Threshold monitoring
+- Multi-channel notifications
+
+#### US-16.5.7: Enterprise Credit Management
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As an enterprise admin, I want team credit management so that I can allocate credits across departments and monitor usage
+
+**Acceptance Criteria:**
+
+- [ ] Team credit pools are managed
+- [ ] Department credit allocations are set
+- [ ] Usage is tracked per department
+- [ ] Credit transfers between departments work
+- [ ] Enterprise usage reports are available
+
+**Technical Requirements:**
+
+- Team credit pools
+- Department allocation system
+- Credit transfer mechanism
+- Enterprise reporting
+- Admin dashboard
+
+#### US-16.5.8: Credit Cost Optimization
+
+**Story Points:** 2  
+**Priority:** Should Have  
+**User Story:** As a platform manager, I want credit cost optimization so that I can reduce AI costs and improve efficiency
+
+**Acceptance Criteria:**
+
+- [ ] AI provider selection is optimized for cost
+- [ ] Caching reduces redundant AI calls
+- [ ] Batch processing is implemented
+- [ ] Cost optimization recommendations are provided
+- [ ] Usage efficiency metrics are tracked
+
+**Technical Requirements:**
+
+- Cost optimization engine
+- Caching system
+- Batch processing
+- Efficiency metrics
+- Optimization algorithms
 
 ---
 
@@ -5080,6 +5459,156 @@ The Rockket platform backlog is now comprehensive and ready for implementation. 
 - Data synchronization
 - Health monitoring
 - Update management
+
+## Epic 27: Market Research & User Feedback Platform
+
+**Priority:** Should Have  
+**RICE Score:** 7.8  
+**Phase:** 3 (Days 15-21)  
+**Story Points:** 18  
+**Prerequisites:** Epic 1 (Multi-Tenant Platform), Epic 19 (Data Management & Analytics)
+
+### User Stories
+
+#### US-27.1: Interactive Survey & Quiz Builder
+
+**Story Points:** 4  
+**Priority:** Should Have  
+**User Story:** As a startup founder, I want to create interactive surveys and quizzes so that I can gather user feedback and validate my business idea quickly
+
+**Acceptance Criteria:**
+
+- [ ] Drag-and-drop survey builder works
+- [ ] Multiple question types are supported (multiple choice, rating, text, etc.)
+- [ ] Conditional logic and branching work
+- [ ] Survey templates are available for different industries
+- [ ] Mobile-responsive surveys are generated
+- [ ] Real-time preview is available
+- [ ] Survey sharing via links works
+- [ ] Anonymous and authenticated responses are supported
+
+**Technical Requirements:**
+
+- Survey builder interface
+- Question type system
+- Conditional logic engine
+- Template library
+- Mobile optimization
+- Real-time preview
+- Sharing system
+- Response collection
+
+#### US-27.2: Market Research Dashboard & Analytics
+
+**Story Points:** 4  
+**Priority:** Should Have  
+**User Story:** As a startup founder, I want comprehensive analytics on my market research so that I can make data-driven decisions about my business
+
+**Acceptance Criteria:**
+
+- [ ] Response analytics dashboard is available
+- [ ] Demographic breakdowns are provided
+- [ ] Sentiment analysis is performed
+- [ ] Trend analysis over time works
+- [ ] Export to CSV/Excel is available
+- [ ] Custom reports can be generated
+- [ ] Data visualization tools are included
+- [ ] Real-time response tracking works
+
+**Technical Requirements:**
+
+- Analytics dashboard
+- Demographic analysis
+- Sentiment analysis engine
+- Trend analysis tools
+- Export functionality
+- Report generation
+- Data visualization
+- Real-time tracking
+
+#### US-27.3: Business Plan Generator & Market Analysis
+
+**Story Points:** 4  
+**Priority:** Should Have  
+**User Story:** As a startup founder, I want AI-powered business plan generation so that I can quickly create professional business plans with market analysis
+
+**Acceptance Criteria:**
+
+- [ ] AI-powered business plan generation works
+- [ ] Market size and opportunity analysis is included
+- [ ] Competitive analysis is provided
+- [ ] Financial projections are generated
+- [ ] Industry-specific templates are available
+- [ ] Export to PDF/Word is supported
+- [ ] Custom sections can be added
+- [ ] Professional formatting is applied
+
+**Technical Requirements:**
+
+- AI business plan generator
+- Market analysis engine
+- Competitive analysis tools
+- Financial projection models
+- Template system
+- Export functionality
+- Custom section support
+- Formatting engine
+
+#### US-27.4: Customer Feedback Collection & Management
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a startup founder, I want to collect and manage customer feedback so that I can continuously improve my product based on user input
+
+**Acceptance Criteria:**
+
+- [ ] Feedback collection widgets work
+- [ ] Feedback categorization is automatic
+- [ ] Priority scoring is applied
+- [ ] Response management system works
+- [ ] Feedback trends are tracked
+- [ ] Integration with CRM systems works
+- [ ] Automated follow-up emails are sent
+- [ ] Feedback analytics are provided
+
+**Technical Requirements:**
+
+- Feedback collection system
+- Categorization engine
+- Priority scoring algorithm
+- Response management
+- Trend tracking
+- CRM integration
+- Email automation
+- Feedback analytics
+
+#### US-27.5: Lead Generation & Qualification Tools
+
+**Story Points:** 3  
+**Priority:** Should Have  
+**User Story:** As a startup founder, I want lead generation and qualification tools so that I can identify and prioritize potential customers
+
+**Acceptance Criteria:**
+
+- [ ] Lead capture forms work
+- [ ] Lead scoring system is functional
+- [ ] Qualification questionnaires are available
+- [ ] Lead nurturing workflows work
+- [ ] Integration with email marketing tools works
+- [ ] Lead analytics are provided
+- [ ] Automated follow-up sequences work
+- [ ] Lead quality assessment is available
+
+**Technical Requirements:**
+
+- Lead capture system
+- Lead scoring engine
+- Qualification tools
+- Nurturing workflows
+- Email marketing integration
+- Lead analytics
+- Automation system
+- Quality assessment tools
 
 ---
 
