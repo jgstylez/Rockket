@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         projects: projects.map((project) => ({
           id: project.id,
           name: project.title,
-          description: project.description,
+          description: (project.metadata as any)?.description || "",
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
         })),
@@ -49,15 +49,18 @@ export async function POST(request: NextRequest) {
       const project = await db.content.create({
         data: {
           title: name,
-          description: description || "",
+          slug: name.toLowerCase().replace(/\s+/g, "-"),
           type: "builder_project",
           content: JSON.stringify({
             pages: [],
             globalStyles: {},
             settings: {},
           }),
+          metadata: {
+            description: description || "",
+          },
           tenantId: req.user!.tenantId,
-          userId: req.user!.userId,
+          authorId: req.user!.userId,
         },
       });
 
@@ -66,7 +69,7 @@ export async function POST(request: NextRequest) {
         project: {
           id: project.id,
           name: project.title,
-          description: project.description,
+          description: (project.metadata as any)?.description || "",
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
         },

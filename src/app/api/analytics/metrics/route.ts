@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth, requireRole } from "@/lib/auth/middleware";
+import { withAuthAndRole } from "@/lib/auth/middleware";
 import { AnalyticsService } from "@/lib/analytics/events";
 
 const analyticsService = new AnalyticsService();
 
 export async function GET(request: NextRequest) {
-  return withAuth(request, requireRole(["admin", "owner"]), async (req) => {
+  return withAuthAndRole(request, ["admin", "owner"], async (req) => {
     try {
       const { searchParams } = new URL(request.url);
       const startDate = searchParams.get("startDate");

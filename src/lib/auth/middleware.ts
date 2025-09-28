@@ -86,3 +86,27 @@ export function requireTenant(tenantId: string) {
     return handler(request);
   };
 }
+
+export async function withAuthAndRole(
+  request: NextRequest,
+  roles: string[],
+  handler: (req: AuthenticatedRequest) => Promise<NextResponse>
+): Promise<NextResponse> {
+  return withAuth(request, async (req) => {
+    if (!req.user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return NextResponse.json(
+        { error: "Insufficient permissions" },
+        { status: 403 }
+      );
+    }
+
+    return handler(req);
+  });
+}

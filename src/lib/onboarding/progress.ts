@@ -10,7 +10,7 @@ export class OnboardingProgressService {
       const progress = await db.content.findFirst({
         where: {
           type: "onboarding_progress",
-          userId,
+          authorId: userId,
           tenantId,
         },
       });
@@ -45,11 +45,14 @@ export class OnboardingProgressService {
       await db.content.create({
         data: {
           title: `Onboarding Progress - ${userId}`,
-          description: `User onboarding progress for ${userId}`,
+          slug: `onboarding-progress-${userId}`,
           type: "onboarding_progress",
           content: JSON.stringify(progress),
+          metadata: {
+            description: `User onboarding progress for ${userId}`,
+          },
           tenantId,
-          userId,
+          authorId: userId,
         },
       });
 
@@ -69,7 +72,7 @@ export class OnboardingProgressService {
       const existing = await db.content.findFirst({
         where: {
           type: "onboarding_progress",
-          userId,
+          authorId: userId,
           tenantId,
         },
       });

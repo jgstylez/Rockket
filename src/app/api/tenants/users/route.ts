@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth, requireRole } from "@/lib/auth/middleware";
+import { withAuthAndRole } from "@/lib/auth/middleware";
 import {
   getTenantUsers,
   addUserToTenant,
@@ -8,7 +8,7 @@ import {
 import { createUser } from "@/lib/db/user";
 
 export async function GET(request: NextRequest) {
-  return withAuth(request, requireRole(["admin", "owner"]), async (req) => {
+  return withAuthAndRole(request, ["admin", "owner"], async (req) => {
     try {
       const users = await getTenantUsers(req.user!.tenantId);
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  return withAuth(request, requireRole(["admin", "owner"]), async (req) => {
+  return withAuthAndRole(request, ["admin", "owner"], async (req) => {
     try {
       const body = await request.json();
       const { email, name, role = "member" } = body;
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  return withAuth(request, requireRole(["owner"]), async (req) => {
+  return withAuthAndRole(request, ["owner"], async (req) => {
     try {
       const { searchParams } = new URL(request.url);
       const userId = searchParams.get("userId");

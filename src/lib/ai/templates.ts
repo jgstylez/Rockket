@@ -138,5 +138,7 @@ export function getTemplateById(id: string): AppTemplate | undefined {
 }
 
 export function getCategories(): string[] {
-  return [...new Set(APP_TEMPLATES.map((template) => template.category))];
+  return Array.from(
+    new Set(APP_TEMPLATES.map((template) => template.category))
+  );
 }

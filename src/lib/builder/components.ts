@@ -361,7 +361,9 @@ export function getComponentById(id: string): BuilderComponent | undefined {
 }
 
 export function getCategories(): string[] {
-  return [...new Set(COMPONENT_LIBRARY.map((component) => component.category))];
+  return Array.from(
+    new Set(COMPONENT_LIBRARY.map((component) => component.category))
+  );
 }
 
 export function createComponent(

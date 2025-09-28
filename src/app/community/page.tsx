@@ -6,7 +6,6 @@ import {
   MessageCircle,
   Github,
   Twitter,
-  Discord,
   BookOpen,
   Code,
   Zap,
@@ -25,7 +24,7 @@ export default function CommunityPage() {
     {
       name: "Discord",
       description: "Real-time chat and collaboration",
-      icon: <Discord className="h-8 w-8 text-indigo-600" />,
+      icon: <MessageCircle className="h-8 w-8 text-indigo-600" />,
       members: "5,000+",
       features: [
         "Real-time chat",
@@ -102,7 +101,7 @@ export default function CommunityPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
                 <Link href="https://discord.gg/rockket" target="_blank">
-                  <Discord className="h-4 w-4 mr-2" />
+                  <MessageCircle className="h-4 w-4 mr-2" />
                   Join Discord
                 </Link>
               </Button>
@@ -301,7 +300,7 @@ export default function CommunityPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
                 <Link href="https://discord.gg/rockket" target="_blank">
-                  <Discord className="h-4 w-4 mr-2" />
+                  <MessageCircle className="h-4 w-4 mr-2" />
                   Join Discord
                 </Link>
               </Button>

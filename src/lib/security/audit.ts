@@ -21,7 +21,7 @@ export class AuditService {
       await db.content.create({
         data: {
           title: `Security Event - ${event.type}`,
-          description: event.description,
+          slug: `security-event-${Date.now()}`,
           type: "security_event",
           content: JSON.stringify({
             eventType: event.type,
@@ -31,8 +31,11 @@ export class AuditService {
             ipAddress: event.ipAddress,
             userAgent: event.userAgent,
           }),
+          metadata: {
+            description: event.description,
+          },
           tenantId: event.tenantId,
-          userId: event.userId || null,
+          authorId: event.userId || "system",
         },
       });
     } catch (error) {
@@ -47,7 +50,7 @@ export class AuditService {
       await db.content.create({
         data: {
           title: `Audit Log - ${auditLog.action}`,
-          description: `User ${auditLog.userId || "system"} performed ${auditLog.action} on ${auditLog.resource}`,
+          slug: `audit-log-${Date.now()}`,
           type: "audit_log",
           content: JSON.stringify({
             action: auditLog.action,
@@ -58,8 +61,11 @@ export class AuditService {
             ipAddress: auditLog.ipAddress,
             userAgent: auditLog.userAgent,
           }),
+          metadata: {
+            description: `User ${auditLog.userId || "system"} performed ${auditLog.action} on ${auditLog.resource}`,
+          },
           tenantId: auditLog.tenantId,
-          userId: auditLog.userId || null,
+          authorId: auditLog.userId || "system",
         },
       });
     } catch (error) {
@@ -109,7 +115,7 @@ export class AuditService {
         const content = JSON.parse(log.content);
         return {
           id: log.id,
-          userId: log.userId || undefined,
+          userId: log.authorId || undefined,
           tenantId: log.tenantId,
           action: content.action,
           resource: content.resource,
@@ -172,7 +178,7 @@ export class AuditService {
           severity: content.severity,
           userId: content.userId,
           tenantId: event.tenantId,
-          description: event.description,
+          description: (event.metadata as any)?.description || "",
           data: content.data,
           timestamp: event.createdAt,
           ipAddress: content.ipAddress,

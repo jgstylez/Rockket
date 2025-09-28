@@ -108,7 +108,7 @@ export interface Order {
     lastName: string;
     phone?: string;
   };
-  shipping: {
+  shippingAddress: {
     firstName: string;
     lastName: string;
     company?: string;
@@ -332,6 +332,17 @@ export class ProductService {
       status: "pending",
       customer,
       shipping,
+      shippingAddress: {
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        address1: billing.address1,
+        address2: billing.address2,
+        city: billing.city,
+        state: billing.state,
+        zip: billing.zip,
+        country: billing.country,
+        phone: customer.phone,
+      },
       billing,
       items: cart.items.map((item) => ({
         id: `order_item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -346,7 +357,6 @@ export class ProductService {
       })),
       subtotal: cart.subtotal,
       tax: cart.tax,
-      shipping: cart.shipping,
       discount: 0,
       total: cart.total,
       currency: cart.currency,

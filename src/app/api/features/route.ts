@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth, requireRole } from "@/lib/auth/middleware";
+import { withAuthAndRole } from "@/lib/auth/middleware";
 import {
   getAllFeatureFlags,
   createFeatureFlag,
 } from "@/lib/features/feature-flags";
 
 export async function GET(request: NextRequest) {
-  return withAuth(request, requireRole(["admin", "owner"]), async (req) => {
+  return withAuthAndRole(request, ["admin", "owner"], async (req) => {
     try {
       const flags = await getAllFeatureFlags();
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  return withAuth(request, requireRole(["admin", "owner"]), async (req) => {
+  return withAuthAndRole(request, ["admin", "owner"], async (req) => {
     try {
       const body = await request.json();
       const {

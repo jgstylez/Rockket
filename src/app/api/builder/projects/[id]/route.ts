@@ -4,13 +4,14 @@ import { db } from "@/lib/db/client";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   return withAuth(request, async (req) => {
     try {
       const project = await db.content.findFirst({
         where: {
-          id: params.id,
+          id: resolvedParams.id,
           tenantId: req.user!.tenantId,
           type: "builder_project",
         },
@@ -28,7 +29,7 @@ export async function GET(
         project: {
           id: project.id,
           name: project.title,
-          description: project.description,
+          description: (project.metadata as any)?.description || "",
           data: JSON.parse(project.content),
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
@@ -46,8 +47,9 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   return withAuth(request, async (req) => {
     try {
       const body = await request.json();
@@ -55,12 +57,14 @@ export async function PUT(
 
       const project = await db.content.update({
         where: {
-          id: params.id,
+          id: resolvedParams.id,
           tenantId: req.user!.tenantId,
         },
         data: {
           title: name,
-          description: description,
+          metadata: {
+            description: description,
+          },
           content: JSON.stringify(data),
           updatedAt: new Date(),
         },
@@ -71,7 +75,7 @@ export async function PUT(
         project: {
           id: project.id,
           name: project.title,
-          description: project.description,
+          description: (project.metadata as any)?.description || "",
           data: JSON.parse(project.content),
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
@@ -89,13 +93,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   return withAuth(request, async (req) => {
     try {
       await db.content.delete({
         where: {
-          id: params.id,
+          id: resolvedParams.id,
           tenantId: req.user!.tenantId,
         },
       });

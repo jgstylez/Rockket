@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
           return {
             id: product.id,
             name: product.title,
-            description: product.description,
+            description: (product.metadata as any)?.description || "",
             slug: product.slug,
             sku: content.sku,
             price: content.price,
@@ -113,8 +113,10 @@ export async function POST(request: NextRequest) {
         data: {
           title: product.name,
           slug: product.slug,
-          description: product.description,
           type: "ecommerce_product",
+          metadata: {
+            description: product.description || "",
+          },
           content: JSON.stringify({
             sku: product.sku,
             price: product.price,
@@ -129,7 +131,7 @@ export async function POST(request: NextRequest) {
             seo: product.seo,
           }),
           tenantId: req.user!.tenantId,
-          userId: req.user!.userId,
+          authorId: req.user!.userId,
         },
       });
 
@@ -138,7 +140,7 @@ export async function POST(request: NextRequest) {
         product: {
           id: savedProduct.id,
           name: product.name,
-          description: product.description,
+          description: product.description || "",
           slug: product.slug,
           sku: product.sku,
           price: product.price,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth, requireRole } from "@/lib/auth/middleware";
+import { withAuth, withAuthAndRole } from "@/lib/auth/middleware";
 import {
   getFeatureFlag,
   updateFeatureFlag,
@@ -8,11 +8,12 @@ import {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
+  const resolvedParams = await params;
   return withAuth(request, async (req) => {
     try {
-      const flag = await getFeatureFlag(params.name);
+      const flag = await getFeatureFlag(resolvedParams.name);
 
       if (!flag) {
         return NextResponse.json(
@@ -37,14 +38,15 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
-  return withAuth(request, requireRole(["admin", "owner"]), async (req) => {
+  const resolvedParams = await params;
+  return withAuthAndRole(request, ["admin", "owner"], async (req) => {
     try {
       const body = await request.json();
       const { description, enabled, variants, rules } = body;
 
-      const flag = await updateFeatureFlag(params.name, {
+      const flag = await updateFeatureFlag(resolvedParams.name, {
         description,
         enabled,
         variants,
@@ -74,11 +76,12 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
-  return withAuth(request, requireRole(["owner"]), async (req) => {
+  const resolvedParams = await params;
+  return withAuthAndRole(request, ["owner"], async (req) => {
     try {
-      const success = await deleteFeatureFlag(params.name);
+      const success = await deleteFeatureFlag(resolvedParams.name);
 
       if (!success) {
         return NextResponse.json(

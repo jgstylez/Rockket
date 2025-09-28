@@ -41,8 +41,8 @@ export async function getFeatureFlag(
     name: flag.name,
     description: flag.description,
     enabled: flag.enabled,
-    variants: JSON.parse(flag.variants),
-    rules: JSON.parse(flag.rules),
+    variants: JSON.parse(flag.variants as string),
+    rules: JSON.parse(flag.rules as string),
     createdAt: flag.createdAt,
     updatedAt: flag.updatedAt,
   };
@@ -70,8 +70,8 @@ export async function createFeatureFlag(data: {
     name: flag.name,
     description: flag.description,
     enabled: flag.enabled,
-    variants: JSON.parse(flag.variants),
-    rules: JSON.parse(flag.rules),
+    variants: JSON.parse(flag.variants as string),
+    rules: JSON.parse(flag.rules as string),
     createdAt: flag.createdAt,
     updatedAt: flag.updatedAt,
   };
@@ -103,8 +103,8 @@ export async function updateFeatureFlag(
     name: flag.name,
     description: flag.description,
     enabled: flag.enabled,
-    variants: JSON.parse(flag.variants),
-    rules: JSON.parse(flag.rules),
+    variants: JSON.parse(flag.variants as string),
+    rules: JSON.parse(flag.rules as string),
     createdAt: flag.createdAt,
     updatedAt: flag.updatedAt,
   };
@@ -132,8 +132,8 @@ export async function getAllFeatureFlags(): Promise<FeatureFlag[]> {
     name: flag.name,
     description: flag.description,
     enabled: flag.enabled,
-    variants: JSON.parse(flag.variants),
-    rules: JSON.parse(flag.rules),
+    variants: JSON.parse(flag.variants as string),
+    rules: JSON.parse(flag.rules as string),
     createdAt: flag.createdAt,
     updatedAt: flag.updatedAt,
   }));

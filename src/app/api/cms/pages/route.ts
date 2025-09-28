@@ -38,10 +38,10 @@ export async function GET(request: NextRequest) {
           id: page.id,
           title: page.title,
           slug: page.slug,
-          description: page.description,
+          description: (page.metadata as any)?.description || "",
           status: JSON.parse(page.content).status,
           publishedAt: JSON.parse(page.content).publishedAt,
-          authorId: page.userId,
+          authorId: page.authorId,
           tags: JSON.parse(page.content).tags || [],
           category: JSON.parse(page.content).category,
           seo: JSON.parse(page.content).seo,
@@ -85,7 +85,9 @@ export async function POST(request: NextRequest) {
         data: {
           title,
           slug,
-          description: description || "",
+          metadata: {
+            description: description || "",
+          },
           type: "cms_page",
           content: JSON.stringify({
             content: content || [],
@@ -95,7 +97,7 @@ export async function POST(request: NextRequest) {
             seo,
           }),
           tenantId: req.user!.tenantId,
-          userId: req.user!.userId,
+          authorId: req.user!.userId,
         },
       });
 
@@ -105,9 +107,9 @@ export async function POST(request: NextRequest) {
           id: page.id,
           title: page.title,
           slug: page.slug,
-          description: page.description,
+          description: (page.metadata as any)?.description || "",
           status: "draft",
-          authorId: page.userId,
+          authorId: page.authorId,
           tags: tags || [],
           category,
           seo,

@@ -11,6 +11,10 @@ import {
   BarChart3,
   Palette,
   FileText,
+  ShoppingCart,
+  Sparkles,
+  Brain,
+  Zap,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -141,6 +145,24 @@ export default function DashboardPage() {
             </Button>
           </div>
 
+          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-blue-600" />
+              Business Generator
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Generate complete business applications with payments, CMS, and
+              user accounts.
+            </p>
+            <Button
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              onClick={() => router.push("/dashboard/business-generator")}
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              Generate Business App
+            </Button>
+          </div>
+
           <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow">
             <h3 className="text-lg font-semibold mb-2">Visual Builder</h3>
             <p className="text-muted-foreground mb-4">
@@ -154,6 +176,42 @@ export default function DashboardPage() {
             >
               <Palette className="h-4 w-4 mr-2" />
               Open Builder
+            </Button>
+          </div>
+
+          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <Brain className="h-5 w-5 text-purple-600" />
+              Enhanced Builder
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Visual builder with business logic understanding, workflows, and
+              automation.
+            </p>
+            <Button
+              className="w-full bg-purple-600 hover:bg-purple-700"
+              onClick={() => router.push("/dashboard/enhanced-builder")}
+            >
+              <Brain className="h-4 w-4 mr-2" />
+              Open Enhanced Builder
+            </Button>
+          </div>
+
+          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
+            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+              <Zap className="h-5 w-5 text-orange-600" />
+              Unified Platform
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Seamlessly switch between AI, visual, and code approaches in one
+              unified platform.
+            </p>
+            <Button
+              className="w-full bg-orange-600 hover:bg-orange-700"
+              onClick={() => router.push("/dashboard/unified-platform")}
+            >
+              <Zap className="h-4 w-4 mr-2" />
+              Open Unified Platform
             </Button>
           </div>
 
@@ -199,6 +257,21 @@ export default function DashboardPage() {
             >
               <FileText className="h-4 w-4 mr-2" />
               Manage Content
+            </Button>
+          </div>
+
+          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow">
+            <h3 className="text-lg font-semibold mb-2">E-commerce</h3>
+            <p className="text-muted-foreground mb-4">
+              Manage products, orders, and customers for your online store.
+            </p>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => router.push("/dashboard/ecommerce")}
+            >
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Manage Store
             </Button>
           </div>
 

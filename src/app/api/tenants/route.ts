@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth, requireRole } from "@/lib/auth/middleware";
+import { withAuth, withAuthAndRole } from "@/lib/auth/middleware";
 import { getTenantById, updateTenantSettings } from "@/lib/db/tenant";
 
 export async function GET(request: NextRequest) {
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
           name: tenant.name,
           slug: tenant.slug,
           domain: tenant.domain,
-          settings: JSON.parse(tenant.settings),
+          settings: JSON.parse(tenant.settings as string),
           plan: tenant.plan,
           status: tenant.status,
           createdAt: tenant.createdAt,
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  return withAuth(request, requireRole(["admin", "owner"]), async (req) => {
+  return withAuthAndRole(request, ["admin", "owner"], async (req) => {
     try {
       const body = await request.json();
       const { name, domain, settings } = body;
@@ -58,7 +58,7 @@ export async function PATCH(request: NextRequest) {
           name: tenant.name,
           slug: tenant.slug,
           domain: tenant.domain,
-          settings: JSON.parse(tenant.settings),
+          settings: JSON.parse(tenant.settings as string),
           plan: tenant.plan,
           status: tenant.status,
         },

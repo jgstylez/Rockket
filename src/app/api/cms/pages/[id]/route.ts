@@ -7,13 +7,14 @@ const contentService = new ContentService();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   return withAuth(request, async (req) => {
     try {
       const page = await db.content.findFirst({
         where: {
-          id: params.id,
+          id: resolvedParams.id,
           tenantId: req.user!.tenantId,
           type: "cms_page",
         },
@@ -31,11 +32,11 @@ export async function GET(
           id: page.id,
           title: page.title,
           slug: page.slug,
-          description: page.description,
+          description: (page.metadata as any)?.description || "",
           content: content.content,
           status: content.status,
           publishedAt: content.publishedAt,
-          authorId: page.userId,
+          authorId: page.authorId,
           tags: content.tags || [],
           category: content.category,
           seo: content.seo,
@@ -55,8 +56,9 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   return withAuth(request, async (req) => {
     try {
       const body = await request.json();
@@ -76,7 +78,7 @@ export async function PUT(
 
       const existingPage = await db.content.findFirst({
         where: {
-          id: params.id,
+          id: resolvedParams.id,
           tenantId: req.user!.tenantId,
           type: "cms_page",
         },
@@ -101,12 +103,18 @@ export async function PUT(
       };
 
       const page = await db.content.update({
-        where: { id: params.id },
+        where: { id: resolvedParams.id },
         data: {
           title: title || existingPage.title,
           slug: slug || existingPage.slug,
-          description: description || existingPage.description,
           content: JSON.stringify(updatedContent),
+          metadata: {
+            description:
+              description || (existingPage.metadata as any)?.description || "",
+            tags,
+            category,
+            seo,
+          },
           updatedAt: new Date(),
         },
       });
@@ -117,11 +125,11 @@ export async function PUT(
           id: page.id,
           title: page.title,
           slug: page.slug,
-          description: page.description,
+          description: (page.metadata as any)?.description || "",
           content: updatedContent.content,
           status: updatedContent.status,
           publishedAt: updatedContent.publishedAt,
-          authorId: page.userId,
+          authorId: page.authorId,
           tags: updatedContent.tags,
           category: updatedContent.category,
           seo: updatedContent.seo,
@@ -141,13 +149,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   return withAuth(request, async (req) => {
     try {
       await db.content.delete({
         where: {
-          id: params.id,
+          id: resolvedParams.id,
           tenantId: req.user!.tenantId,
         },
       });

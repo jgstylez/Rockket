@@ -44,6 +44,7 @@ export class AnalyticsService {
     filters: {
       event?: string;
       userId?: string;
+      sessionId?: string;
       startDate?: Date;
       endDate?: Date;
       limit?: number;
@@ -59,6 +60,10 @@ export class AnalyticsService {
 
     if (filters.userId) {
       where.userId = filters.userId;
+    }
+
+    if (filters.sessionId) {
+      where.sessionId = filters.sessionId;
     }
 
     if (filters.startDate || filters.endDate) {
@@ -80,7 +85,7 @@ export class AnalyticsService {
     return events.map((event) => ({
       id: event.id,
       event: event.event,
-      properties: JSON.parse(event.properties),
+      properties: JSON.parse(event.properties as string),
       userId: event.userId || undefined,
       sessionId: event.sessionId,
       tenantId: event.tenantId,

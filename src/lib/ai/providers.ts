@@ -63,34 +63,29 @@ export class AnthropicProvider {
 
   async generateApp(prompt: string, context: any): Promise<string> {
     try {
-      const response = await this.client.messages.create({
+      const response = await this.client.completions.create({
         model: "claude-3-sonnet-20240229",
-        max_tokens: 4000,
-        messages: [
-          {
-            role: "user",
-            content: `You are an expert full-stack developer. Generate a complete application based on the user's requirements.
-            
-            Return a structured JSON response with the following format:
-            {
-              "name": "App Name",
-              "description": "App description", 
-              "techStack": ["React", "Node.js", "PostgreSQL"],
-              "features": ["Feature 1", "Feature 2"],
-              "code": {
-                "frontend": "Frontend code here",
-                "backend": "Backend code here", 
-                "database": "Database schema here"
-              },
-              "deployment": "Deployment instructions"
-            }
-            
-            User requirements: ${prompt}`,
+        max_tokens_to_sample: 4000,
+        prompt: `You are an expert full-stack developer. Generate a complete application based on the user's requirements.
+        
+        Return a structured JSON response with the following format:
+        {
+          "name": "App Name",
+          "description": "App description", 
+          "techStack": ["React", "Node.js", "PostgreSQL"],
+          "features": ["Feature 1", "Feature 2"],
+          "code": {
+            "frontend": "Frontend code here",
+            "backend": "Backend code here", 
+            "database": "Database schema here"
           },
-        ],
+          "deployment": "Deployment instructions"
+        }
+        
+        User requirements: ${prompt}`,
       });
 
-      return response.content[0]?.text || "";
+      return response.completion || "";
     } catch (error) {
       console.error("Anthropic generation error:", error);
       throw new Error("Failed to generate application with Anthropic");

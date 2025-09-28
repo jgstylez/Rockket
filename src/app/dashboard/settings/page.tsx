@@ -61,7 +61,7 @@ export default function SettingsPage() {
   useEffect(() => {
     if (tenant?.settings) {
       try {
-        const parsedSettings = JSON.parse(tenant.settings);
+        const parsedSettings = JSON.parse(JSON.stringify(tenant.settings));
         setSettings((prev) => ({ ...prev, ...parsedSettings }));
       } catch (error) {
         console.error("Failed to parse tenant settings:", error);

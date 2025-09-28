@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: rockket
       POSTGRES_PASSWORD: rockket_dev_password
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
@@ -74,40 +74,41 @@ services:
       timeout: 10s
       retries: 3
 
-  # Development Tools
-  dev-tools:
-    image: node:18-alpine
-    container_name: rockket-dev-tools
-    working_dir: /app
-    volumes:
-      - .:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-      - "3001:3001"
+  # Directus CMS
+  directus:
+    image: directus/directus:latest
+    container_name: rockket-directus
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://rockket:rockket_dev_password@postgres:5432/rockket_dev
-      - REDIS_URL=redis://redis:6379
-      - MINIO_ENDPOINT=http://minio:9000
-      - MINIO_ACCESS_KEY=rockket
-      - MINIO_SECRET_KEY=rockket_dev_password
-      - SMTP_HOST=mailhog
-      - SMTP_PORT=1025
-    command: >
-      sh -c "
-        npm install &&
-        npm run dev
-      "
+      KEY: "255d861b-5ea1-5996-9aa3-922530ec40b3"
+      SECRET: "6116487b-cda1-52c2-b5b5-c8022c45e263"
+      DB_CLIENT: "pg"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_DATABASE: "rockket_dev"
+      DB_USER: "rockket"
+      DB_PASSWORD: "rockket_dev_password"
+      ADMIN_EMAIL: "admin@rockket.dev"
+      ADMIN_PASSWORD: "admin123"
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "http://localhost:3001"
+    ports:
+      - "8055:8055"
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-      mailhog:
-        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8055/",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   postgres_data:

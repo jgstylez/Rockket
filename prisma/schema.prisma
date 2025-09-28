@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,7 +15,7 @@ model Tenant {
   name      String
   slug      String   @unique
   domain    String?
-  settings  String   @default("{}") // JSON stored as string for SQLite
+  settings  Json     @default("{}")
   plan      String   @default("free") // free, starter, professional, enterprise
   status    String   @default("active") // active, suspended, cancelled
   createdAt DateTime @default(now())
@@ -57,7 +57,7 @@ model Content {
   type        String   // page, post, product, course, template
   status      String   @default("draft") // draft, published, archived
   content     String
-  metadata    String   @default("{}") // JSON stored as string
+  metadata    Json     @default("{}")
   tenantId    String
   authorId    String
   publishedAt DateTime?
@@ -80,8 +80,8 @@ model Product {
   currency    String   @default("USD")
   sku         String
   inventory   Int      @default(0)
-  images      String   @default("[]") // JSON stored as string
-  variants    String   @default("[]") // JSON stored as string
+  images      Json     @default("[]")
+  variants    Json     @default("[]")
   tenantId    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -97,13 +97,13 @@ model Product {
 model Order {
   id             String   @id @default(cuid())
   customerId     String
-  items          String   @default("[]") // JSON stored as string
+  items          Json     @default("[]")
   total          Float
   currency       String   @default("USD")
   status         String   @default("pending") // pending, processing, shipped, delivered, cancelled
   paymentStatus  String   @default("pending") // pending, paid, failed, refunded
-  shippingAddress String  @default("{}") // JSON stored as string
-  billingAddress  String  @default("{}") // JSON stored as string
+  shippingAddress Json    @default("{}")
+  billingAddress  Json    @default("{}")
   tenantId       String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -131,7 +131,7 @@ model OrderItem {
 model AnalyticsEvent {
   id        String   @id @default(cuid())
   event     String
-  properties String  @default("{}") // JSON stored as string
+  properties Json    @default("{}")
   userId    String?
   sessionId String
   tenantId  String
@@ -149,7 +149,7 @@ model Integration {
   name      String
   type      String   // stripe, email, analytics, crm, marketing, custom
   status    String   @default("active") // active, inactive, error, pending
-  config    String   @default("{}") // JSON stored as string
+  config    Json     @default("{}")
   tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -165,8 +165,8 @@ model FeatureFlag {
   name        String   @unique
   description String
   enabled     Boolean  @default(false)
-  variants    String   @default("[]") // JSON stored as string
-  rules       String   @default("[]") // JSON stored as string
+  variants    Json     @default("[]")
+  rules       Json     @default("[]")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

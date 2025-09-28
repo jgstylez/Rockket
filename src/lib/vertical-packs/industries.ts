@@ -462,5 +462,5 @@ export function getIndustryTemplateById(
 }
 
 export function getIndustries(): string[] {
-  return [...new Set(VERTICAL_PACKS.map((pack) => pack.industry))];
+  return Array.from(new Set(VERTICAL_PACKS.map((pack) => pack.industry)));
 }
