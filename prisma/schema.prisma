@@ -1,0 +1,200 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  domain    String?
+  settings  String   @default("{}") // JSON stored as string for SQLite
+  plan      String   @default("free") // free, starter, professional, enterprise
+  status    String   @default("active") // active, suspended, cancelled
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  users     User[]
+  content   Content[]
+  products  Product[]
+  orders    Order[]
+  analytics AnalyticsEvent[]
+  integrations Integration[]
+
+  @@map("tenants")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  avatar    String?
+  role      String   @default("member") // admin, owner, member, viewer
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  content   Content[]
+  analytics AnalyticsEvent[]
+
+  @@map("users")
+}
+
+model Content {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String
+  type        String   // page, post, product, course, template
+  status      String   @default("draft") // draft, published, archived
+  content     String
+  metadata    String   @default("{}") // JSON stored as string
+  tenantId    String
+  authorId    String
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, slug])
+  @@map("content")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  currency    String   @default("USD")
+  sku         String
+  inventory   Int      @default(0)
+  images      String   @default("[]") // JSON stored as string
+  variants    String   @default("[]") // JSON stored as string
+  tenantId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orders OrderItem[]
+
+  @@unique([tenantId, sku])
+  @@map("products")
+}
+
+model Order {
+  id             String   @id @default(cuid())
+  customerId     String
+  items          String   @default("[]") // JSON stored as string
+  total          Float
+  currency       String   @default("USD")
+  status         String   @default("pending") // pending, processing, shipped, delivered, cancelled
+  paymentStatus  String   @default("pending") // pending, paid, failed, refunded
+  shippingAddress String  @default("{}") // JSON stored as string
+  billingAddress  String  @default("{}") // JSON stored as string
+  tenantId       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  productId String
+  variantId String?
+  quantity  Int
+  price     Float
+  orderId   String
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  event     String
+  properties String  @default("{}") // JSON stored as string
+  userId    String?
+  sessionId String
+  tenantId  String
+  timestamp DateTime @default(now())
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("analytics_events")
+}
+
+model Integration {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   // stripe, email, analytics, crm, marketing, custom
+  status    String   @default("active") // active, inactive, error, pending
+  config    String   @default("{}") // JSON stored as string
+  tenantId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("integrations")
+}
+
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  enabled     Boolean  @default(false)
+  variants    String   @default("[]") // JSON stored as string
+  rules       String   @default("[]") // JSON stored as string
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("feature_flags")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // info, success, warning, error
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  userId    String
+  tenantId  String
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model FileUpload {
+  id         String   @id @default(cuid())
+  name       String
+  size       Int
+  type       String
+  url        String
+  tenantId   String
+  uploadedBy String
+  createdAt  DateTime @default(now())
+
+  @@map("file_uploads")
+}

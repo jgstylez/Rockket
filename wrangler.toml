@@ -1,0 +1,90 @@
+name = "rockket-platform"
+main = "src/index.ts"
+compatibility_date = "2023-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[env.development]
+name = "rockket-platform-dev"
+vars = { ENVIRONMENT = "development" }
+
+[env.staging]
+name = "rockket-platform-staging"
+vars = { ENVIRONMENT = "staging" }
+
+[env.production]
+name = "rockket-platform"
+vars = { ENVIRONMENT = "production" }
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "rockket-db"
+database_id = "your-d1-database-id"
+
+# KV Namespaces
+[[kv_namespaces]]
+binding = "FEATURE_FLAGS"
+id = "your-kv-namespace-id"
+preview_id = "your-preview-kv-namespace-id"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-cache-kv-namespace-id"
+preview_id = "your-preview-cache-kv-namespace-id"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "your-sessions-kv-namespace-id"
+preview_id = "your-preview-sessions-kv-namespace-id"
+
+# R2 Buckets
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "rockket-media"
+preview_bucket_name = "rockket-media-preview"
+
+[[r2_buckets]]
+binding = "BACKUP_BUCKET"
+bucket_name = "rockket-backups"
+preview_bucket_name = "rockket-backups-preview"
+
+# Durable Objects
+[[durable_objects.bindings]]
+name = "FEATURE_FLAG_MANAGER"
+class_name = "FeatureFlagManager"
+
+[[durable_objects.bindings]]
+name = "TENANT_MANAGER"
+class_name = "TenantManager"
+
+# AI Gateway
+[ai]
+binding = "AI"
+
+# Analytics Engine
+[analytics]
+binding = "ANALYTICS"
+
+# Rate Limiting
+[limits]
+cpu_ms = 50
+
+# Environment Variables
+[vars]
+APP_NAME = "Rockket"
+APP_DESCRIPTION = "Launch your vision"
+APP_VERSION = "0.1.0"
+FEATURE_FLAGS_ENABLED = "true"
+CACHE_ENABLED = "true"
+RATE_LIMIT_ENABLED = "true"
+
+# Secrets (set via wrangler secret put)
+# - JWT_SECRET
+# - ENCRYPTION_KEY
+# - OPENAI_API_KEY
+# - ANTHROPIC_API_KEY
+# - GOOGLE_AI_API_KEY
+# - STRIPE_SECRET_KEY
+# - RESEND_API_KEY
+# - SENTRY_DSN
+# - POSTHOG_KEY
