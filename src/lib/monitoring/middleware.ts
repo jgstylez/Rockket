@@ -18,19 +18,21 @@ export function withMonitoring(
     try {
       // Start performance tracking
       if (options.trackPerformance) {
-        transaction = PerformanceMonitor.trackApiCall(
-          request.nextUrl.pathname,
-          request.method
+        transaction = PerformanceMonitor.startTransaction(
+          `${request.method} ${request.nextUrl.pathname}`,
+          "http.server"
         );
       }
 
       // Add request context to Sentry
-      ErrorTracker.setContext("request", {
-        method: request.method,
-        url: request.url,
-        headers: Object.fromEntries(request.headers.entries()),
-        userAgent: request.headers.get("user-agent"),
-      });
+      if (transaction) {
+        transaction.setData("request", {
+          method: request.method,
+          url: request.url,
+          headers: Object.fromEntries(request.headers.entries()),
+          userAgent: request.headers.get("user-agent"),
+        });
+      }
 
       // Execute the handler
       const response = await handler(request);
@@ -172,9 +174,9 @@ export function withAIMonitoring<T extends any[], R>(
     let transaction: any = null;
 
     try {
-      transaction = PerformanceMonitor.trackAIGeneration(
-        args[0] || "", // Assuming first arg is prompt
-        provider
+      transaction = PerformanceMonitor.startTransaction(
+        `AI Generation: ${provider}`,
+        "ai.generation"
       );
 
       const result = await fn(...args);
@@ -233,7 +235,10 @@ export function trackUserAction(
   component: string,
   metadata?: Record<string, any>
 ) {
-  const transaction = PerformanceMonitor.trackUserAction(action, component);
+  const transaction = PerformanceMonitor.startTransaction(
+    `User Action: ${action}`,
+    "user.action"
+  );
 
   AnalyticsTracker.track("user_action", {
     action,

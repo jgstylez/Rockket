@@ -7,18 +7,15 @@ Sentry.init({
   // Performance Monitoring
   tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
 
-  integrations: [Sentry.nodeProfilingIntegration()],
-
-  // Filter out development errors
-  beforeSend(event) {
-    if (process.env.NODE_ENV === "development") {
-      return null;
-    }
-    return event;
-  },
+  integrations: [Sentry.browserProfilingIntegration()],
 
   // Custom error filtering for server-side
   beforeSend(event, hint) {
+    // Filter out development errors
+    if (process.env.NODE_ENV === "development") {
+      return null;
+    }
+
     // Filter out common server errors that are not critical
     if (event.exception) {
       const error = hint.originalException;

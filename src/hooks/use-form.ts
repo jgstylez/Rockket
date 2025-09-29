@@ -10,7 +10,7 @@ import { z } from "zod";
 
 interface UseFormOptions<T> {
   initialValues: T;
-  validationSchema?: z.ZodSchema<T>;
+  validationSchema?: z.ZodObject<any>;
   onSubmit: (values: T) => Promise<void>;
 }
 
@@ -45,7 +45,7 @@ export function useForm<T extends Record<string, any>>({
       if (validationSchema) {
         try {
           validationSchema
-            .pick({ [field]: true })
+            .pick({ [field]: true } as any)
             .parse({ [field]: values[field] });
           setErrors((prev) => ({ ...prev, [field]: undefined }));
         } catch (error) {
@@ -101,7 +101,9 @@ export function useForm<T extends Record<string, any>>({
         console.error("Form submission error:", error);
         // Handle submission errors
         if (error instanceof Error) {
-          setErrors({ submit: error.message });
+          setErrors({ submit: error.message } as Partial<
+            Record<keyof T, string>
+          >);
         }
       } finally {
         setIsSubmitting(false);

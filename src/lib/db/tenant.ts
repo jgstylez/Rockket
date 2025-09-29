@@ -1,5 +1,6 @@
 import { db } from "./client";
 import { type Tenant, type User } from "@/types";
+import { hashPassword } from "@/lib/auth/password";
 
 export async function createTenant(data: {
   name: string;
@@ -9,6 +10,8 @@ export async function createTenant(data: {
   ownerName: string;
   ownerPassword: string;
 }) {
+  const hashedPassword = await hashPassword(data.ownerPassword);
+
   return db.tenant.create({
     data: {
       name: data.name,
@@ -18,6 +21,7 @@ export async function createTenant(data: {
         create: {
           email: data.ownerEmail,
           name: data.ownerName,
+          password: hashedPassword,
           role: "owner",
         },
       },

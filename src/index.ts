@@ -5,7 +5,16 @@
  * built on Cloudflare Workers with VibeSDK integration.
  */
 
-import { DurableObject } from "cloudflare:workers";
+import {
+  DurableObject,
+  DurableObjectNamespace,
+  D1Database,
+  KVNamespace,
+  R2Bucket,
+  Ai,
+  Queue,
+  Fetcher,
+} from "cloudflare:workers";
 import { CodeGeneratorAgent } from "./durable-objects/code-generator";
 import { SessionManager } from "./durable-objects/session-manager";
 import { AIAgent } from "./durable-objects/ai-agent";

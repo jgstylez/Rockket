@@ -5,7 +5,7 @@
  * with common CRUD operations and query optimization.
  */
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 export abstract class BaseService<T> {
   protected db: PrismaClient;
@@ -23,47 +23,47 @@ export abstract class BaseService<T> {
     take?: number;
     skip?: number;
   }) {
-    return this.db[this.model].findMany(options);
+    return (this.db as any)[this.model].findMany(options);
   }
 
   async findUnique(where: any, include?: any) {
-    return this.db[this.model].findUnique({
+    return (this.db as any)[this.model].findUnique({
       where,
       include,
     });
   }
 
   async findFirst(where: any, include?: any) {
-    return this.db[this.model].findFirst({
+    return (this.db as any)[this.model].findFirst({
       where,
       include,
     });
   }
 
   async create(data: any) {
-    return this.db[this.model].create({ data });
+    return (this.db as any)[this.model].create({ data });
   }
 
   async createMany(data: any[]) {
-    return this.db[this.model].createMany({ data });
+    return (this.db as any)[this.model].createMany({ data });
   }
 
   async update(where: any, data: any) {
-    return this.db[this.model].update({
+    return (this.db as any)[this.model].update({
       where,
       data,
     });
   }
 
   async updateMany(where: any, data: any) {
-    return this.db[this.model].updateMany({
+    return (this.db as any)[this.model].updateMany({
       where,
       data,
     });
   }
 
   async upsert(where: any, create: any, update: any) {
-    return this.db[this.model].upsert({
+    return (this.db as any)[this.model].upsert({
       where,
       create,
       update,
@@ -71,23 +71,23 @@ export abstract class BaseService<T> {
   }
 
   async delete(where: any) {
-    return this.db[this.model].delete({ where });
+    return (this.db as any)[this.model].delete({ where });
   }
 
   async deleteMany(where: any) {
-    return this.db[this.model].deleteMany({ where });
+    return (this.db as any)[this.model].deleteMany({ where });
   }
 
   async count(where?: any) {
-    return this.db[this.model].count({ where });
+    return (this.db as any)[this.model].count({ where });
   }
 
   async aggregate(aggregate: any) {
-    return this.db[this.model].aggregate(aggregate);
+    return (this.db as any)[this.model].aggregate(aggregate);
   }
 
   async groupBy(groupBy: any) {
-    return this.db[this.model].groupBy(groupBy);
+    return (this.db as any)[this.model].groupBy(groupBy);
   }
 
   // Pagination helper

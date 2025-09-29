@@ -7,59 +7,76 @@ import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 
 // Mock providers for testing
 const MockAuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const mockAuthContext = {
-    user: {
-      id: "test-user-id",
-      email: "test@example.com",
-      name: "Test User",
-      role: "admin",
-      tenantId: "test-tenant-id",
-    },
-    login: jest.fn(),
-    logout: jest.fn(),
-    isLoading: false,
-  };
+  // Mock the fetch function for auth endpoints
+  const originalFetch = global.fetch;
+  global.fetch = jest.fn().mockImplementation((url: string) => {
+    if (url.includes("/api/auth/me")) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            user: {
+              id: "test-user-id",
+              email: "test@example.com",
+              name: "Test User",
+              role: "admin",
+              tenantId: "test-tenant-id",
+            },
+          }),
+      });
+    }
+    return originalFetch(url);
+  });
 
-  return (
-    <AuthProvider value={mockAuthContext}>
-      {children}
-    </AuthProvider>
-  );
+  return <AuthProvider>{children}</AuthProvider>;
 };
 
-const MockFeatureFlagProvider = ({ children }: { children: React.ReactNode }) => {
-  const mockFeatureFlags = {
-    flags: {
-      "ai-generator": true,
-      "visual-builder": true,
-      "cms": true,
-      "ecommerce": true,
-    },
-    isLoading: false,
-    isEnabled: jest.fn((flag: string) => mockFeatureFlags.flags[flag] || false),
-    getVariant: jest.fn(() => "default"),
-  };
+const MockFeatureFlagProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  // Mock the fetch function for feature flags
+  const originalFetch = global.fetch;
+  global.fetch = jest.fn().mockImplementation((url: string) => {
+    if (url.includes("/api/features/evaluate")) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            results: {
+              "ai-generator": { enabled: true },
+              "visual-builder": { enabled: true },
+              cms: { enabled: true },
+              ecommerce: { enabled: true },
+              analytics: { enabled: true },
+              billing: { enabled: false },
+              "multi-tenant": { enabled: true },
+              "progressive-onboarding": { enabled: true },
+            },
+          }),
+      });
+    }
+    return originalFetch(url);
+  });
 
-  return (
-    <FeatureFlagProvider value={mockFeatureFlags}>
-      {children}
-    </FeatureFlagProvider>
-  );
+  return <FeatureFlagProvider>{children}</FeatureFlagProvider>;
 };
 
 const MockAnalyticsProvider = ({ children }: { children: React.ReactNode }) => {
-  const mockAnalytics = {
-    track: jest.fn(),
-    identify: jest.fn(),
-    page: jest.fn(),
-    reset: jest.fn(),
-  };
+  // Mock the fetch function for analytics
+  const originalFetch = global.fetch;
+  global.fetch = jest.fn().mockImplementation((url: string) => {
+    if (url.includes("/api/analytics/track")) {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      });
+    }
+    return originalFetch(url);
+  });
 
-  return (
-    <AnalyticsProvider value={mockAnalytics}>
-      {children}
-    </AnalyticsProvider>
-  );
+  return <AnalyticsProvider>{children}</AnalyticsProvider>;
 };
 
 // Custom render function with providers
@@ -73,9 +90,7 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
     >
       <MockAuthProvider>
         <MockFeatureFlagProvider>
-          <MockAnalyticsProvider>
-            {children}
-          </MockAnalyticsProvider>
+          <MockAnalyticsProvider>{children}</MockAnalyticsProvider>
         </MockFeatureFlagProvider>
       </MockAuthProvider>
     </ThemeProvider>
@@ -88,7 +103,7 @@ const customRender = (
 ) => render(ui, { wrapper: AllTheProviders, ...options });
 
 // Mock API responses
-export const mockApiResponse = <T>(data: T, status = 200) => ({
+export const mockApiResponse = <T,>(data: T, status = 200) => ({
   ok: status >= 200 && status < 300,
   status,
   json: jest.fn().mockResolvedValue(data),
@@ -111,8 +126,8 @@ export const mockFetch = (responses: Record<string, any> = {}) => {
       flags: {
         "ai-generator": true,
         "visual-builder": true,
-        "cms": true,
-        "ecommerce": true,
+        cms: true,
+        ecommerce: true,
       },
     }),
     "/api/ai/generate": mockApiResponse({
@@ -128,7 +143,9 @@ export const mockFetch = (responses: Record<string, any> = {}) => {
   const allResponses = { ...defaultResponses, ...responses };
 
   (global.fetch as jest.Mock).mockImplementation((url: string) => {
-    const response = allResponses[url] || mockApiResponse({ error: "Not found" }, 404);
+    const response =
+      (allResponses as any)[url] ||
+      mockApiResponse({ error: "Not found" }, 404);
     return Promise.resolve(response);
   });
 };
@@ -223,7 +240,11 @@ export const waitForApiCall = (mockFn: jest.Mock, timeout = 1000) => {
   });
 };
 
-export const expectApiCall = (mockFn: jest.Mock, expectedUrl: string, expectedOptions?: any) => {
+export const expectApiCall = (
+  mockFn: jest.Mock,
+  expectedUrl: string,
+  expectedOptions?: any
+) => {
   expect(mockFn).toHaveBeenCalledWith(
     expectedUrl,
     expect.objectContaining(expectedOptions || {})

@@ -941,4 +941,5 @@ export const swaggerConfig: OpenAPIV3.Document = {
       BearerAuth: [],
     },
   ],
+  paths: {},
 };

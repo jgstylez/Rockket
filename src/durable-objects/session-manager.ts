@@ -5,11 +5,11 @@
  * and session state across the platform.
  */
 
-import { DurableObject } from "cloudflare:workers";
+import { DurableObject, DurableObjectState } from "cloudflare:workers";
 import { Env } from "../index";
 
 export class SessionManager extends DurableObject {
-  private env: Env;
+  env: Env;
   private sessions: Map<string, any> = new Map();
 
   constructor(state: DurableObjectState, env: Env) {

@@ -14,6 +14,7 @@ export async function createUser(data: {
     data: {
       email: data.email,
       name: data.name,
+      password: hashedPassword,
       tenantId: data.tenantId,
       role: data.role || "member",
     },
@@ -67,9 +68,6 @@ export async function verifyUserPassword(email: string, password: string) {
     return null;
   }
 
-  // Note: In a real implementation, you'd store the hashed password in the database
-  // For now, we'll implement a simple check
-  const isValid = password === "password"; // Temporary for development
-
+  const isValid = await verifyPassword(password, user.password);
   return isValid ? user : null;
 }

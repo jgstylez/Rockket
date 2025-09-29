@@ -74,7 +74,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/api"
+                  href="/api-docs"
                   className="text-muted-foreground hover:text-rockket-orange transition-colors"
                 >
                   API

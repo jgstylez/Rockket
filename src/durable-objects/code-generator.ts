@@ -5,11 +5,11 @@
  * It maintains stateful connections and manages the code generation process.
  */
 
-import { DurableObject } from "cloudflare:workers";
+import { DurableObject, DurableObjectState } from "cloudflare:workers";
 import { Env } from "../index";
 
 export class CodeGeneratorAgent extends DurableObject {
-  private env: Env;
+  env: Env;
   private generationState: Map<string, any> = new Map();
 
   constructor(state: DurableObjectState, env: Env) {

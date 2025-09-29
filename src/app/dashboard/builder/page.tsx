@@ -1,7 +1,7 @@
 "use client";
 
-import { VisualBuilder } from "@/components/builder/visual-builder";
+import { EnhancedVisualBuilder } from "@/components/builder/visual-builder";
 
 export default function BuilderPage() {
-  return <VisualBuilder />;
+  return <EnhancedVisualBuilder />;
 }

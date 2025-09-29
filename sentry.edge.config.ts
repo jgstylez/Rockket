@@ -7,16 +7,13 @@ Sentry.init({
   // Performance Monitoring
   tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
 
-  // Filter out development errors
-  beforeSend(event) {
+  // Custom error filtering for edge runtime
+  beforeSend(event, hint) {
+    // Filter out development errors
     if (process.env.NODE_ENV === "development") {
       return null;
     }
-    return event;
-  },
 
-  // Custom error filtering for edge runtime
-  beforeSend(event, hint) {
     // Filter out common edge runtime errors
     if (event.exception) {
       const error = hint.originalException;

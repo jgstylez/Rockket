@@ -41,7 +41,7 @@ interface GenerationStatus {
 }
 
 export default function GeneratorPage() {
-  const { user, tenant } = useAuth();
+  const { user, tenant, isLoading } = useAuth();
   const [prompt, setPrompt] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStatus, setGenerationStatus] =
@@ -49,6 +49,7 @@ export default function GeneratorPage() {
   const [generatedApp, setGeneratedApp] = useState<GeneratedApp | null>(null);
   const [copiedSection, setCopiedSection] = useState<string>("");
   const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     // Check if there's a prompt from the homepage
@@ -58,6 +59,19 @@ export default function GeneratorPage() {
       sessionStorage.removeItem("generationPrompt");
     }
   }, []);
+
+  // Retry mechanism for authentication
+  useEffect(() => {
+    if (!isLoading && !user && retryCount < 3) {
+      const timer = setTimeout(() => {
+        console.log(`Retrying authentication... attempt ${retryCount + 1}`);
+        setRetryCount((prev) => prev + 1);
+        // Force a page reload to retry authentication
+        window.location.reload();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, user, retryCount]);
 
   useEffect(() => {
     // Cleanup WebSocket connection on unmount
@@ -182,12 +196,39 @@ export default function GeneratorPage() {
     URL.revokeObjectURL(url);
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading generator...</p>
+          <p className="text-sm text-gray-500 mt-2">
+            Checking authentication...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (!user || !tenant) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="loading-spinner mx-auto mb-4"></div>
-          <p>Loading generator...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Authentication failed</p>
+          <p className="text-sm text-gray-500 mt-2">
+            {retryCount < 3
+              ? `Retrying... (${retryCount + 1}/3)`
+              : "Please try logging in again"}
+          </p>
+          {retryCount >= 3 && (
+            <button
+              onClick={() => (window.location.href = "/auth/login")}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Go to Login
+            </button>
+          )}
         </div>
       </div>
     );

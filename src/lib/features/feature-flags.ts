@@ -28,24 +28,88 @@ export interface FeatureFlag {
 export async function getFeatureFlag(
   name: string
 ): Promise<FeatureFlag | null> {
-  const flag = await db.featureFlag.findUnique({
-    where: { name },
-  });
+  // Check if the database has the featureFlag model
+  if (!db.featureFlag) {
+    // Return default feature flags for now
+    const defaultFlags: Record<string, FeatureFlag> = {
+      "ai-generator": {
+        id: "default-ai-generator",
+        name: "ai-generator",
+        description: "AI-powered application generator",
+        enabled: true,
+        variants: [],
+        rules: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      "visual-builder": {
+        id: "default-visual-builder",
+        name: "visual-builder",
+        description: "Drag-and-drop visual builder",
+        enabled: true,
+        variants: [],
+        rules: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      cms: {
+        id: "default-cms",
+        name: "cms",
+        description: "Content management system",
+        enabled: true,
+        variants: [],
+        rules: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      ecommerce: {
+        id: "default-ecommerce",
+        name: "ecommerce",
+        description: "E-commerce functionality",
+        enabled: true,
+        variants: [],
+        rules: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      analytics: {
+        id: "default-analytics",
+        name: "analytics",
+        description: "Analytics and reporting",
+        enabled: true,
+        variants: [],
+        rules: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    };
 
-  if (!flag) {
-    return null;
+    return defaultFlags[name] || null;
   }
 
-  return {
-    id: flag.id,
-    name: flag.name,
-    description: flag.description,
-    enabled: flag.enabled,
-    variants: JSON.parse(flag.variants as string),
-    rules: JSON.parse(flag.rules as string),
-    createdAt: flag.createdAt,
-    updatedAt: flag.updatedAt,
-  };
+  try {
+    const flag = await db.featureFlag.findUnique({
+      where: { name },
+    });
+
+    if (!flag) {
+      return null;
+    }
+
+    return {
+      id: flag.id,
+      name: flag.name,
+      description: flag.description,
+      enabled: flag.enabled,
+      variants: JSON.parse(flag.variants as string),
+      rules: JSON.parse(flag.rules as string),
+      createdAt: flag.createdAt,
+      updatedAt: flag.updatedAt,
+    };
+  } catch (error) {
+    console.warn("Feature flags not available, using defaults:", error);
+    return null;
+  }
 }
 
 export async function createFeatureFlag(data: {

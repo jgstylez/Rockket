@@ -199,7 +199,7 @@ export default function IntegrationsPage() {
                 <Link href="/contact">Request Integration</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/api">View API Docs</Link>
+                <Link href="/api-docs">View API Docs</Link>
               </Button>
             </div>
           </div>

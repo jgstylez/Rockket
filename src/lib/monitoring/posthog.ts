@@ -1,22 +1,43 @@
-import { PostHog } from "posthog-js";
+import React from "react";
+
+// Optional PostHog import - will be undefined if not available
+let PostHog: any = null;
+try {
+  PostHog = require("posthog-js").PostHog;
+} catch (error) {
+  console.warn("PostHog not available:", error);
+}
 
 // Initialize PostHog
-let posthog: PostHog | null = null;
+let posthog: any = null;
 
 export function initPostHog() {
-  if (typeof window !== "undefined" && !posthog) {
-    posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host:
-        process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
-      person_profiles: "identified_only",
-      capture_pageview: false, // We'll handle this manually
-      capture_pageleave: true,
-      loaded: (posthog) => {
-        if (process.env.NODE_ENV === "development") {
-          console.log("PostHog loaded");
-        }
-      },
-    });
+  if (!PostHog) {
+    console.warn("PostHog not available - analytics disabled");
+    return null;
+  }
+
+  if (
+    typeof window !== "undefined" &&
+    !posthog &&
+    process.env.NEXT_PUBLIC_POSTHOG_KEY
+  ) {
+    try {
+      posthog = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+        api_host:
+          process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
+        person_profiles: "identified_only",
+        capture_pageview: false, // We'll handle this manually
+        capture_pageleave: true,
+        loaded: (posthog: any) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log("PostHog loaded");
+          }
+        },
+      });
+    } catch (error) {
+      console.warn("Failed to initialize PostHog:", error);
+    }
   }
   return posthog;
 }
@@ -54,6 +75,8 @@ export class AnalyticsTracker {
           plan: user.plan,
         },
       });
+    } else {
+      console.log("Analytics (PostHog not available): identify", user);
     }
   }
 
@@ -66,6 +89,12 @@ export class AnalyticsTracker {
         url: window.location.href,
         pathname: window.location.pathname,
       });
+    } else {
+      console.log(
+        "Analytics (PostHog not available): track",
+        event,
+        properties
+      );
     }
   }
 
@@ -77,6 +106,12 @@ export class AnalyticsTracker {
         page_name: pageName,
         ...properties,
       });
+    } else {
+      console.log(
+        "Analytics (PostHog not available): page",
+        pageName,
+        properties
+      );
     }
   }
 

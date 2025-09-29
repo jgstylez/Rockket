@@ -143,18 +143,21 @@ export function MonitoringProvider({
       console.error("Failed to initialize Sentry:", error);
     }
 
-    // Initialize PostHog
+    // Initialize PostHog (optional)
     try {
-      initPostHog();
-      setIsPostHogReady(true);
+      const posthog = initPostHog();
+      if (posthog) {
+        setIsPostHogReady(true);
+      }
     } catch (error) {
-      console.error("Failed to initialize PostHog:", error);
+      console.warn("PostHog not configured or failed to initialize:", error);
+      setIsPostHogReady(false);
     }
   }, []);
 
   useEffect(() => {
-    if (user && isSentryReady && isPostHogReady) {
-      // Set user context in both services
+    if (user && isSentryReady) {
+      // Set user context in Sentry
       ErrorTracker.setUser({
         id: user.id,
         email: user.email,
@@ -162,16 +165,19 @@ export function MonitoringProvider({
         role: user.role,
       });
 
-      AnalyticsTracker.identify({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        tenantId: user.tenantId,
-        role: user.role,
-        plan: user.plan,
-      });
-
       ErrorTracker.setTenant(user.tenantId);
+
+      // Set user context in PostHog if available
+      if (isPostHogReady) {
+        AnalyticsTracker.identify({
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          tenantId: user.tenantId,
+          role: user.role,
+          plan: user.plan,
+        });
+      }
     }
   }, [user, isSentryReady, isPostHogReady]);
 
@@ -182,45 +188,93 @@ export function MonitoringProvider({
     setUser: ErrorTracker.setUser,
     setTenant: ErrorTracker.setTenant,
 
-    // PostHog methods
-    track: AnalyticsTracker.track,
-    identify: AnalyticsTracker.identify,
-    page: AnalyticsTracker.page,
+    // PostHog methods (with fallback)
+    track: (event: string, properties?: Record<string, any>) => {
+      if (isPostHogReady) {
+        AnalyticsTracker.track(event, properties);
+      }
+    },
+    identify: (user: any) => {
+      if (isPostHogReady) {
+        AnalyticsTracker.identify(user);
+      }
+    },
+    page: (pageName: string, properties?: Record<string, any>) => {
+      if (isPostHogReady) {
+        AnalyticsTracker.page(pageName, properties);
+      }
+    },
 
-    // Business Analytics methods
-    trackUserRegistration: BusinessAnalytics.trackUserRegistration,
-    trackTenantCreation: BusinessAnalytics.trackTenantCreation,
-    trackAIGeneration: BusinessAnalytics.trackAIGeneration,
-    trackVisualBuilderUsage: BusinessAnalytics.trackVisualBuilderUsage,
-    trackContentCreation: BusinessAnalytics.trackContentCreation,
-    trackEcommerceActivity: BusinessAnalytics.trackEcommerceActivity,
-    trackPaymentEvent: BusinessAnalytics.trackPaymentEvent,
-    trackFeatureUsage: BusinessAnalytics.trackFeatureUsage,
+    // Business Analytics methods (with fallback)
+    trackUserRegistration: (user: any) => {
+      if (isPostHogReady) {
+        BusinessAnalytics.trackUserRegistration(user);
+      }
+    },
+    trackTenantCreation: (tenant: any) => {
+      if (isPostHogReady) {
+        BusinessAnalytics.trackTenantCreation(tenant);
+      }
+    },
+    trackAIGeneration: (userId: string, tenantId: string, prompt: string, provider: string, result: any) => {
+      if (isPostHogReady) {
+        BusinessAnalytics.trackAIGeneration(userId, tenantId, prompt, provider, result);
+      }
+    },
+    trackVisualBuilderUsage: (userId: string, tenantId: string, action: string, component?: string, projectId?: string) => {
+      if (isPostHogReady) {
+        BusinessAnalytics.trackVisualBuilderUsage(userId, tenantId, action, component, projectId);
+      }
+    },
+    trackContentCreation: (userId: string, tenantId: string, contentType: string, contentId: string) => {
+      if (isPostHogReady) {
+        BusinessAnalytics.trackContentCreation(userId, tenantId, contentType, contentId);
+      }
+    },
+    trackEcommerceActivity: (userId: string, tenantId: string, activity: string, productId?: string, orderId?: string, amount?: number) => {
+      if (isPostHogReady) {
+        BusinessAnalytics.trackEcommerceActivity(userId, tenantId, activity, productId, orderId, amount);
+      }
+    },
+    trackPaymentEvent: (userId: string, tenantId: string, event: string, amount: number, currency: string, plan?: string) => {
+      if (isPostHogReady) {
+        BusinessAnalytics.trackPaymentEvent(userId, tenantId, event, amount, currency, plan);
+      }
+    },
+    trackFeatureUsage: (userId: string, tenantId: string, feature: string, action: string, metadata?: Record<string, any>) => {
+      if (isPostHogReady) {
+        BusinessAnalytics.trackFeatureUsage(userId, tenantId, feature, action, metadata);
+      }
+    },
 
-    // Performance methods
+    // Performance methods (with fallback)
     trackPageLoad: (
       pageName: string,
       loadTime: number,
       metadata?: Record<string, any>
     ) => {
-      AnalyticsTracker.track("page_load", {
-        page_name: pageName,
-        load_time: loadTime,
-        ...metadata,
-        timestamp: new Date().toISOString(),
-      });
+      if (isPostHogReady) {
+        AnalyticsTracker.track("page_load", {
+          page_name: pageName,
+          load_time: loadTime,
+          ...metadata,
+          timestamp: new Date().toISOString(),
+        });
+      }
     },
     trackComponentRender: (
       componentName: string,
       renderTime: number,
       props?: Record<string, any>
     ) => {
-      AnalyticsTracker.track("component_render", {
-        component_name: componentName,
-        render_time: renderTime,
-        props,
-        timestamp: new Date().toISOString(),
-      });
+      if (isPostHogReady) {
+        AnalyticsTracker.track("component_render", {
+          component_name: componentName,
+          render_time: renderTime,
+          props,
+          timestamp: new Date().toISOString(),
+        });
+      }
     },
 
     // Loading states

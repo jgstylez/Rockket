@@ -5,6 +5,7 @@
  * based on the VibeSDK architecture.
  */
 
+import { D1Database, KVNamespace, R2Bucket, Ai } from "cloudflare:workers";
 import { Env } from "../index";
 import { handleAPIRoute } from "./api-handler";
 import { handlePageRoute } from "./page-handler";

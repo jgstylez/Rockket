@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import React from "react";
 
 // Performance optimization utilities
 export class PerformanceOptimizer {
@@ -317,7 +318,7 @@ export class FrontendOptimizer {
     Component: T,
     propsAreEqual?: (prevProps: any, nextProps: any) => boolean
   ): T {
-    return React.memo(Component, propsAreEqual) as T;
+    return React.memo(Component, propsAreEqual) as unknown as T;
   }
 
   // Hook optimization
@@ -468,7 +469,7 @@ export class PerformanceMonitor {
 
   static getAllMetrics(): Record<string, any> {
     const result: Record<string, any> = {};
-    for (const [name, values] of this.metrics.entries()) {
+    for (const [name, values] of Array.from(this.metrics.entries())) {
       result[name] = this.getMetricStats(name);
     }
     return result;

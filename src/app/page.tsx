@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -21,36 +21,84 @@ export default function HomePage() {
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [generationStatus, setGenerationStatus] = useState<string>("");
+  const [hasTriggeredGeneration, setHasTriggeredGeneration] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
 
-    // If user is already logged in, redirect to generator with prompt
-    if (user) {
-      setIsGenerating(true);
-      try {
-        // Store the prompt in sessionStorage for the generator page
-        sessionStorage.setItem("generationPrompt", prompt);
-        router.push("/dashboard/generator");
-      } catch (error) {
-        console.error("Error redirecting to generator:", error);
-        setIsGenerating(false);
-      }
+    // Clear previous status
+    setGenerationStatus("");
+    setHasTriggeredGeneration(true);
+
+    // If user is not logged in, show signup modal with prompt
+    if (!user) {
+      setShowSignupModal(true);
       return;
     }
 
-    // If user is not logged in, show signup modal with prompt
-    setShowSignupModal(true);
+    // If user is logged in, start generation directly
+    setIsGenerating(true);
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: prompt.trim(),
+          options: {
+            framework: "react",
+            styling: "tailwind",
+            features: ["responsive", "modern-ui", "interactive"],
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Generation started:", data);
+        setGenerationStatus(
+          `Generation started! ID: ${data.generationId}. This feature is coming soon.`
+        );
+        // TODO: Handle the generation process (WebSocket, polling, etc.)
+        // For now, just show success message
+      } else {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to start generation");
+      }
+    } catch (error) {
+      console.error("Generation error:", error);
+      alert("Failed to start generation. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSignupSuccess = () => {
-    // Store the prompt for after signup
-    sessionStorage.setItem("generationPrompt", prompt);
     setShowSignupModal(false);
-    // Redirect will happen automatically after login
+    // The generation will be triggered automatically after the user is logged in
+    // due to the useEffect that watches for user changes
   };
+
+  // Auto-trigger generation when user logs in and there's a prompt
+  useEffect(() => {
+    if (
+      user &&
+      prompt.trim() &&
+      !isGenerating &&
+      !generationStatus &&
+      !hasTriggeredGeneration
+    ) {
+      // Small delay to ensure the user state is fully loaded
+      const timer = setTimeout(() => {
+        handleGenerate();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [user]); // Only depend on user, not prompt or isGenerating to prevent loops
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
@@ -74,7 +122,11 @@ export default function HomePage() {
             <div className="relative">
               <textarea
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={(e) => {
+                  setPrompt(e.target.value);
+                  setHasTriggeredGeneration(false); // Reset when prompt changes
+                  setGenerationStatus(""); // Clear status when prompt changes
+                }}
                 placeholder="Describe your business idea and we'll build the complete platform..."
                 className="w-full h-32 px-6 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-white/60 resize-none focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                 onKeyDown={(e) => {
@@ -113,6 +165,12 @@ export default function HomePage() {
                 )}
               </Button>
             </div>
+
+            {generationStatus && (
+              <div className="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
+                <p className="text-green-200 text-center">{generationStatus}</p>
+              </div>
+            )}
           </div>
 
           {/* Features Grid */}

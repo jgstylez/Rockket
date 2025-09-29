@@ -19,16 +19,13 @@ Sentry.init({
     Sentry.browserTracingIntegration(),
   ],
 
-  // Filter out development errors
-  beforeSend(event) {
+  // Custom error filtering
+  beforeSend(event, hint) {
+    // Filter out development errors
     if (process.env.NODE_ENV === "development") {
       return null;
     }
-    return event;
-  },
 
-  // Custom error filtering
-  beforeSend(event, hint) {
     // Filter out common non-critical errors
     if (event.exception) {
       const error = hint.originalException;

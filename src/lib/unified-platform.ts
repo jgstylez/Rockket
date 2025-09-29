@@ -1,5 +1,5 @@
 import { BusinessApplication } from "./ai/business-generator";
-import { EnhancedBuilderComponent } from "../components/builder/enhanced-visual-builder";
+import { EnhancedVisualBuilder } from "../components/builder/enhanced-visual-builder";
 import { BusinessLogicBuilder } from "./builder/business-logic";
 
 export type DevelopmentApproach = "ai" | "visual" | "code";
@@ -36,7 +36,7 @@ export interface AIProjectState {
 }
 
 export interface VisualProjectState {
-  components: EnhancedBuilderComponent[];
+  components: any[];
   businessLogic: BusinessLogicBuilder;
   layout: {
     structure: any;
@@ -325,9 +325,7 @@ export class UnifiedDevelopmentPlatform {
     return [];
   }
 
-  private extractFeaturesFromVisualComponents(
-    components: EnhancedBuilderComponent[]
-  ): string[] {
+  private extractFeaturesFromVisualComponents(components: any[]): string[] {
     const features: string[] = [];
 
     components.forEach((component) => {
@@ -414,10 +412,8 @@ export class UnifiedDevelopmentPlatform {
     return code;
   }
 
-  private generateVisualComponentsFromAI(
-    aiState: AIProjectState
-  ): EnhancedBuilderComponent[] {
-    const components: EnhancedBuilderComponent[] = [];
+  private generateVisualComponentsFromAI(aiState: AIProjectState): any[] {
+    const components: any[] = [];
 
     // Generate components based on AI requirements
     if (aiState.requirements.features.includes("User authentication")) {
@@ -481,10 +477,8 @@ export class UnifiedDevelopmentPlatform {
     return businessLogic;
   }
 
-  private parseCodeToVisualComponents(
-    files: CodeFile[]
-  ): EnhancedBuilderComponent[] {
-    const components: EnhancedBuilderComponent[] = [];
+  private parseCodeToVisualComponents(files: CodeFile[]): any[] {
+    const components: any[] = [];
 
     // Parse code files to extract visual components
     files.forEach((file) => {
@@ -608,9 +602,7 @@ export class UnifiedDevelopmentPlatform {
     return files;
   }
 
-  private generateCodeFromComponent(
-    component: EnhancedBuilderComponent
-  ): string {
+  private generateCodeFromComponent(component: any): string {
     // Generate code from component
     return `
 import React from 'react';

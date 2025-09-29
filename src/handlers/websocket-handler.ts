@@ -5,6 +5,18 @@
  * particularly for VibeSDK code generation progress.
  */
 
+import {
+  WebSocketPair,
+  WebSocket,
+  WebSocketEvent,
+  WebSocketCloseEvent,
+  WebSocketErrorEvent,
+} from "cloudflare:workers";
+import type {
+  Response,
+  ResponseInit,
+  DurableObjectStub,
+} from "cloudflare:workers";
 import { Env } from "../index";
 
 export async function handleWebSocket(
@@ -51,9 +63,13 @@ async function handleGenerationWebSocket(
   server.accept();
 
   // Set up message handling
-  server.addEventListener("message", async (event) => {
+  server.addEventListener("message", async (event: WebSocketEvent) => {
     try {
-      const message = JSON.parse(event.data);
+      const message = JSON.parse(
+        typeof event.data === "string"
+          ? event.data
+          : new TextDecoder().decode(event.data)
+      );
 
       if (message.type === "subscribe") {
         // Subscribe to generation updates
@@ -70,12 +86,12 @@ async function handleGenerationWebSocket(
     }
   });
 
-  server.addEventListener("close", () => {
+  server.addEventListener("close", (event: WebSocketCloseEvent) => {
     console.log("Generation WebSocket closed for:", generationId);
   });
 
-  server.addEventListener("error", (error) => {
-    console.error("Generation WebSocket error:", error);
+  server.addEventListener("error", (event: WebSocketErrorEvent) => {
+    console.error("Generation WebSocket error:", event.error);
   });
 
   // Send initial connection confirmation
@@ -90,7 +106,7 @@ async function handleGenerationWebSocket(
   return new Response(null, {
     status: 101,
     webSocket: client,
-  });
+  } as ResponseInit);
 }
 
 async function handleGeneralWebSocket(
@@ -102,9 +118,13 @@ async function handleGeneralWebSocket(
 
   server.accept();
 
-  server.addEventListener("message", async (event) => {
+  server.addEventListener("message", async (event: WebSocketEvent) => {
     try {
-      const message = JSON.parse(event.data);
+      const message = JSON.parse(
+        typeof event.data === "string"
+          ? event.data
+          : new TextDecoder().decode(event.data)
+      );
 
       switch (message.type) {
         case "ping":
@@ -139,18 +159,18 @@ async function handleGeneralWebSocket(
     }
   });
 
-  server.addEventListener("close", () => {
+  server.addEventListener("close", (event: WebSocketCloseEvent) => {
     console.log("General WebSocket closed");
   });
 
-  server.addEventListener("error", (error) => {
-    console.error("General WebSocket error:", error);
+  server.addEventListener("error", (event: WebSocketErrorEvent) => {
+    console.error("General WebSocket error:", event.error);
   });
 
   return new Response(null, {
     status: 101,
     webSocket: client,
-  });
+  } as ResponseInit);
 }
 
 async function subscribeToGenerationUpdates(
@@ -188,7 +208,7 @@ async function subscribeToGenerationUpdates(
   }, 1000); // Poll every second
 
   // Clean up on close
-  server.addEventListener("close", () => {
+  server.addEventListener("close", (event: WebSocketCloseEvent) => {
     clearInterval(pollInterval);
   });
 }

@@ -23,7 +23,9 @@ export class CacheService {
     // Remove oldest items if cache is full
     if (this.cache.size >= this.maxSize) {
       const oldestKey = this.cache.keys().next().value;
-      this.cache.delete(oldestKey);
+      if (oldestKey) {
+        this.cache.delete(oldestKey);
+      }
     }
 
     const expires = Date.now() + (ttl || this.defaultTTL);
@@ -99,7 +101,7 @@ export class CacheService {
     const regex = new RegExp(pattern);
     let count = 0;
 
-    for (const key of this.cache.keys()) {
+    for (const key of Array.from(this.cache.keys())) {
       if (regex.test(key)) {
         this.cache.delete(key);
         count++;
@@ -115,7 +117,7 @@ export class CacheService {
     let expired = 0;
     let active = 0;
 
-    for (const [key, item] of this.cache.entries()) {
+    for (const [key, item] of Array.from(this.cache.entries())) {
       if (now > item.expires) {
         expired++;
       } else {
@@ -137,7 +139,7 @@ export class CacheService {
     const now = Date.now();
     let count = 0;
 
-    for (const [key, item] of this.cache.entries()) {
+    for (const [key, item] of Array.from(this.cache.entries())) {
       if (now > item.expires) {
         this.cache.delete(key);
         count++;

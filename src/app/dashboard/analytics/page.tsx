@@ -1,356 +1,475 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/components/providers/auth-provider";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Rocket,
   BarChart3,
-  Users,
-  Activity,
-  TrendingUp,
-  Calendar,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
   Download,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  DollarSign,
+  Activity,
+  Calendar,
+  Filter,
 } from "lucide-react";
 
-interface AnalyticsMetrics {
-  totalEvents: number;
-  uniqueUsers: number;
-  uniqueSessions: number;
-  topEvents: Array<{ event: string; count: number }>;
-  eventsOverTime: Array<{ date: string; count: number }>;
+interface AnalyticsDashboard {
+  id: string;
+  name: string;
+  description?: string;
+  widgets: any[];
+  isPublic: boolean;
+  createdAt: string;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+  };
 }
 
-interface AnalyticsEvent {
+interface AnalyticsReport {
   id: string;
-  event: string;
-  properties: Record<string, any>;
-  userId?: string;
-  sessionId: string;
-  tenantId: string;
-  timestamp: string;
+  name: string;
+  description?: string;
+  type: string;
+  filters: any;
+  metrics: any[];
+  schedule: any;
+  isActive: boolean;
+  createdAt: string;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  runs: Array<{
+    id: string;
+    status: string;
+    startedAt: string;
+    completedAt?: string;
+  }>;
+}
+
+interface RevenueData {
+  total: number;
+  monthly: number;
+  metrics: Array<{
+    id: string;
+    date: string;
+    revenue: number;
+    currency: string;
+    source: string;
+  }>;
+}
+
+interface EngagementData {
+  uniqueUsers: number;
+  totalEvents: number;
+  eventCounts: Record<string, number>;
+  metrics: Array<{
+    id: string;
+    userId: string;
+    event: string;
+    properties: any;
+    timestamp: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  }>;
 }
 
 export default function AnalyticsPage() {
-  const { user, tenant } = useAuth();
-  const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
-  const [events, setEvents] = useState<AnalyticsEvent[]>([]);
+  const [dashboards, setDashboards] = useState<AnalyticsDashboard[]>([]);
+  const [reports, setReports] = useState<AnalyticsReport[]>([]);
+  const [revenueData, setRevenueData] = useState<RevenueData>({
+    total: 0,
+    monthly: 0,
+    metrics: [],
+  });
+  const [engagementData, setEngagementData] = useState<EngagementData>({
+    uniqueUsers: 0,
+    totalEvents: 0,
+    eventCounts: {},
+    metrics: [],
+  });
   const [isLoading, setIsLoading] = useState(true);
-  const [dateRange, setDateRange] = useState("7d");
-  const [selectedEvent, setSelectedEvent] = useState<string>("");
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
-    loadAnalytics();
-  }, [dateRange]);
+    loadData();
+  }, []);
 
-  const loadAnalytics = async () => {
+  const loadData = async () => {
     try {
       setIsLoading(true);
+      const [dashboardsRes, reportsRes, metricsRes] = await Promise.all([
+        fetch("/api/analytics/dashboards?tenantId=demo-tenant"),
+        fetch("/api/analytics/reports?tenantId=demo-tenant"),
+        fetch("/api/analytics/metrics?tenantId=demo-tenant"),
+      ]);
 
-      // Calculate date range
-      const endDate = new Date();
-      const startDate = new Date();
-      switch (dateRange) {
-        case "1d":
-          startDate.setDate(startDate.getDate() - 1);
-          break;
-        case "7d":
-          startDate.setDate(startDate.getDate() - 7);
-          break;
-        case "30d":
-          startDate.setDate(startDate.getDate() - 30);
-          break;
-        case "90d":
-          startDate.setDate(startDate.getDate() - 90);
-          break;
-      }
+      const dashboardsData = await dashboardsRes.json();
+      const reportsData = await reportsRes.json();
+      const metricsData = await metricsRes.json();
 
-      // Load metrics
-      const metricsResponse = await fetch(
-        `/api/analytics/metrics?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+      setDashboards(dashboardsData.dashboards || []);
+      setReports(reportsData.reports || []);
+      setRevenueData(
+        metricsData.revenue || { total: 0, monthly: 0, metrics: [] }
       );
-
-      if (metricsResponse.ok) {
-        const metricsData = await metricsResponse.json();
-        setMetrics(metricsData.metrics);
-      }
-
-      // Load events
-      const eventsResponse = await fetch(
-        `/api/analytics/events?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&limit=50`
+      setEngagementData(
+        metricsData.engagement || {
+          uniqueUsers: 0,
+          totalEvents: 0,
+          eventCounts: {},
+          metrics: [],
+        }
       );
-
-      if (eventsResponse.ok) {
-        const eventsData = await eventsResponse.json();
-        setEvents(eventsData.events);
-      }
     } catch (error) {
-      console.error("Failed to load analytics:", error);
+      console.error("Failed to load analytics data:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const exportData = () => {
-    if (!metrics) return;
-
-    const csvContent = [
-      ["Metric", "Value"],
-      ["Total Events", metrics.totalEvents.toString()],
-      ["Unique Users", metrics.uniqueUsers.toString()],
-      ["Unique Sessions", metrics.uniqueSessions.toString()],
-      ...metrics.topEvents.map((event) => [
-        event.event,
-        event.count.toString(),
-      ]),
-    ]
-      .map((row) => row.join(","))
-      .join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `analytics-${dateRange}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "running":
+        return "bg-blue-100 text-blue-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "failed":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
   };
 
-  if (!user || !tenant) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-spinner mx-auto mb-4"></div>
-          <p>Loading analytics...</p>
-        </div>
-      </div>
-    );
-  }
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "completed":
+        return <TrendingUp className="h-4 w-4" />;
+      case "running":
+        return <Activity className="h-4 w-4" />;
+      case "pending":
+        return <Calendar className="h-4 w-4" />;
+      case "failed":
+        return <TrendingDown className="h-4 w-4" />;
+      default:
+        return <BarChart3 className="h-4 w-4" />;
+    }
+  };
+
+  const stats = {
+    totalDashboards: dashboards.length,
+    totalReports: reports.length,
+    totalRevenue: revenueData.total,
+    monthlyRevenue: revenueData.monthly,
+    uniqueUsers: engagementData.uniqueUsers,
+    totalEvents: engagementData.totalEvents,
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Rocket className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold gradient-text">Rockket</span>
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Analytics</h2>
+            <Button size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              New Dashboard
+            </Button>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container py-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">Analytics Dashboard</h1>
-                <p className="text-muted-foreground">
-                  Track user behavior and platform performance for {tenant.name}
-                  .
-                </p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <select
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                  className="input-field"
-                >
-                  <option value="1d">Last 24 hours</option>
-                  <option value="7d">Last 7 days</option>
-                  <option value="30d">Last 30 days</option>
-                  <option value="90d">Last 90 days</option>
-                </select>
-                <Button onClick={exportData} variant="outline">
-                  <Download className="h-4 w-4 mr-2" />
-                  Export
-                </Button>
-              </div>
-            </div>
-          </div>
+        {/* Navigation Tabs */}
+        <div className="p-4 border-b border-gray-200">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="dashboards">Dashboards</TabsTrigger>
+              <TabsTrigger value="reports">Reports</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
 
+        {/* Content List */}
+        <div className="flex-1 overflow-y-auto p-4">
           {isLoading ? (
-            <div className="text-center py-12">
-              <div className="loading-spinner mx-auto mb-4"></div>
-              <p>Loading analytics data...</p>
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+              <p className="text-sm text-gray-500 mt-2">Loading...</p>
+            </div>
+          ) : activeTab === "dashboards" ? (
+            <div className="space-y-2">
+              {dashboards.length === 0 ? (
+                <div className="text-center py-8">
+                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-sm text-gray-500">No dashboards found</p>
+                </div>
+              ) : (
+                dashboards.map((dashboard) => (
+                  <Card
+                    key={dashboard.id}
+                    className="cursor-pointer hover:border-gray-300"
+                  >
+                    <CardContent className="p-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-sm truncate">
+                            {dashboard.name}
+                          </h3>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {dashboard.description}
+                          </p>
+                          <div className="flex items-center text-xs text-gray-400 mt-1">
+                            <span className="mr-2">
+                              {dashboard.widgets.length} widgets
+                            </span>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(dashboard.isPublic ? "completed" : "pending")}`}
+                            >
+                              {dashboard.isPublic ? "Public" : "Private"}
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           ) : (
-            <>
-              {/* Metrics Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-card rounded-lg border p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-primary/10 rounded-lg">
-                      <Activity className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold">
-                        {metrics?.totalEvents || 0}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Total Events
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-card rounded-lg border p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-primary/10 rounded-lg">
-                      <Users className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold">
-                        {metrics?.uniqueUsers || 0}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Unique Users
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-card rounded-lg border p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-primary/10 rounded-lg">
-                      <BarChart3 className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold">
-                        {metrics?.uniqueSessions || 0}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Unique Sessions
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Top Events */}
-                <div className="bg-card rounded-lg border p-6">
-                  <h3 className="text-lg font-semibold mb-4">Top Events</h3>
-                  <div className="space-y-3">
-                    {metrics?.topEvents.slice(0, 5).map((event, index) => (
-                      <div
-                        key={event.event}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium">
-                            {index + 1}
-                          </div>
-                          <span className="font-medium">{event.event}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-20 bg-muted rounded-full h-2">
-                            <div
-                              className="bg-primary h-2 rounded-full"
-                              style={{
-                                width: `${(event.count / (metrics?.topEvents[0]?.count || 1)) * 100}%`,
-                              }}
-                            />
-                          </div>
-                          <span className="text-sm text-muted-foreground w-8 text-right">
-                            {event.count}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Events Over Time */}
-                <div className="bg-card rounded-lg border p-6">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Events Over Time
-                  </h3>
-                  <div className="space-y-2">
-                    {metrics?.eventsOverTime.slice(-7).map((data, index) => (
-                      <div
-                        key={data.date}
-                        className="flex items-center justify-between"
-                      >
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(data.date).toLocaleDateString()}
-                        </span>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-24 bg-muted rounded-full h-2">
-                            <div
-                              className="bg-primary h-2 rounded-full"
-                              style={{
-                                width: `${(data.count / Math.max(...(metrics?.eventsOverTime.map((d) => d.count) || [1]))) * 100}%`,
-                              }}
-                            />
-                          </div>
-                          <span className="text-sm text-muted-foreground w-8 text-right">
-                            {data.count}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Recent Events */}
-              <div className="mt-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">Recent Events</h3>
-                  <select
-                    value={selectedEvent}
-                    onChange={(e) => setSelectedEvent(e.target.value)}
-                    className="input-field"
-                  >
-                    <option value="">All Events</option>
-                    {metrics?.topEvents.map((event) => (
-                      <option key={event.event} value={event.event}>
-                        {event.event}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="bg-card rounded-lg border">
-                  <div className="p-6">
-                    <div className="space-y-4">
-                      {events
-                        .filter(
-                          (event) =>
-                            !selectedEvent || event.event === selectedEvent
-                        )
-                        .slice(0, 10)
-                        .map((event) => (
-                          <div
-                            key={event.id}
-                            className="flex items-center justify-between p-4 bg-muted rounded-lg"
+            <div className="space-y-2">
+              {reports.map((report) => (
+                <Card
+                  key={report.id}
+                  className="cursor-pointer hover:border-gray-300"
+                >
+                  <CardContent className="p-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-sm truncate">
+                          {report.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {report.description}
+                        </p>
+                        <div className="flex items-center text-xs text-gray-400 mt-1">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(report.isActive ? "completed" : "pending")}`}
                           >
-                            <div className="flex items-center space-x-4">
-                              <div className="w-2 h-2 bg-primary rounded-full"></div>
-                              <div>
-                                <div className="font-medium">{event.event}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  {new Date(event.timestamp).toLocaleString()}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {event.userId
-                                ? `User: ${event.userId.slice(0, 8)}...`
-                                : "Anonymous"}
-                            </div>
-                          </div>
-                        ))}
+                            {report.isActive ? "Active" : "Inactive"}
+                          </span>
+                          <span className="ml-2">{report.type}</span>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
-      </main>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Header with Stats */}
+        <div className="bg-white border-b border-gray-200 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-semibold">Analytics Dashboard</h1>
+              <p className="text-sm text-gray-500">
+                Advanced business intelligence and reporting
+              </p>
+            </div>
+            <div className="flex items-center space-x-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">
+                  {stats.totalDashboards}
+                </div>
+                <div className="text-xs text-gray-500">Dashboards</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {stats.totalReports}
+                </div>
+                <div className="text-xs text-gray-500">Reports</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">
+                  ${stats.monthlyRevenue.toFixed(2)}
+                </div>
+                <div className="text-xs text-gray-500">Monthly Revenue</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600">
+                  {stats.uniqueUsers}
+                </div>
+                <div className="text-xs text-gray-500">Active Users</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 p-6">
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="revenue">Revenue</TabsTrigger>
+              <TabsTrigger value="engagement">Engagement</TabsTrigger>
+              <TabsTrigger value="reports">Reports</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Total Revenue
+                    </CardTitle>
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      ${stats.totalRevenue.toFixed(2)}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      All time revenue
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Monthly Revenue
+                    </CardTitle>
+                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      ${stats.monthlyRevenue.toFixed(2)}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Last 30 days
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Active Users
+                    </CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {stats.uniqueUsers}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Unique users
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Total Events
+                    </CardTitle>
+                    <Activity className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {stats.totalEvents}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      User interactions
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="revenue" className="mt-6">
+              <div className="text-center py-8">
+                <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">
+                  Revenue Analytics
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  Track revenue trends and performance
+                </p>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Revenue Report
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="engagement" className="mt-6">
+              <div className="text-center py-8">
+                <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">User Engagement</h3>
+                <p className="text-gray-500 mb-4">
+                  Analyze user behavior and engagement patterns
+                </p>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Engagement Report
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="reports" className="mt-6">
+              <div className="text-center py-8">
+                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Custom Reports</h3>
+                <p className="text-gray-500 mb-4">
+                  Create and schedule custom analytics reports
+                </p>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Report
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 }

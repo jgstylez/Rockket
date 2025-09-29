@@ -5,11 +5,11 @@
  * and rate limiting for the platform.
  */
 
-import { DurableObject } from "cloudflare:workers";
+import { DurableObject, DurableObjectState } from "cloudflare:workers";
 import { Env } from "../index";
 
 export class AIAgent extends DurableObject {
-  private env: Env;
+  env: Env;
   private requestCounts: Map<string, number> = new Map();
   private cache: Map<string, any> = new Map();
 

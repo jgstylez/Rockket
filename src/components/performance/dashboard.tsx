@@ -339,7 +339,7 @@ export function PerformanceDashboard() {
                     ></div>
                   </div>
                   <div className="text-sm text-gray-600">
-                    Target: > 80% | Current: {metrics.cacheHitRate.toFixed(1)}%
+                    Target: &gt; 80% | Current: {metrics.cacheHitRate.toFixed(1)}%
                   </div>
                 </div>
               </CardContent>
@@ -391,7 +391,7 @@ export function PerformanceDashboard() {
                     ></div>
                   </div>
                   <div className="text-sm text-gray-600">
-                    Target: < 500KB | Current: {metrics.bundleSize.toFixed(0)}KB
+                    Target: &lt; 500KB | Current: {metrics.bundleSize.toFixed(0)}KB
                   </div>
                 </div>
               </CardContent>
@@ -443,7 +443,7 @@ export function PerformanceDashboard() {
                     ></div>
                   </div>
                   <div className="text-sm text-gray-600">
-                    Target: < 100ms | Current: 45ms
+                    Target: &lt; 100ms | Current: 45ms
                   </div>
                 </div>
               </CardContent>
