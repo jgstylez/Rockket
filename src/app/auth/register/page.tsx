@@ -273,13 +273,41 @@ export default function RegisterPage() {
             <div className="text-destructive text-sm text-center">{error}</div>
           )}
 
-          <div>
+          <div className="space-y-3">
             <Button
               type="submit"
               className="w-full"
               disabled={isLoading || !isPasswordValid || !doPasswordsMatch}
             >
               {isLoading ? "Creating account..." : "Create account"}
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or
+                </span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                setFormData({
+                  name: "Demo User",
+                  email: "demo@rockket.dev",
+                  password: "Demo123!",
+                  confirmPassword: "Demo123!",
+                  company: "Demo Company",
+                });
+              }}
+            >
+              Use Demo Account
             </Button>
           </div>
 

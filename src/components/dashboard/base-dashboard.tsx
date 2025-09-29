@@ -35,8 +35,10 @@ export function BaseDashboard({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-          {description && <p className="text-gray-600 mt-1">{description}</p>}
+          <h1 className="text-3xl font-bold text-foreground">{title}</h1>
+          {description && (
+            <p className="text-muted-foreground mt-1">{description}</p>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {actions}
@@ -66,7 +68,7 @@ export function BaseDashboard({
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : (
         children

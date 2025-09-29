@@ -1,530 +1,687 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SmartSidebar } from "@/components/layout/smart-sidebar";
+import { AICopilot, useAICopilot } from "@/components/ui/ai-copilot";
 import {
-  Activity,
+  Server,
+  Clock,
+  Users,
   AlertTriangle,
   CheckCircle,
-  Clock,
-  Database,
-  Globe,
-  Server,
-  Users,
-  Zap,
+  Activity,
   TrendingUp,
   TrendingDown,
-  BarChart3,
-  PieChart,
+  Zap,
+  Shield,
+  Target,
+  Lightbulb,
+  Brain,
+  Plus,
+  RefreshCw,
+  Settings,
+  Download,
+  Eye,
+  AlertCircle,
+  Filter,
+  FileText,
+  Wifi,
+  Database,
+  Cpu,
+  HardDrive
 } from "lucide-react";
 
 interface MonitoringData {
-  // System metrics
   uptime: number;
   responseTime: number;
-  errorRate: number;
-  throughput: number;
-
-  // User metrics
   activeUsers: number;
   newUsers: number;
-  userGrowth: number;
-
-  // Business metrics
-  aiGenerations: number;
-  visualBuilderUsage: number;
-  contentCreated: number;
-  revenue: number;
-
-  // Performance metrics
-  pageLoadTime: number;
-  apiResponseTime: number;
-  databaseQueryTime: number;
-
-  // Error metrics
-  totalErrors: number;
-  criticalErrors: number;
-  resolvedErrors: number;
+  errorRate: number;
+  cpuUsage: number;
+  memoryUsage: number;
+  diskUsage: number;
+  networkLatency: number;
+  throughput: number;
 }
 
 interface Alert {
   id: string;
-  type: "error" | "warning" | "info";
-  message: string;
+  type: "critical" | "warning" | "info";
+  title: string;
+  description: string;
   timestamp: Date;
   resolved: boolean;
+  severity: number;
 }
 
-export function MonitoringDashboard() {
+interface Prediction {
+  id: string;
+  metric: string;
+  current: number;
+  predicted: number;
+  confidence: number;
+  timeframe: string;
+  recommendation: string;
+}
+
+export default function MonitoringDashboard() {
+  const [userLevel, setUserLevel] = useState<"beginner" | "intermediate" | "expert">("intermediate");
+  const [activeTab, setActiveTab] = useState("overview");
+  const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState<MonitoringData>({
     uptime: 99.9,
-    responseTime: 150,
-    errorRate: 0.5,
-    throughput: 1250,
-    activeUsers: 1250,
+    responseTime: 245,
+    activeUsers: 1234,
     newUsers: 45,
-    userGrowth: 12.5,
-    aiGenerations: 89,
-    visualBuilderUsage: 156,
-    contentCreated: 234,
-    revenue: 12500,
-    pageLoadTime: 1.2,
-    apiResponseTime: 150,
-    databaseQueryTime: 25,
-    totalErrors: 12,
-    criticalErrors: 2,
-    resolvedErrors: 10,
+    errorRate: 0.2,
+    cpuUsage: 65,
+    memoryUsage: 78,
+    diskUsage: 45,
+    networkLatency: 12,
+    throughput: 1250
   });
 
   const [alerts, setAlerts] = useState<Alert[]>([
     {
       id: "1",
-      type: "error",
-      message: "High error rate detected on /api/ai/generate",
-      timestamp: new Date(Date.now() - 5 * 60 * 1000),
+      type: "warning",
+      title: "High CPU Usage",
+      description: "CPU usage has been above 80% for the last 15 minutes",
+      timestamp: new Date(Date.now() - 10 * 60 * 1000),
       resolved: false,
+      severity: 7
+    },
+    {
+      id: "2",
+      type: "info",
+      title: "Scheduled Maintenance",
+      description: "Database maintenance completed successfully",
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      resolved: true,
+      severity: 3
+    }
+  ]);
+
+  const [predictions, setPredictions] = useState<Prediction[]>([
+    {
+      id: "1",
+      metric: "CPU Usage",
+      current: 65,
+      predicted: 78,
+      confidence: 85,
+      timeframe: "Next 2 hours",
+      recommendation: "Consider scaling up resources"
+    },
+    {
+      id: "2",
+      metric: "Memory Usage",
+      current: 78,
+      predicted: 85,
+      confidence: 92,
+      timeframe: "Next 4 hours",
+      recommendation: "Monitor memory leaks and optimize"
+    },
+    {
+      id: "3",
+      metric: "Active Users",
+      current: 1234,
+      predicted: 1456,
+      confidence: 78,
+      timeframe: "Next 24 hours",
+      recommendation: "Prepare for increased load"
+    }
+  ]);
+
+  const [insights, setInsights] = useState([
+    {
+      id: "1",
+      type: "success",
+      title: "System Performance Excellent",
+      description: "All systems are running smoothly with optimal performance",
+      impact: "positive",
+      suggestion: "Continue current monitoring practices"
     },
     {
       id: "2",
       type: "warning",
-      message: "Database connection pool near capacity",
-      timestamp: new Date(Date.now() - 15 * 60 * 1000),
-      resolved: false,
+      title: "Memory Usage Trending Up",
+      description: "Memory usage has increased 15% over the last week",
+      impact: "medium",
+      suggestion: "Investigate potential memory leaks"
     },
     {
       id: "3",
-      type: "info",
-      message: "Scheduled maintenance completed",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      resolved: true,
-    },
+      type: "opportunity",
+      title: "Optimization Opportunity",
+      description: "Database queries could be optimized to improve response time",
+      impact: "high",
+      suggestion: "Review and optimize slow queries"
+    }
   ]);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const { suggestions, addSuggestion, removeSuggestion } = useAICopilot();
 
   useEffect(() => {
-    // Simulate loading monitoring data
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    // Simulate AI suggestions for monitoring
+    const monitoringSuggestions = [
+      {
+        type: "proactive" as const,
+        title: "Set up Automated Alerts",
+        description: "Configure smart alerts to prevent downtime before it happens.",
+        action: "Configure alerts",
+        priority: "high" as const,
+        category: "automation"
+      },
+      {
+        type: "educational" as const,
+        title: "Learn about Performance Optimization",
+        description: "Master techniques for optimizing system performance.",
+        action: "Start learning",
+        priority: "medium" as const,
+        category: "optimization"
+      }
+    ];
 
-    return () => clearTimeout(timer);
-  }, []);
+    monitoringSuggestions.forEach(suggestion => {
+      setTimeout(() => addSuggestion(suggestion), 3000);
+    });
+  }, [addSuggestion]);
 
-  const getStatusColor = (
-    value: number,
-    thresholds: { good: number; warning: number }
-  ) => {
-    if (value <= thresholds.good) return "text-green-600";
-    if (value <= thresholds.warning) return "text-yellow-600";
-    return "text-red-600";
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setRefreshing(false);
   };
 
-  const getStatusIcon = (
-    value: number,
-    thresholds: { good: number; warning: number }
-  ) => {
-    if (value <= thresholds.good)
-      return <CheckCircle className="h-4 w-4 text-green-600" />;
-    if (value <= thresholds.warning)
-      return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
-    return <AlertTriangle className="h-4 w-4 text-red-600" />;
+  const getStatusColor = (type: string) => {
+    switch (type) {
+      case "critical":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "warning":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "info":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading monitoring data...</p>
-        </div>
-      </div>
-    );
-  }
+  const getMetricStatus = (value: number, thresholds: { good: number; warning: number }) => {
+    if (value <= thresholds.good) return { status: "good", color: "text-green-600" };
+    if (value <= thresholds.warning) return { status: "warning", color: "text-yellow-600" };
+    return { status: "critical", color: "text-red-600" };
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Monitoring Dashboard
-          </h1>
-          <p className="text-gray-600">Real-time system and business metrics</p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Badge variant="outline" className="text-green-600 border-green-600">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            System Healthy
-          </Badge>
-          <Button variant="outline" size="sm">
-            <Activity className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-background flex">
+      {/* Smart Sidebar */}
+      <SmartSidebar 
+        userLevel={userLevel}
+        activeProject="Monitoring Dashboard"
+        className="w-80"
+      />
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Uptime</CardTitle>
-            <Server className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.uptime}%</div>
-            <p className="text-xs text-muted-foreground">Last 30 days</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Response Time</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.responseTime}ms</div>
-            <p className="text-xs text-muted-foreground">
-              Average API response
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {data.activeUsers.toLocaleString()}
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-16 items-center justify-between px-6">
+            <div className="flex items-center space-x-4">
+              <div>
+                <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Activity className="h-6 w-6 text-primary" />
+                  Monitoring Dashboard
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Real-time system and business metrics
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              +{data.newUsers} new today
-            </p>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Error Rate</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.errorRate}%</div>
-            <p className="text-xs text-muted-foreground">Last 24 hours</p>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="flex items-center space-x-4">
+              {/* System Status */}
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-green-600">All Systems Operational</span>
+              </div>
 
-      {/* Detailed Metrics */}
-      <Tabs defaultValue="system" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="system">System</TabsTrigger>
-          <TabsTrigger value="business">Business</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="alerts">Alerts</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="system" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Database className="h-5 w-5 mr-2" />
-                  Database Performance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Query Time</span>
-                    <span
-                      className={getStatusColor(data.databaseQueryTime, {
-                        good: 50,
-                        warning: 100,
-                      })}
-                    >
-                      {data.databaseQueryTime}ms
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Connections</span>
-                    <span>45/100</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Cache Hit Rate</span>
-                    <span className="text-green-600">94.2%</span>
-                  </div>
+              <div className="flex items-center space-x-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{data.uptime}%</div>
+                  <div className="text-xs text-muted-foreground">Uptime</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Globe className="h-5 w-5 mr-2" />
-                  API Performance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Response Time</span>
-                    <span
-                      className={getStatusColor(data.apiResponseTime, {
-                        good: 200,
-                        warning: 500,
-                      })}
-                    >
-                      {data.apiResponseTime}ms
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Throughput</span>
-                    <span>{data.throughput.toLocaleString()}/min</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Success Rate</span>
-                    <span className="text-green-600">99.5%</span>
-                  </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">{data.responseTime}ms</div>
+                  <div className="text-xs text-muted-foreground">Response</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Zap className="h-5 w-5 mr-2" />
-                  System Health
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span>CPU Usage</span>
-                    <div className="flex items-center">
-                      {getStatusIcon(45, { good: 70, warning: 85 })}
-                      <span className="ml-2">45%</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Memory Usage</span>
-                    <div className="flex items-center">
-                      {getStatusIcon(62, { good: 80, warning: 90 })}
-                      <span className="ml-2">62%</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Disk Usage</span>
-                    <div className="flex items-center">
-                      {getStatusIcon(38, { good: 80, warning: 90 })}
-                      <span className="ml-2">38%</span>
-                    </div>
-                  </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{data.activeUsers}</div>
+                  <div className="text-xs text-muted-foreground">Users</div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+              </div>
 
-        <TabsContent value="business" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  User Growth
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="text-2xl font-bold">{data.userGrowth}%</div>
-                  <p className="text-sm text-muted-foreground">
-                    Growth rate this month
-                  </p>
-                  <div className="flex items-center text-green-600">
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                    <span className="text-sm">+{data.newUsers} new users</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  Feature Usage
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>AI Generations</span>
-                    <span>{data.aiGenerations}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Visual Builder</span>
-                    <span>{data.visualBuilderUsage}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Content Created</span>
-                    <span>{data.contentCreated}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <PieChart className="h-5 w-5 mr-2" />
-                  Revenue
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="text-2xl font-bold">
-                    ${data.revenue.toLocaleString()}
-                  </div>
-                  <p className="text-sm text-muted-foreground">This month</p>
-                  <div className="flex items-center text-green-600">
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                    <span className="text-sm">+15.2% from last month</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="performance" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Page Load Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span>Average Load Time</span>
-                    <span
-                      className={getStatusColor(data.pageLoadTime, {
-                        good: 2,
-                        warning: 3,
-                      })}
-                    >
-                      {data.pageLoadTime}s
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full"
-                      style={{
-                        width: `${Math.min((data.pageLoadTime / 3) * 100, 100)}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Target: &lt; 2s | Current: {data.pageLoadTime}s
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>API Response Times</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span>Average Response</span>
-                    <span
-                      className={getStatusColor(data.apiResponseTime, {
-                        good: 200,
-                        warning: 500,
-                      })}
-                    >
-                      {data.apiResponseTime}ms
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-600 h-2 rounded-full"
-                      style={{
-                        width: `${Math.min((data.apiResponseTime / 500) * 100, 100)}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Target: &lt; 200ms | Current: {data.apiResponseTime}ms
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="alerts" className="space-y-4">
-          <div className="space-y-4">
-            {alerts.map((alert) => (
-              <Card
-                key={alert.id}
-                className={alert.resolved ? "opacity-60" : ""}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={refreshing}
               >
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      {alert.type === "error" && (
-                        <AlertTriangle className="h-5 w-5 text-red-500" />
-                      )}
-                      {alert.type === "warning" && (
-                        <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                      )}
-                      {alert.type === "info" && (
-                        <CheckCircle className="h-5 w-5 text-blue-500" />
-                      )}
-                      <div>
-                        <p className="font-medium">{alert.message}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {alert.timestamp.toLocaleString()}
+                <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 p-6 space-y-6">
+          {/* AI Insights - Predictive Interface */}
+          <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-purple-600" />
+                Predictive Intelligence
+              </CardTitle>
+              <CardDescription>
+                I've analyzed your system patterns and predicted future behavior
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {insights.map((insight) => (
+                  <div
+                    key={insight.id}
+                    className={`p-4 rounded-lg border ${
+                      insight.type === "success" 
+                        ? "bg-green-50 border-green-200" 
+                        : insight.type === "warning"
+                        ? "bg-yellow-50 border-yellow-200"
+                        : "bg-blue-50 border-blue-200"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        {insight.type === "success" && <CheckCircle className="h-4 w-4 text-green-600" />}
+                        {insight.type === "warning" && <AlertTriangle className="h-4 w-4 text-yellow-600" />}
+                        {insight.type === "opportunity" && <Target className="h-4 w-4 text-blue-600" />}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm mb-1">{insight.title}</h4>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          {insight.description}
+                        </p>
+                        <p className="text-xs font-medium text-primary">
+                          💡 {insight.suggestion}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {alert.resolved ? (
-                        <Badge
-                          variant="outline"
-                          className="text-green-600 border-green-600"
-                        >
-                          Resolved
-                        </Badge>
-                      ) : (
-                        <Badge
-                          variant="outline"
-                          className="text-red-600 border-red-600"
-                        >
-                          Active
-                        </Badge>
-                      )}
-                      {!alert.resolved && (
-                        <Button size="sm" variant="outline">
-                          Resolve
-                        </Button>
-                      )}
-                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Key Metrics - Predictive Interface */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">Uptime</CardTitle>
+                <Server className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">{data.uptime}%</div>
+                <p className="text-xs text-muted-foreground">Last 30 days</p>
+                <div className="mt-2">
+                  <Progress value={data.uptime} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">Response Time</CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">{data.responseTime}ms</div>
+                <p className="text-xs text-muted-foreground">Average API response</p>
+                <div className="mt-2">
+                  <Progress value={Math.max(0, 100 - (data.responseTime / 5))} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">Active Users</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">
+                  {data.activeUsers.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +{data.newUsers} new today
+                </p>
+                <div className="mt-2">
+                  <Progress value={Math.min(100, (data.activeUsers / 2000) * 100)} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">Error Rate</CardTitle>
+                <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">{data.errorRate}%</div>
+                <p className="text-xs text-muted-foreground">Last 24 hours</p>
+                <div className="mt-2">
+                  <Progress value={data.errorRate * 10} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </TabsContent>
-      </Tabs>
+
+          {/* System Resources */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Cpu className="h-5 w-5 text-primary" />
+                  CPU Usage
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Current</span>
+                    <span className="font-semibold">{data.cpuUsage}%</span>
+                  </div>
+                  <Progress value={data.cpuUsage} className="h-2" />
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>0%</span>
+                    <span>100%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5 text-primary" />
+                  Memory Usage
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Current</span>
+                    <span className="font-semibold">{data.memoryUsage}%</span>
+                  </div>
+                  <Progress value={data.memoryUsage} className="h-2" />
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>0%</span>
+                    <span>100%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <HardDrive className="h-5 w-5 text-primary" />
+                  Disk Usage
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Current</span>
+                    <span className="font-semibold">{data.diskUsage}%</span>
+                  </div>
+                  <Progress value={data.diskUsage} className="h-2" />
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>0%</span>
+                    <span>100%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="space-y-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="alerts">Alerts</TabsTrigger>
+                <TabsTrigger value="predictions">Predictions</TabsTrigger>
+                <TabsTrigger value="logs">Logs</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview" className="space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Recent Alerts */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <AlertCircle className="h-5 w-5 text-primary" />
+                        Recent Alerts
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {alerts.slice(0, 3).map((alert) => (
+                          <div key={alert.id} className="flex items-start gap-3 p-3 rounded-lg border">
+                            <div className="flex-shrink-0 mt-1">
+                              {alert.type === "critical" && <AlertTriangle className="h-4 w-4 text-red-500" />}
+                              {alert.type === "warning" && <AlertTriangle className="h-4 w-4 text-yellow-500" />}
+                              {alert.type === "info" && <CheckCircle className="h-4 w-4 text-blue-500" />}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-sm">{alert.title}</h4>
+                              <p className="text-xs text-muted-foreground mb-2">{alert.description}</p>
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-muted-foreground">
+                                  {alert.timestamp.toLocaleTimeString()}
+                                </span>
+                                <Badge className={getStatusColor(alert.type)}>
+                                  {alert.type}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* System Health */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Shield className="h-5 w-5 text-primary" />
+                        System Health
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Database</span>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                            <span className="text-sm font-medium text-green-600">Healthy</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">API Gateway</span>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                            <span className="text-sm font-medium text-green-600">Healthy</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Cache</span>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 bg-yellow-500 rounded-full"></div>
+                            <span className="text-sm font-medium text-yellow-600">Warning</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">CDN</span>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                            <span className="text-sm font-medium text-green-600">Healthy</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="alerts" className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search alerts..."
+                        className="pl-4 pr-4 py-2 border border-border rounded-lg bg-background"
+                      />
+                    </div>
+                    <Button variant="outline" size="sm">
+                      <Filter className="h-4 w-4 mr-2" />
+                      Filter
+                    </Button>
+                  </div>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Alert
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  {alerts.map((alert) => (
+                    <Card key={alert.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0 mt-1">
+                            {alert.type === "critical" && <AlertTriangle className="h-5 w-5 text-red-500" />}
+                            {alert.type === "warning" && <AlertTriangle className="h-5 w-5 text-yellow-500" />}
+                            {alert.type === "info" && <CheckCircle className="h-5 w-5 text-blue-500" />}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold">{alert.title}</h3>
+                              <Badge className={getStatusColor(alert.type)}>
+                                {alert.type}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-3">{alert.description}</p>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-muted-foreground">
+                                {alert.timestamp.toLocaleString()}
+                              </span>
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                <Button variant="outline" size="sm">
+                                  <Settings className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="predictions" className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {predictions.map((prediction) => (
+                    <Card key={prediction.id} className="hover:shadow-md transition-shadow">
+                      <CardHeader>
+                        <CardTitle className="text-lg">{prediction.metric}</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {prediction.confidence}% confidence
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">{prediction.timeframe}</span>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Current</span>
+                            <span className="font-semibold">{prediction.current}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Predicted</span>
+                            <span className="font-semibold text-primary">{prediction.predicted}</span>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between text-xs">
+                              <span>Current</span>
+                              <span>Predicted</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <Progress value={prediction.current} className="flex-1 h-2" />
+                              <Progress value={prediction.predicted} className="flex-1 h-2" />
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{prediction.recommendation}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="logs" className="space-y-4">
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-12">
+                    <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No logs available</h3>
+                    <p className="text-muted-foreground text-center mb-4">
+                      System logs will appear here when available
+                    </p>
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Enable Logging
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </main>
+      </div>
+
+      {/* AI Copilot */}
+      <AICopilot
+        suggestions={suggestions}
+        onSuggestionClick={(suggestion) => {
+          console.log("Monitoring suggestion clicked:", suggestion);
+          removeSuggestion(suggestion.id);
+        }}
+        onDismiss={removeSuggestion}
+      />
     </div>
   );
 }
+
+export { MonitoringDashboard };

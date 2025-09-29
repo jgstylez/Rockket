@@ -2,8 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SmartSidebar } from "@/components/layout/smart-sidebar";
+import { AICopilot, useAICopilot } from "@/components/ui/ai-copilot";
 import {
   BarChart3,
   Plus,
@@ -18,458 +22,359 @@ import {
   Activity,
   Calendar,
   Filter,
+  Target,
+  Lightbulb,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Zap,
+  Award,
+  Sparkles,
+  Brain
 } from "lucide-react";
 
-interface AnalyticsDashboard {
-  id: string;
-  name: string;
-  description?: string;
-  widgets: any[];
-  isPublic: boolean;
-  createdAt: string;
-  author: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
-
-interface AnalyticsReport {
-  id: string;
-  name: string;
-  description?: string;
-  type: string;
-  filters: any;
-  metrics: any[];
-  schedule: any;
-  isActive: boolean;
-  createdAt: string;
-  author: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  runs: Array<{
-    id: string;
-    status: string;
-    startedAt: string;
-    completedAt?: string;
-  }>;
-}
-
-interface RevenueData {
-  total: number;
-  monthly: number;
-  metrics: Array<{
-    id: string;
-    date: string;
-    revenue: number;
-    currency: string;
-    source: string;
-  }>;
-}
-
-interface EngagementData {
-  uniqueUsers: number;
-  totalEvents: number;
-  eventCounts: Record<string, number>;
-  metrics: Array<{
-    id: string;
-    userId: string;
-    event: string;
-    properties: any;
-    timestamp: string;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-    };
-  }>;
-}
-
 export default function AnalyticsPage() {
-  const [dashboards, setDashboards] = useState<AnalyticsDashboard[]>([]);
-  const [reports, setReports] = useState<AnalyticsReport[]>([]);
-  const [revenueData, setRevenueData] = useState<RevenueData>({
-    total: 0,
-    monthly: 0,
-    metrics: [],
-  });
-  const [engagementData, setEngagementData] = useState<EngagementData>({
-    uniqueUsers: 0,
-    totalEvents: 0,
-    eventCounts: {},
-    metrics: [],
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  const [userLevel, setUserLevel] = useState<"beginner" | "intermediate" | "expert">("beginner");
   const [activeTab, setActiveTab] = useState("overview");
+  const [insights, setInsights] = useState([
+    {
+      id: "1",
+      type: "opportunity",
+      title: "High Bounce Rate on Homepage",
+      description: "67% of visitors leave without exploring further",
+      impact: "high",
+      suggestion: "Add compelling call-to-action above the fold"
+    },
+    {
+      id: "2", 
+      type: "success",
+      title: "Mobile Traffic Growing",
+      description: "Mobile visits increased 23% this month",
+      impact: "positive",
+      suggestion: "Consider mobile-first design improvements"
+    },
+    {
+      id: "3",
+      type: "warning", 
+      title: "Slow Page Load Times",
+      description: "Average load time is 4.2s, above recommended 3s",
+      impact: "medium",
+      suggestion: "Optimize images and enable compression"
+    }
+  ]);
+
+  const { suggestions, addSuggestion, removeSuggestion } = useAICopilot();
 
   useEffect(() => {
-    loadData();
-  }, []);
+    // Simulate AI suggestions for analytics
+    const analyticsSuggestions = [
+      {
+        type: "proactive" as const,
+        title: "Set up Conversion Tracking",
+        description: "Track how many visitors become customers with Google Analytics goals.",
+        action: "Set up in 2 clicks",
+        priority: "high" as const,
+        category: "analytics"
+      },
+      {
+        type: "educational" as const,
+        title: "Learn about Cohort Analysis",
+        description: "Understand user retention patterns with cohort analysis.",
+        action: "Start learning",
+        priority: "medium" as const,
+        category: "analytics"
+      }
+    ];
 
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      const [dashboardsRes, reportsRes, metricsRes] = await Promise.all([
-        fetch("/api/analytics/dashboards?tenantId=demo-tenant"),
-        fetch("/api/analytics/reports?tenantId=demo-tenant"),
-        fetch("/api/analytics/metrics?tenantId=demo-tenant"),
-      ]);
-
-      const dashboardsData = await dashboardsRes.json();
-      const reportsData = await reportsRes.json();
-      const metricsData = await metricsRes.json();
-
-      setDashboards(dashboardsData.dashboards || []);
-      setReports(reportsData.reports || []);
-      setRevenueData(
-        metricsData.revenue || { total: 0, monthly: 0, metrics: [] }
-      );
-      setEngagementData(
-        metricsData.engagement || {
-          uniqueUsers: 0,
-          totalEvents: 0,
-          eventCounts: {},
-          metrics: [],
-        }
-      );
-    } catch (error) {
-      console.error("Failed to load analytics data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "running":
-        return "bg-blue-100 text-blue-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "failed":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <TrendingUp className="h-4 w-4" />;
-      case "running":
-        return <Activity className="h-4 w-4" />;
-      case "pending":
-        return <Calendar className="h-4 w-4" />;
-      case "failed":
-        return <TrendingDown className="h-4 w-4" />;
-      default:
-        return <BarChart3 className="h-4 w-4" />;
-    }
-  };
-
-  const stats = {
-    totalDashboards: dashboards.length,
-    totalReports: reports.length,
-    totalRevenue: revenueData.total,
-    monthlyRevenue: revenueData.monthly,
-    uniqueUsers: engagementData.uniqueUsers,
-    totalEvents: engagementData.totalEvents,
-  };
+    analyticsSuggestions.forEach(suggestion => {
+      setTimeout(() => addSuggestion(suggestion), 3000);
+    });
+  }, [addSuggestion]);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Analytics</h2>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              New Dashboard
-            </Button>
-          </div>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="p-4 border-b border-gray-200">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="dashboards">Dashboards</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {/* Content List */}
-        <div className="flex-1 overflow-y-auto p-4">
-          {isLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="text-sm text-gray-500 mt-2">Loading...</p>
-            </div>
-          ) : activeTab === "dashboards" ? (
-            <div className="space-y-2">
-              {dashboards.length === 0 ? (
-                <div className="text-center py-8">
-                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-sm text-gray-500">No dashboards found</p>
-                </div>
-              ) : (
-                dashboards.map((dashboard) => (
-                  <Card
-                    key={dashboard.id}
-                    className="cursor-pointer hover:border-gray-300"
-                  >
-                    <CardContent className="p-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-sm truncate">
-                            {dashboard.name}
-                          </h3>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {dashboard.description}
-                          </p>
-                          <div className="flex items-center text-xs text-gray-400 mt-1">
-                            <span className="mr-2">
-                              {dashboard.widgets.length} widgets
-                            </span>
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(dashboard.isPublic ? "completed" : "pending")}`}
-                            >
-                              {dashboard.isPublic ? "Public" : "Private"}
-                            </span>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {reports.map((report) => (
-                <Card
-                  key={report.id}
-                  className="cursor-pointer hover:border-gray-300"
-                >
-                  <CardContent className="p-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-sm truncate">
-                          {report.name}
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {report.description}
-                        </p>
-                        <div className="flex items-center text-xs text-gray-400 mt-1">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(report.isActive ? "completed" : "pending")}`}
-                          >
-                            {report.isActive ? "Active" : "Inactive"}
-                          </span>
-                          <span className="ml-2">{report.type}</span>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+    <div className="min-h-screen bg-background flex">
+      {/* Smart Sidebar */}
+      <SmartSidebar 
+        userLevel={userLevel}
+        activeProject="Analytics Dashboard"
+        className="w-80"
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {/* Header with Stats */}
-        <div className="bg-white border-b border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-semibold">Analytics Dashboard</h1>
-              <p className="text-sm text-gray-500">
-                Advanced business intelligence and reporting
-              </p>
+        {/* Header */}
+        <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-16 items-center justify-between px-6">
+            <div className="flex items-center space-x-4">
+              <div>
+                <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <BarChart3 className="h-6 w-6 text-primary" />
+                  Analytics Dashboard
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Understand your users and optimize performance
+                </p>
+              </div>
             </div>
-            <div className="flex items-center space-x-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {stats.totalDashboards}
+
+            <div className="flex items-center space-x-4">
+              {/* Quick Stats */}
+              <div className="flex items-center space-x-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">1,234</div>
+                  <div className="text-xs text-muted-foreground">Visitors</div>
                 </div>
-                <div className="text-xs text-gray-500">Dashboards</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {stats.totalReports}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">+12%</div>
+                  <div className="text-xs text-muted-foreground">Growth</div>
                 </div>
-                <div className="text-xs text-gray-500">Reports</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">
-                  ${stats.monthlyRevenue.toFixed(2)}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">2.3s</div>
+                  <div className="text-xs text-muted-foreground">Load Time</div>
                 </div>
-                <div className="text-xs text-gray-500">Monthly Revenue</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">
-                  {stats.uniqueUsers}
-                </div>
-                <div className="text-xs text-gray-500">Active Users</div>
-              </div>
+
+              <Button size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                New Report
+              </Button>
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Content */}
-        <div className="flex-1 p-6">
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="revenue">Revenue</TabsTrigger>
-              <TabsTrigger value="engagement">Engagement</TabsTrigger>
-              <TabsTrigger value="reports">Reports</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="overview" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Total Revenue
-                    </CardTitle>
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      ${stats.totalRevenue.toFixed(2)}
+        {/* Main Content */}
+        <main className="flex-1 p-6 space-y-6">
+          {/* AI Insights - Contextual Intelligence */}
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-blue-600" />
+                AI Insights
+              </CardTitle>
+              <CardDescription>
+                I've analyzed your data and found some key opportunities
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {insights.map((insight) => (
+                  <div
+                    key={insight.id}
+                    className={`p-4 rounded-lg border ${
+                      insight.type === "success" 
+                        ? "bg-green-50 border-green-200" 
+                        : insight.type === "warning"
+                        ? "bg-yellow-50 border-yellow-200"
+                        : "bg-red-50 border-red-200"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        {insight.type === "success" && <CheckCircle className="h-4 w-4 text-green-600" />}
+                        {insight.type === "warning" && <AlertTriangle className="h-4 w-4 text-yellow-600" />}
+                        {insight.type === "opportunity" && <Target className="h-4 w-4 text-red-600" />}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm mb-1">{insight.title}</h4>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          {insight.description}
+                        </p>
+                        <p className="text-xs font-medium text-primary">
+                          💡 {insight.suggestion}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      All time revenue
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Monthly Revenue
-                    </CardTitle>
-                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      ${stats.monthlyRevenue.toFixed(2)}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Last 30 days
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Active Users
-                    </CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {stats.uniqueUsers}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Unique users
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Total Events
-                    </CardTitle>
-                    <Activity className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {stats.totalEvents}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      User interactions
-                    </p>
-                  </CardContent>
-                </Card>
+                  </div>
+                ))}
               </div>
-            </TabsContent>
+            </CardContent>
+          </Card>
 
-            <TabsContent value="revenue" className="mt-6">
-              <div className="text-center py-8">
-                <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  Revenue Analytics
-                </h3>
-                <p className="text-gray-500 mb-4">
-                  Track revenue trends and performance
+          {/* Key Metrics - Value Demonstration */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">
+                  Total Visitors
+                </CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">1,234</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-600">+12%</span> from last month
                 </p>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Revenue Report
-                </Button>
-              </div>
-            </TabsContent>
+              </CardContent>
+            </Card>
 
-            <TabsContent value="engagement" className="mt-6">
-              <div className="text-center py-8">
-                <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">User Engagement</h3>
-                <p className="text-gray-500 mb-4">
-                  Analyze user behavior and engagement patterns
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">
+                  Conversion Rate
+                </CardTitle>
+                <Target className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">3.2%</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-600">+0.5%</span> from last month
                 </p>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Engagement Report
-                </Button>
-              </div>
-            </TabsContent>
+              </CardContent>
+            </Card>
 
-            <TabsContent value="reports" className="mt-6">
-              <div className="text-center py-8">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Custom Reports</h3>
-                <p className="text-gray-500 mb-4">
-                  Create and schedule custom analytics reports
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">
+                  Revenue
+                </CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">$2,456</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-green-600">+18%</span> from last month
                 </p>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Report
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-card-foreground">
+                  Bounce Rate
+                </CardTitle>
+                <Activity className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-card-foreground">67%</div>
+                <p className="text-xs text-muted-foreground">
+                  <span className="text-red-600">+3%</span> from last month
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="space-y-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="dashboards">Dashboards</TabsTrigger>
+                <TabsTrigger value="reports">Reports</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview" className="space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Traffic Overview */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-primary" />
+                        Traffic Overview
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Page Views</span>
+                          <span className="font-semibold">2,456</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Unique Visitors</span>
+                          <span className="font-semibold">1,234</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Avg. Session Duration</span>
+                          <span className="font-semibold">2m 34s</span>
+                        </div>
+                        <Progress value={75} className="h-2" />
+                        <p className="text-xs text-muted-foreground">
+                          Traffic is up 12% this week
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Top Pages */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Eye className="h-5 w-5 text-primary" />
+                        Top Pages
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {[
+                          { page: "/", views: 456, change: "+12%" },
+                          { page: "/products", views: 234, change: "+8%" },
+                          { page: "/about", views: 123, change: "-2%" },
+                          { page: "/contact", views: 89, change: "+15%" }
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium">{item.page}</p>
+                              <p className="text-xs text-muted-foreground">{item.views} views</p>
+                            </div>
+                            <Badge variant={item.change.startsWith('+') ? "default" : "secondary"}>
+                              {item.change}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="dashboards" className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Card className="col-span-full">
+                    <CardContent className="flex flex-col items-center justify-center py-12">
+                      <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">No dashboards yet</h3>
+                      <p className="text-muted-foreground text-center mb-4">
+                        Create your first dashboard to start tracking your metrics
+                      </p>
+                      <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Dashboard
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="reports" className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Card className="col-span-full">
+                    <CardContent className="flex flex-col items-center justify-center py-12">
+                      <Download className="h-12 w-12 text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">No reports yet</h3>
+                      <p className="text-muted-foreground text-center mb-4">
+                        Generate your first report to analyze your data
+                      </p>
+                      <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Report
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </main>
       </div>
+
+      {/* AI Copilot */}
+      <AICopilot
+        suggestions={suggestions}
+        onSuggestionClick={(suggestion) => {
+          console.log("Analytics suggestion clicked:", suggestion);
+          removeSuggestion(suggestion.id);
+        }}
+        onDismiss={removeSuggestion}
+      />
     </div>
   );
 }

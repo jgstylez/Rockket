@@ -1,5 +1,29 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable React Strict Mode for better development experience
+  reactStrictMode: true,
+
+  // Enable experimental features
+  experimental: {
+    // Enable React Server Components
+    serverComponents: true,
+    // Enable concurrent features
+    concurrentFeatures: true,
+  },
+
+  // Configure webpack for better hot reload
+  webpack: (config, { dev, isServer }) => {
+    // Enable hot reload in development
+    if (dev && !isServer) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: /node_modules/,
+        aggregateTimeout: 300,
+        poll: 1000,
+      };
+    }
+    return config;
+  },
   images: {
     domains: ["localhost", "rockket.dev", "*.rockket.dev"],
     remotePatterns: [
@@ -44,10 +68,6 @@ const nextConfig = {
         destination: "/api/:path*",
       },
     ];
-  },
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Add custom webpack configuration here
-    return config;
   },
 };
 

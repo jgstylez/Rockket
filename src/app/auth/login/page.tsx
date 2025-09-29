@@ -103,9 +103,32 @@ export default function LoginPage() {
             <div className="text-destructive text-sm text-center">{error}</div>
           )}
 
-          <div>
+          <div className="space-y-3">
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign in"}
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or
+                </span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                setEmail("demo@rockket.dev");
+                setPassword("demo123");
+              }}
+            >
+              Use Demo Account
             </Button>
           </div>
 

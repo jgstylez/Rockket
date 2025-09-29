@@ -1,4 +1,5 @@
-import { db } from "@/lib/db/client";
+/*
+// import { db } from "@/lib/db/client";
 
 export interface AnalyticsEvent {
   id: string;
@@ -23,16 +24,17 @@ export class AnalyticsService {
     sessionId?: string
   ): Promise<void> {
     try {
-      await db.analyticsEvent.create({
-        data: {
-          event,
-          properties: JSON.stringify(properties),
-          userId: userId || null,
-          sessionId: sessionId || this.generateSessionId(),
-          tenantId: tenantId || "",
-          timestamp: new Date(),
-        },
-      });
+      // await db.analyticsEvent.create({
+      //   data: {
+      //     event,
+      //     properties: JSON.stringify(properties),
+      //     userId: userId || null,
+      //     sessionId: sessionId || this.generateSessionId(),
+      //     tenantId: tenantId || "",
+      //     timestamp: new Date(),
+      //   },
+      // });
+      console.log("Analytics event:", event, properties);
     } catch (error) {
       console.error("Analytics tracking error:", error);
       // Don't throw error to avoid breaking the main flow
@@ -231,3 +233,4 @@ export const ANALYTICS_EVENTS = {
 
 export type AnalyticsEventType =
   (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];
+*/

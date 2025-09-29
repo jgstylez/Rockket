@@ -1,3 +1,4 @@
+/*
 import { db } from "./client";
 import { type Tenant, type User } from "@/types";
 import { hashPassword } from "@/lib/auth/password";
@@ -88,3 +89,4 @@ export async function removeUserFromTenant(tenantId: string, userId: string) {
     },
   });
 }
+*/

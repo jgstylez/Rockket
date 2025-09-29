@@ -145,7 +145,7 @@ export default function HomePage() {
             </div>
 
             {/* Generate Button */}
-            <div className="mt-4 flex justify-center">
+            <div className="mt-4 flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 onClick={handleGenerate}
                 disabled={!prompt.trim() || isGenerating}
@@ -163,6 +163,14 @@ export default function HomePage() {
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </>
                 )}
+              </Button>
+
+              <Button
+                onClick={() => router.push("/auth/login")}
+                variant="outline"
+                className="bg-transparent hover:bg-white/10 text-white border-white/30 px-8 py-3 rounded-xl font-medium transition-all duration-200"
+              >
+                Try Demo Account
               </Button>
             </div>
 

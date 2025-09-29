@@ -1,3 +1,4 @@
+/*
 import { db } from "@/lib/db/client";
 
 export interface FeatureFlagVariant {
@@ -301,3 +302,4 @@ function evaluateCondition(
       return false;
   }
 }
+*/

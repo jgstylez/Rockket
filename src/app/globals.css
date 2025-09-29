@@ -4,50 +4,107 @@
 
 @layer base {
   :root {
-    /* Light theme - clean and bright */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 14 100% 60%; /* Rockket orange */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 14 100% 60%;
-    --radius: 0.5rem;
+    --radius: 0.65rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.141 0.005 285.823);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.141 0.005 285.823);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.141 0.005 285.823);
+    --primary: oklch(0.705 0.213 47.604);
+    --primary-foreground: oklch(0.98 0.016 73.684);
+    --secondary: oklch(0.967 0.001 286.375);
+    --secondary-foreground: oklch(0.21 0.006 285.885);
+    --muted: oklch(0.967 0.001 286.375);
+    --muted-foreground: oklch(0.552 0.016 285.938);
+    --accent: oklch(0.967 0.001 286.375);
+    --accent-foreground: oklch(0.21 0.006 285.885);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.85 0.004 286.32);
+    --input: oklch(0.8 0.004 286.32);
+    --ring: oklch(0.705 0.213 47.604);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.141 0.005 285.823);
+    --sidebar-primary: oklch(0.705 0.213 47.604);
+    --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
+    --sidebar-accent: oklch(0.967 0.001 286.375);
+    --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+    --sidebar-border: oklch(0.85 0.004 286.32);
+    --sidebar-ring: oklch(0.705 0.213 47.604);
   }
 
   .dark {
-    /* Dark theme - Rockket brand colors */
-    --background: 220 39% 11%; /* Dark blue from logo */
-    --foreground: 0 0% 100%; /* White text */
-    --card: 220 39% 13%;
-    --card-foreground: 0 0% 100%;
-    --popover: 220 39% 13%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 14 100% 60%; /* Rockket orange */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 39% 18%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 220 39% 18%;
-    --muted-foreground: 220 13% 70%;
-    --accent: 220 39% 18%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 39% 18%;
-    --input: 220 39% 18%;
-    --ring: 14 100% 60%;
+    /* Base colors - exact match from image */
+    --background: #0c0c0c;
+    --foreground: #ffffff;
+
+    /* Card and popover - slightly lighter than background */
+    --card: #161616;
+    --card-foreground: #ffffff;
+    --popover: #161616;
+    --popover-foreground: #ffffff;
+
+    /* Primary - orange accent color from the image */
+    --primary: #f97316;
+    --primary-foreground: #ffffff;
+
+    /* Secondary - subtle gray for secondary elements */
+    --secondary: #161616;
+    --secondary-foreground: #ffffff;
+
+    /* Muted - very subtle gray for muted elements */
+    --muted: #161616;
+    --muted-foreground: #737373;
+
+    /* Accent - slightly lighter than secondary */
+    --accent: #161616;
+    --accent-foreground: #ffffff;
+
+    /* Destructive - red for error states */
+    --destructive: #ef4444;
+
+    /* Borders - exact match from image */
+    --border: rgba(255, 255, 255, 0.05);
+    --input: rgba(255, 255, 255, 0.05);
+    --ring: #f97316;
+
+    /* Chart colors - vibrant but not overwhelming */
+    --chart-1: #f97316;
+    --chart-2: #3b82f6;
+    --chart-3: #10b981;
+    --chart-4: #8b5cf6;
+    --chart-5: #f43f5e;
+
+    /* Sidebar specific colors - exact match from image */
+    --sidebar: #0c0c0c;
+    --sidebar-foreground: #ffffff;
+    --sidebar-primary: #f97316;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #161616;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: rgba(255, 255, 255, 0.05);
+    --sidebar-ring: #f97316;
+
+    /* Status colors - exact match from image */
+    --success: #10b981;
+    --success-foreground: #ffffff;
+    --warning: #f59e0b;
+    --warning-foreground: #ffffff;
+    --info: #3b82f6;
+    --info-foreground: #ffffff;
+
+    /* Custom colors for specific components */
+    --card-hover: #1a1a1a;
+    --card-active: #1e1e1e;
+    --button-hover: #1a1a1a;
+    --button-active: #1e1e1e;
+    --nav-hover: #1a1a1a;
+    --nav-active: #1e1e1e;
   }
 }
 
@@ -65,105 +122,179 @@
     @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
-  .section {
-    @apply py-12 sm:py-16 lg:py-20;
+  /* Card styling */
+  .card-subtle {
+    @apply bg-card border border-border rounded-xl transition-colors hover:bg-card-hover active:bg-card-active;
   }
 
-  .gradient-text {
-    @apply bg-gradient-to-r from-rockket-orange to-rockket-orange-light bg-clip-text text-transparent;
+  /* Button styling */
+  .btn-subtle {
+    @apply border border-border rounded-lg transition-colors hover:bg-button-hover active:bg-button-active;
   }
 
-  .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  /* Login form styling */
+  .login-input {
+    @apply border border-border bg-card rounded-lg transition-colors focus:border-primary/20 focus:bg-card-hover;
   }
 
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:scale-105;
+  .login-button {
+    @apply bg-primary text-primary-foreground rounded-lg transition-colors hover:bg-primary/90 active:bg-primary/80 border-0;
   }
 
-  .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors;
+  /* Dashboard card styling */
+  .dashboard-card {
+    @apply bg-card border border-border rounded-xl transition-colors hover:bg-card-hover active:bg-card-active;
   }
 
-  .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-md font-medium transition-colors;
+  /* Dashboard stats card */
+  .stats-card {
+    @apply bg-card border border-border rounded-xl p-4;
   }
 
-  .input-field {
-    @apply w-full px-3 py-2 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
+  /* Project progress card */
+  .progress-card {
+    @apply bg-card border border-border rounded-xl p-6;
   }
 
-  .form-group {
-    @apply space-y-2;
+  /* Dashboard metric */
+  .metric-value {
+    @apply text-2xl font-semibold text-foreground tracking-tight;
   }
 
-  .form-label {
-    @apply text-sm font-medium text-foreground;
+  .metric-label {
+    @apply text-sm text-muted-foreground;
   }
 
-  .form-error {
-    @apply text-sm text-destructive;
+  /* Status badges */
+  .status-badge {
+    @apply px-2 py-0.5 text-xs font-medium rounded-full;
   }
 
-  .loading-spinner {
-    @apply animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent;
+  .status-badge-success {
+    @apply bg-success/10 text-success border border-success/20;
   }
 
-  .fade-in {
-    @apply animate-fade-in;
+  .status-badge-warning {
+    @apply bg-warning/10 text-warning border border-warning/20;
   }
 
-  .slide-in {
-    @apply animate-slide-in;
+  /* Quick actions button */
+  .quick-action-btn {
+    @apply bg-card border border-border rounded-lg px-3 py-1.5 text-sm font-medium flex items-center gap-2 transition-colors hover:bg-button-hover active:bg-button-active;
   }
 
-  .bounce-in {
-    @apply animate-bounce-in;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  /* Sidebar navigation */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground transition-colors hover:text-foreground hover:bg-nav-hover;
   }
 
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  .nav-item-active {
+    @apply text-foreground bg-nav-active;
   }
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  /* Progress bars */
+  .progress-bar {
+    @apply h-2 rounded-full bg-card overflow-hidden;
   }
 
-  .perspective-1000 {
-    perspective: 1000px;
+  .progress-bar-value {
+    @apply h-full bg-primary rounded-full transition-all duration-300;
   }
 
-  .preserve-3d {
-    transform-style: preserve-3d;
+  /* AI suggestions */
+  .ai-suggestion {
+    @apply bg-card border border-border rounded-xl p-4 transition-colors hover:bg-card-hover active:bg-card-active;
   }
 
-  .backface-hidden {
-    backface-visibility: hidden;
+  /* Live status */
+  .live-status {
+    @apply text-success font-medium;
+  }
+
+  /* View count */
+  .view-count {
+    @apply text-info font-medium;
+  }
+
+  /* Project stats */
+  .project-stat {
+    @apply text-center;
+  }
+
+  .project-stat-value {
+    @apply text-3xl font-semibold text-foreground mb-1;
+  }
+
+  .project-stat-label {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Recent activity */
+  .activity-item {
+    @apply flex items-start gap-3 py-2;
+  }
+
+  .activity-time {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .activity-content {
+    @apply text-sm text-foreground;
+  }
+
+  /* Building tools */
+  .tool-card {
+    @apply bg-card border border-border rounded-xl p-6 transition-colors hover:bg-card-hover active:bg-card-active;
+  }
+
+  .tool-header {
+    @apply flex items-center gap-3 mb-3;
+  }
+
+  .tool-title {
+    @apply text-lg font-semibold text-foreground;
+  }
+
+  .tool-description {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Custom hover effects */
+  .hover-highlight {
+    @apply transition-colors hover:bg-card-hover active:bg-card-active;
+  }
+
+  .hover-border {
+    @apply transition-colors hover:border-primary/20 active:border-primary/30;
+  }
+
+  .hover-text {
+    @apply transition-colors hover:text-foreground active:text-foreground/90;
   }
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-muted;
+  @apply bg-background;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/20 rounded-full;
+  @apply bg-border rounded-full hover:bg-muted-foreground/20 transition-colors;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/30;
+/* Hide scrollbar for a cleaner look */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Selection styles */

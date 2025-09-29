@@ -130,10 +130,10 @@ const BusinessLogicPanel: React.FC<{
             <Label>Business Rules</Label>
             <div className="space-y-2">
               {businessLogic.rules.map((rule, index) => (
-                <Card key={index} className="p-3">
+                <Card key={index} className="p-3 bg-card border-border">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">{rule.name}</p>
+                      <p className="font-medium text-foreground">{rule.name}</p>
                       <p className="text-sm text-muted-foreground">
                         {rule.description}
                       </p>
@@ -159,10 +159,12 @@ const BusinessLogicPanel: React.FC<{
             <Label>Workflows</Label>
             <div className="space-y-2">
               {businessLogic.workflows.map((workflow, index) => (
-                <Card key={index} className="p-3">
+                <Card key={index} className="p-3 bg-card border-border">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">{workflow.name}</p>
+                      <p className="font-medium text-foreground">
+                        {workflow.name}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {workflow.description}
                       </p>
@@ -208,10 +210,12 @@ const BusinessLogicPanel: React.FC<{
             <Label>Data Bindings</Label>
             <div className="space-y-2">
               {businessLogic.dataBindings.map((binding, index) => (
-                <Card key={index} className="p-3">
+                <Card key={index} className="p-3 bg-card border-border">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">{binding.field}</p>
+                      <p className="font-medium text-foreground">
+                        {binding.field}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {binding.source} → {binding.target}
                       </p>
@@ -571,16 +575,16 @@ export const EnhancedVisualBuilder: React.FC = () => {
   );
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-background">
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         {/* Component Library Sidebar */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
+        <div className="w-80 bg-card border-r border-border flex flex-col">
+          <div className="p-4 border-b border-border">
+            <h2 className="text-lg font-semibold flex items-center gap-2 text-foreground">
               <Component className="h-5 w-5" />
               Business Components
             </h2>
@@ -600,20 +604,20 @@ export const EnhancedVisualBuilder: React.FC = () => {
                 {Object.entries(groupedComponents).map(
                   ([category, categoryComponents]) => (
                     <div key={category} className="space-y-2">
-                      <h3 className="text-sm font-medium text-gray-700">
+                      <h3 className="text-sm font-medium text-foreground">
                         {category}
                       </h3>
                       <div className="space-y-2">
                         {categoryComponents.map((component) => (
                           <div
                             key={component.id}
-                            className="p-3 border border-gray-200 rounded-lg cursor-grab hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                            className="p-3 border border-border rounded-lg cursor-grab hover:border-primary/20 hover:bg-card-hover transition-colors"
                             draggable
                           >
                             <div className="flex items-center gap-2">
                               <span className="text-lg">{component.icon}</span>
                               <div>
-                                <p className="font-medium text-sm">
+                                <p className="font-medium text-sm text-foreground">
                                   {component.name}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
@@ -633,13 +637,15 @@ export const EnhancedVisualBuilder: React.FC = () => {
                 {groupedComponents["Business Logic"]?.map((component) => (
                   <div
                     key={component.id}
-                    className="p-3 border border-gray-200 rounded-lg cursor-grab hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                    className="p-3 border border-border rounded-lg cursor-grab hover:border-primary/20 hover:bg-card-hover transition-colors"
                     draggable
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{component.icon}</span>
                       <div>
-                        <p className="font-medium text-sm">{component.name}</p>
+                        <p className="font-medium text-sm text-foreground">
+                          {component.name}
+                        </p>
                         <p className="text-xs text-muted-foreground">
                           {component.description}
                         </p>
@@ -655,7 +661,7 @@ export const EnhancedVisualBuilder: React.FC = () => {
         {/* Main Builder Area */}
         <div className="flex-1 flex flex-col">
           {/* Toolbar */}
-          <div className="bg-white border-b border-gray-200 p-4">
+          <div className="bg-card border-b border-border p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Button
@@ -691,14 +697,14 @@ export const EnhancedVisualBuilder: React.FC = () => {
 
           {/* Canvas */}
           <div className="flex-1 p-6 overflow-auto">
-            <div className="min-h-full bg-white rounded-lg border-2 border-dashed border-gray-300 p-6">
+            <div className="min-h-full bg-card rounded-lg border-2 border-dashed border-border p-6">
               {components.length === 0 ? (
                 <div className="text-center py-12">
-                  <Layers className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <Layers className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">
                     Start Building
                   </h3>
-                  <p className="text-gray-500">
+                  <p className="text-muted-foreground">
                     Drag components from the sidebar to start building your
                     application
                   </p>
@@ -724,9 +730,9 @@ export const EnhancedVisualBuilder: React.FC = () => {
         </div>
 
         {/* Business Logic Panel */}
-        <div className="w-80 bg-white border-l border-gray-200">
-          <div className="p-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
+        <div className="w-80 bg-card border-l border-border">
+          <div className="p-4 border-b border-border">
+            <h2 className="text-lg font-semibold flex items-center gap-2 text-foreground">
               <Brain className="h-5 w-5" />
               Business Logic
             </h2>

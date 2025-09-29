@@ -49,12 +49,14 @@ export function MetricCard({
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <CardTitle className="text-sm font-medium text-card-foreground">
+            {title}
+          </CardTitle>
           {icon}
         </CardHeader>
         <CardContent>
-          <div className="h-8 bg-gray-200 animate-pulse rounded"></div>
-          <div className="h-4 bg-gray-200 animate-pulse rounded mt-2"></div>
+          <div className="h-8 bg-muted animate-pulse rounded"></div>
+          <div className="h-4 bg-muted animate-pulse rounded mt-2"></div>
         </CardContent>
       </Card>
     );
@@ -63,11 +65,13 @@ export function MetricCard({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <CardTitle className="text-sm font-medium text-card-foreground">
+          {title}
+        </CardTitle>
         {icon}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-bold text-card-foreground">{value}</div>
         {change && (
           <div
             className={`flex items-center text-xs ${changeColors[change.type]}`}

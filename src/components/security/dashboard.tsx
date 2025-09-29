@@ -1,621 +1,791 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SmartSidebar } from "@/components/layout/smart-sidebar";
+import { AICopilot, useAICopilot } from "@/components/ui/ai-copilot";
 import {
   Shield,
   AlertTriangle,
   CheckCircle,
-  XCircle,
-  Eye,
   Lock,
+  Eye,
+  EyeOff,
   Key,
+  User,
+  Server,
   Database,
-  Network,
-  FileText,
-  BarChart3,
-  RefreshCw,
+  Globe,
+  Smartphone,
+  Laptop,
+  Wifi,
   Download,
+  Upload,
   Settings,
+  RefreshCw,
+  Plus,
+  Target,
+  Lightbulb,
+  Brain,
+  Award,
   Zap,
-  Bug,
-  Search,
+  TrendingUp,
+  TrendingDown,
   Activity,
+  Clock,
+  Filter,
 } from "lucide-react";
 
-interface SecurityMetrics {
-  overallScore: number;
-  criticalIssues: number;
-  highIssues: number;
-  mediumIssues: number;
-  lowIssues: number;
-  totalTests: number;
-  passedTests: number;
-  failedTests: number;
-  riskLevel: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-}
-
-interface SecurityTest {
+interface SecurityMetric {
   id: string;
   name: string;
-  category: string;
-  severity: "critical" | "high" | "medium" | "low" | "info";
-  status: "passed" | "failed" | "warning" | "skipped";
+  value: number;
+  status: "excellent" | "good" | "warning" | "critical";
+  trend: "up" | "down" | "stable";
   description: string;
-  recommendation: string;
-  evidence?: string;
-  cwe?: string;
-  owasp?: string;
+  recommendation?: string;
 }
 
-export function SecurityDashboard() {
-  const [metrics, setMetrics] = useState<SecurityMetrics>({
-    overallScore: 85,
-    criticalIssues: 2,
-    highIssues: 5,
-    mediumIssues: 8,
-    lowIssues: 3,
-    totalTests: 45,
-    passedTests: 35,
-    failedTests: 10,
-    riskLevel: "MEDIUM",
+interface SecurityAlert {
+  id: string;
+  type: "threat" | "vulnerability" | "compliance" | "info";
+  severity: "low" | "medium" | "high" | "critical";
+  title: string;
+  description: string;
+  timestamp: Date;
+  resolved: boolean;
+  source: string;
+}
+
+interface SecurityScore {
+  overall: number;
+  authentication: number;
+  encryption: number;
+  network: number;
+  compliance: number;
+}
+
+export default function SecurityDashboard() {
+  const [userLevel, setUserLevel] = useState<
+    "beginner" | "intermediate" | "expert"
+  >("intermediate");
+  const [activeTab, setActiveTab] = useState("overview");
+  const [refreshing, setRefreshing] = useState(false);
+  const [securityScore, setSecurityScore] = useState<SecurityScore>({
+    overall: 87,
+    authentication: 92,
+    encryption: 85,
+    network: 90,
+    compliance: 88,
   });
 
-  const [tests, setTests] = useState<SecurityTest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [metrics, setMetrics] = useState<SecurityMetric[]>([
+    {
+      id: "1",
+      name: "SSL/TLS Score",
+      value: 95,
+      status: "excellent",
+      trend: "up",
+      description: "Your SSL/TLS configuration is excellent",
+      recommendation: "Maintain current configuration",
+    },
+    {
+      id: "2",
+      name: "Password Strength",
+      value: 78,
+      status: "good",
+      trend: "up",
+      description: "Password policies are well implemented",
+      recommendation: "Consider implementing 2FA for additional security",
+    },
+    {
+      id: "3",
+      name: "Firewall Protection",
+      value: 92,
+      status: "excellent",
+      trend: "stable",
+      description: "Firewall rules are properly configured",
+      recommendation: "Regular rule audits recommended",
+    },
+    {
+      id: "4",
+      name: "Data Encryption",
+      value: 88,
+      status: "good",
+      trend: "up",
+      description: "Data encryption is properly implemented",
+      recommendation: "Consider upgrading to AES-256 for sensitive data",
+    },
+  ]);
+
+  const [alerts, setAlerts] = useState<SecurityAlert[]>([
+    {
+      id: "1",
+      type: "vulnerability",
+      severity: "medium",
+      title: "Outdated Dependencies Detected",
+      description: "3 packages have known security vulnerabilities",
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      resolved: false,
+      source: "Dependency Scanner",
+    },
+    {
+      id: "2",
+      type: "threat",
+      severity: "low",
+      title: "Suspicious Login Attempt",
+      description: "Multiple failed login attempts from IP 192.168.1.100",
+      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+      resolved: true,
+      source: "Authentication Monitor",
+    },
+    {
+      id: "3",
+      type: "compliance",
+      severity: "high",
+      title: "GDPR Compliance Check",
+      description: "Data retention policies need review for GDPR compliance",
+      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+      resolved: false,
+      source: "Compliance Scanner",
+    },
+  ]);
+
+  const [insights, setInsights] = useState([
+    {
+      id: "1",
+      type: "success",
+      title: "Security Score Excellent",
+      description:
+        "Your overall security score of 87% is above industry average",
+      impact: "positive",
+      suggestion: "Continue current security practices",
+    },
+    {
+      id: "2",
+      type: "warning",
+      title: "Dependency Updates Needed",
+      description: "3 packages have known vulnerabilities that need updating",
+      impact: "medium",
+      suggestion: "Update packages to latest secure versions",
+    },
+    {
+      id: "3",
+      type: "opportunity",
+      title: "Enhance Authentication",
+      description: "Implementing 2FA could improve your security score by 5%",
+      impact: "high",
+      suggestion: "Enable two-factor authentication for all users",
+    },
+  ]);
+
+  const { suggestions, addSuggestion, removeSuggestion } = useAICopilot();
 
   useEffect(() => {
-    loadSecurityData();
-  }, []);
+    // Simulate AI suggestions for security
+    const securitySuggestions = [
+      {
+        type: "proactive" as const,
+        title: "Enable Automated Security Scanning",
+        description:
+          "Set up continuous security monitoring to catch threats early.",
+        action: "Configure scanning",
+        priority: "high" as const,
+        category: "automation",
+      },
+      {
+        type: "educational" as const,
+        title: "Learn Security Best Practices",
+        description: "Master modern security techniques and threat prevention.",
+        action: "Start learning",
+        priority: "medium" as const,
+        category: "education",
+      },
+    ];
 
-  const loadSecurityData = async () => {
-    try {
-      setLoading(true);
-
-      // Simulate loading security data
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock security test data
-      const mockTests: SecurityTest[] = [
-        {
-          id: "1",
-          name: "SQL Injection Test",
-          category: "Input Validation",
-          severity: "critical",
-          status: "failed",
-          description: "Tested for SQL injection vulnerabilities",
-          recommendation:
-            "Implement parameterized queries and input validation",
-          evidence: "SQL injection payload executed successfully",
-          cwe: "CWE-89",
-          owasp: "A03:2021 – Injection",
-        },
-        {
-          id: "2",
-          name: "XSS Protection Test",
-          category: "Input Validation",
-          severity: "high",
-          status: "passed",
-          description: "Tested for Cross-Site Scripting vulnerabilities",
-          recommendation: "XSS protection is working correctly",
-          cwe: "CWE-79",
-          owasp: "A03:2021 – Injection",
-        },
-        {
-          id: "3",
-          name: "Authentication Bypass",
-          category: "Authentication",
-          severity: "critical",
-          status: "failed",
-          description: "Tested for authentication bypass vulnerabilities",
-          recommendation: "Implement proper authentication mechanisms",
-          evidence: "Authentication bypass successful",
-          cwe: "CWE-287",
-          owasp: "A07:2021 – Identification and Authentication Failures",
-        },
-        {
-          id: "4",
-          name: "Session Management",
-          category: "Session Management",
-          severity: "medium",
-          status: "passed",
-          description: "Tested session management implementation",
-          recommendation: "Session management is properly implemented",
-          cwe: "CWE-613",
-        },
-        {
-          id: "5",
-          name: "Password Policy",
-          category: "Authentication",
-          severity: "medium",
-          status: "warning",
-          description: "Tested password policy enforcement",
-          recommendation: "Strengthen password policy requirements",
-          cwe: "CWE-521",
-        },
-      ];
-
-      setTests(mockTests);
-    } catch (error) {
-      console.error("Failed to load security data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    securitySuggestions.forEach((suggestion) => {
+      setTimeout(() => addSuggestion(suggestion), 2000);
+    });
+  }, [addSuggestion]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await loadSecurityData();
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setRefreshing(false);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "excellent":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "good":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "warning":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "critical":
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case "critical":
-        return "text-red-600 bg-red-100";
-      case "high":
-        return "text-orange-600 bg-orange-100";
-      case "medium":
-        return "text-yellow-600 bg-yellow-100";
       case "low":
-        return "text-blue-600 bg-blue-100";
+        return "bg-blue-100 text-blue-800";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800";
+      case "high":
+        return "bg-orange-100 text-orange-800";
+      case "critical":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case "threat":
+        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      case "vulnerability":
+        return <Shield className="h-4 w-4 text-yellow-500" />;
+      case "compliance":
+        return <CheckCircle className="h-4 w-4 text-blue-500" />;
       case "info":
-        return "text-gray-600 bg-gray-100";
+        return <Activity className="h-4 w-4 text-green-500" />;
       default:
-        return "text-gray-600 bg-gray-100";
+        return <Activity className="h-4 w-4 text-gray-500" />;
     }
   };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "passed":
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case "failed":
-        return <XCircle className="h-4 w-4 text-red-600" />;
-      case "warning":
-        return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
-      case "skipped":
-        return <Eye className="h-4 w-4 text-gray-600" />;
-      default:
-        return <Activity className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  const getRiskLevelColor = (riskLevel: string) => {
-    switch (riskLevel) {
-      case "CRITICAL":
-        return "text-red-600 bg-red-100";
-      case "HIGH":
-        return "text-orange-600 bg-orange-100";
-      case "MEDIUM":
-        return "text-yellow-600 bg-yellow-100";
-      case "LOW":
-        return "text-green-600 bg-green-100";
-      default:
-        return "text-gray-600 bg-gray-100";
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading security data...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Security Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Monitor and manage security vulnerabilities
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={refreshing}
-          >
-            <RefreshCw
-              className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </Button>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
-          <Button variant="outline" size="sm">
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
-          </Button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-background flex">
+      {/* Smart Sidebar */}
+      <SmartSidebar
+        userLevel={userLevel}
+        activeProject="Security Dashboard"
+        className="w-80"
+      />
 
-      {/* Security Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Security Score
-            </CardTitle>
-            <Shield className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metrics.overallScore}%</div>
-            <p className="text-xs text-muted-foreground">
-              Overall security score
-            </p>
-            <div className="mt-2">
-              <Progress value={metrics.overallScore} className="h-2" />
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-16 items-center justify-between px-6">
+            <div className="flex items-center space-x-4">
+              <div>
+                <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Shield className="h-6 w-6 text-primary" />
+                  Security Dashboard
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Monitor and manage security vulnerabilities
+                </p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Risk Level</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              <Badge className={getRiskLevelColor(metrics.riskLevel)}>
-                {metrics.riskLevel}
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Current risk assessment
-            </p>
-          </CardContent>
-        </Card>
+            <div className="flex items-center space-x-4">
+              {/* Security Status */}
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-green-600">
+                  Secure
+                </span>
+              </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Critical Issues
-            </CardTitle>
-            <XCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {metrics.criticalIssues}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Critical vulnerabilities
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tests Passed</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {metrics.passedTests}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Out of {metrics.totalTests} tests
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Security Tests */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="vulnerabilities">Vulnerabilities</TabsTrigger>
-          <TabsTrigger value="tests">Security Tests</TabsTrigger>
-          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Shield className="h-5 w-5 mr-2" />
-                  Security Score Breakdown
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span>Authentication</span>
-                    <div className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                      <span className="text-green-600">85%</span>
-                    </div>
+              <div className="flex items-center space-x-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">
+                    {securityScore.overall}%
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-600 h-2 rounded-full"
-                      style={{ width: "85%" }}
-                    ></div>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span>Input Validation</span>
-                    <div className="flex items-center">
-                      <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
-                      <span className="text-yellow-600">70%</span>
-                    </div>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-yellow-600 h-2 rounded-full"
-                      style={{ width: "70%" }}
-                    ></div>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span>Session Management</span>
-                    <div className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                      <span className="text-green-600">90%</span>
-                    </div>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-600 h-2 rounded-full"
-                      style={{ width: "90%" }}
-                    ></div>
+                  <div className="text-xs text-muted-foreground">
+                    Security Score
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  Vulnerability Distribution
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-red-600">Critical</span>
-                    <span>{metrics.criticalIssues}</span>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    {alerts.filter((a) => a.resolved).length}
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-orange-600">High</span>
-                    <span>{metrics.highIssues}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-yellow-600">Medium</span>
-                    <span>{metrics.mediumIssues}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-blue-600">Low</span>
-                    <span>{metrics.lowIssues}</span>
-                  </div>
+                  <div className="text-xs text-muted-foreground">Resolved</div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Activity className="h-5 w-5 mr-2" />
-                  Recent Security Events
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <XCircle className="h-4 w-4 text-red-600" />
-                    <span className="text-sm">
-                      SQL injection attempt blocked
-                    </span>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-600">
+                    {alerts.filter((a) => !a.resolved).length}
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm">Rate limit exceeded</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-sm">Security scan completed</span>
-                  </div>
+                  <div className="text-xs text-muted-foreground">Active</div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={refreshing}
+              >
+                <RefreshCw
+                  className={`h-4 w-4 mr-2 ${refreshing ? "animate-spin" : ""}`}
+                />
+                Refresh
+              </Button>
+            </div>
           </div>
-        </TabsContent>
+        </header>
 
-        <TabsContent value="vulnerabilities" className="space-y-4">
-          <div className="space-y-4">
-            {tests
-              .filter((test) => test.status === "failed")
-              .map((test) => (
-                <Card key={test.id} className="border-red-200">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-3">
-                        <XCircle className="h-5 w-5 text-red-600" />
-                        <div>
-                          <h3 className="font-medium text-gray-900">
-                            {test.name}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {test.description}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge className={getSeverityColor(test.severity)}>
-                          {test.severity.toUpperCase()}
-                        </Badge>
-                        {test.cwe && (
-                          <Badge variant="outline" className="text-xs">
-                            {test.cwe}
-                          </Badge>
+        {/* Main Content */}
+        <main className="flex-1 p-6 space-y-6">
+          {/* AI Insights - Confidence Building */}
+          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-green-600" />
+                Security Intelligence
+              </CardTitle>
+              <CardDescription>
+                I've analyzed your security posture and found key insights
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {insights.map((insight) => (
+                  <div
+                    key={insight.id}
+                    className={`p-4 rounded-lg border ${
+                      insight.type === "success"
+                        ? "bg-green-50 border-green-200"
+                        : insight.type === "warning"
+                          ? "bg-yellow-50 border-yellow-200"
+                          : "bg-blue-50 border-blue-200"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        {insight.type === "success" && (
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                        )}
+                        {insight.type === "warning" && (
+                          <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                        )}
+                        {insight.type === "opportunity" && (
+                          <Target className="h-4 w-4 text-blue-600" />
                         )}
                       </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div>
-                        <h4 className="font-medium text-sm text-gray-900 mb-1">
-                          Recommendation
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm mb-1">
+                          {insight.title}
                         </h4>
-                        <p className="text-sm text-gray-600">
-                          {test.recommendation}
+                        <p className="text-xs text-muted-foreground mb-2">
+                          {insight.description}
+                        </p>
+                        <p className="text-xs font-medium text-primary">
+                          💡 {insight.suggestion}
                         </p>
                       </div>
-
-                      {test.evidence && (
-                        <div>
-                          <h4 className="font-medium text-sm text-gray-900 mb-1">
-                            Evidence
-                          </h4>
-                          <p className="text-sm text-gray-600 font-mono bg-gray-100 p-2 rounded">
-                            {test.evidence}
-                          </p>
-                        </div>
-                      )}
-
-                      {test.owasp && (
-                        <div>
-                          <h4 className="font-medium text-sm text-gray-900 mb-1">
-                            OWASP Reference
-                          </h4>
-                          <p className="text-sm text-gray-600">{test.owasp}</p>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="tests" className="space-y-4">
-          <div className="space-y-4">
-            {tests.map((test) => (
-              <Card key={test.id}>
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      {getStatusIcon(test.status)}
-                      <div>
-                        <h3 className="font-medium text-gray-900">
-                          {test.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">{test.category}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge className={getSeverityColor(test.severity)}>
-                        {test.severity.toUpperCase()}
-                      </Badge>
-                      <Badge
-                        variant={
-                          test.status === "passed" ? "default" : "destructive"
-                        }
-                      >
-                        {test.status.toUpperCase()}
-                      </Badge>
                     </div>
                   </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-600">{test.description}</p>
-                    <p className="text-sm text-gray-600">
-                      {test.recommendation}
+          {/* Security Score - Confidence Building */}
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-blue-600" />
+                Security Score Breakdown
+              </CardTitle>
+              <CardDescription>
+                Your comprehensive security assessment
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-2">
+                    {securityScore.overall}%
+                  </div>
+                  <div className="text-sm font-medium text-foreground">
+                    Overall Score
+                  </div>
+                  <Progress
+                    value={securityScore.overall}
+                    className="h-2 mt-2"
+                  />
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600 mb-2">
+                    {securityScore.authentication}%
+                  </div>
+                  <div className="text-sm font-medium text-foreground">
+                    Authentication
+                  </div>
+                  <Progress
+                    value={securityScore.authentication}
+                    className="h-2 mt-2"
+                  />
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600 mb-2">
+                    {securityScore.encryption}%
+                  </div>
+                  <div className="text-sm font-medium text-foreground">
+                    Encryption
+                  </div>
+                  <Progress
+                    value={securityScore.encryption}
+                    className="h-2 mt-2"
+                  />
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600 mb-2">
+                    {securityScore.network}%
+                  </div>
+                  <div className="text-sm font-medium text-foreground">
+                    Network
+                  </div>
+                  <Progress
+                    value={securityScore.network}
+                    className="h-2 mt-2"
+                  />
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600 mb-2">
+                    {securityScore.compliance}%
+                  </div>
+                  <div className="text-sm font-medium text-foreground">
+                    Compliance
+                  </div>
+                  <Progress
+                    value={securityScore.compliance}
+                    className="h-2 mt-2"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Security Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {metrics.map((metric) => (
+              <Card
+                key={metric.id}
+                className="hover:shadow-md transition-shadow"
+              >
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-card-foreground">
+                    {metric.name}
+                  </CardTitle>
+                  <div className="flex items-center gap-1">
+                    {metric.trend === "up" && (
+                      <TrendingUp className="h-4 w-4 text-green-500" />
+                    )}
+                    {metric.trend === "down" && (
+                      <TrendingDown className="h-4 w-4 text-red-500" />
+                    )}
+                    {metric.trend === "stable" && (
+                      <Activity className="h-4 w-4 text-blue-500" />
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-card-foreground mb-2">
+                    {metric.value}%
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge className={getStatusColor(metric.status)}>
+                      {metric.status}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {metric.description}
+                    </span>
+                  </div>
+                  <Progress value={metric.value} className="h-2" />
+                  {metric.recommendation && (
+                    <p className="text-xs text-primary mt-2">
+                      💡 {metric.recommendation}
                     </p>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
-        </TabsContent>
 
-        <TabsContent value="recommendations" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Shield className="h-5 w-5 mr-2" />
-                  Immediate Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <XCircle className="h-4 w-4 text-red-600" />
-                    <span className="text-sm">
-                      Fix critical SQL injection vulnerabilities
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <XCircle className="h-4 w-4 text-red-600" />
-                    <span className="text-sm">
-                      Implement authentication bypass protection
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                    <span className="text-sm">Strengthen password policy</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Navigation Tabs */}
+          <div className="space-y-4">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="alerts">Alerts</TabsTrigger>
+                <TabsTrigger value="vulnerabilities">
+                  Vulnerabilities
+                </TabsTrigger>
+                <TabsTrigger value="compliance">Compliance</TabsTrigger>
+              </TabsList>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <CheckCircle className="h-5 w-5 mr-2" />
-                  Security Best Practices
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-sm">
-                      Implement comprehensive input validation
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-sm">
-                      Add rate limiting to all endpoints
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-sm">Enable security headers</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-sm">
-                      Implement proper error handling
-                    </span>
-                  </div>
+              <TabsContent value="overview" className="space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Recent Alerts */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5 text-primary" />
+                        Recent Security Alerts
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {alerts.slice(0, 3).map((alert) => (
+                          <div
+                            key={alert.id}
+                            className="flex items-start gap-3 p-3 rounded-lg border"
+                          >
+                            <div className="flex-shrink-0 mt-1">
+                              {getTypeIcon(alert.type)}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <h4 className="font-medium text-sm">
+                                  {alert.title}
+                                </h4>
+                                <Badge
+                                  className={getSeverityColor(alert.severity)}
+                                >
+                                  {alert.severity}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-muted-foreground mb-2">
+                                {alert.description}
+                              </p>
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-muted-foreground">
+                                  {alert.timestamp.toLocaleTimeString()}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {alert.source}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Security Status */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Shield className="h-5 w-5 text-primary" />
+                        Security Status
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Lock className="h-4 w-4 text-green-500" />
+                            <span className="text-sm text-foreground">
+                              SSL/TLS
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-sm font-medium text-green-600">
+                              Secure
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Key className="h-4 w-4 text-green-500" />
+                            <span className="text-sm text-foreground">
+                              Encryption
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-sm font-medium text-green-600">
+                              Enabled
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Server className="h-4 w-4 text-yellow-500" />
+                            <span className="text-sm text-foreground">
+                              Firewall
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                            <span className="text-sm font-medium text-yellow-600">
+                              Review Needed
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <User className="h-4 w-4 text-green-500" />
+                            <span className="text-sm text-foreground">
+                              Authentication
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span className="text-sm font-medium text-green-600">
+                              Strong
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
+              </TabsContent>
+
+              <TabsContent value="alerts" className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search alerts..."
+                        className="pl-4 pr-4 py-2 border border-border rounded-lg bg-background"
+                      />
+                    </div>
+                    <Button variant="outline" size="sm">
+                      <Filter className="h-4 w-4 mr-2" />
+                      Filter
+                    </Button>
+                  </div>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Alert
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  {alerts.map((alert) => (
+                    <Card
+                      key={alert.id}
+                      className="hover:shadow-md transition-shadow"
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0 mt-1">
+                            {getTypeIcon(alert.type)}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold">{alert.title}</h3>
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  className={getSeverityColor(alert.severity)}
+                                >
+                                  {alert.severity}
+                                </Badge>
+                                <Badge
+                                  variant={
+                                    alert.resolved ? "default" : "secondary"
+                                  }
+                                >
+                                  {alert.resolved ? "Resolved" : "Active"}
+                                </Badge>
+                              </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              {alert.description}
+                            </p>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-muted-foreground">
+                                {alert.timestamp.toLocaleString()}
+                              </span>
+                              <div className="flex gap-2">
+                                <Button variant="outline" size="sm">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                <Button variant="outline" size="sm">
+                                  <Settings className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="vulnerabilities" className="space-y-4">
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-12">
+                    <Shield className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      No vulnerabilities found
+                    </h3>
+                    <p className="text-muted-foreground text-center mb-4">
+                      Your system is secure! Regular scans help maintain this
+                      status.
+                    </p>
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Run Security Scan
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="compliance" className="space-y-4">
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-12">
+                    <CheckCircle className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      Compliance Dashboard
+                    </h3>
+                    <p className="text-muted-foreground text-center mb-4">
+                      Track your compliance with security standards and
+                      regulations
+                    </p>
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Check Compliance
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
-        </TabsContent>
-      </Tabs>
+        </main>
+      </div>
+
+      {/* AI Copilot */}
+      <AICopilot
+        suggestions={suggestions}
+        onSuggestionClick={(suggestion) => {
+          console.log("Security suggestion clicked:", suggestion);
+          removeSuggestion(suggestion.id);
+        }}
+        onDismiss={removeSuggestion}
+      />
     </div>
   );
 }
+
+export { SecurityDashboard };

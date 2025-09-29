@@ -5,6 +5,7 @@
  * with tenant isolation and optimized queries.
  */
 
+/*
 import { PrismaClient, Content } from "@prisma/client";
 import { BaseService } from "./base-service";
 
@@ -168,3 +169,4 @@ export class ContentService extends BaseService<Content> {
     );
   }
 }
+*/

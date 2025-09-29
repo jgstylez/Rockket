@@ -8,9 +8,12 @@ interface AuthContextType {
   tenant: Tenant | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ user: User; tenant: Tenant }>;
   logout: () => Promise<void>;
-  register: (userData: RegisterData) => Promise<void>;
+  register: (userData: RegisterData) => Promise<{ user: User; tenant: Tenant }>;
   switchTenant: (tenantId: string) => Promise<void>;
 }
 
@@ -35,14 +38,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch("/api/auth/me");
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Auth check successful:", data);
-        setUser(data.user);
-        setTenant(data.user.tenant);
+      // Check localStorage for demo user
+      const demoUser = localStorage.getItem("demo-user");
+      const demoTenant = localStorage.getItem("demo-tenant");
+
+      if (demoUser && demoTenant) {
+        setUser(JSON.parse(demoUser));
+        setTenant(JSON.parse(demoTenant));
+        console.log("Demo user loaded:", JSON.parse(demoUser));
       } else {
-        console.log("Auth check failed:", response.status, response.statusText);
+        console.log("No demo user found");
         setUser(null);
         setTenant(null);
       }
@@ -57,23 +62,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Demo authentication - accept any email/password for now
+      console.log("Demo login attempt:", email);
+
+      // Create demo user and tenant
+      const demoUser: User = {
+        id: "demo-user-1",
+        email: email,
+        name: "Demo User",
+        avatar: undefined,
+        role: "owner",
+        tenantId: "demo-tenant-1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const demoTenant: Tenant = {
+        id: "demo-tenant-1",
+        name: "Demo Company",
+        slug: "demo-company",
+        domain: "demo.rockket.dev",
+        settings: {
+          branding: {
+            primaryColor: "#f97316",
+            secondaryColor: "#fb923c",
+          },
+          features: {
+            aiGenerator: true,
+            visualBuilder: true,
+            cms: true,
+            ecommerce: true,
+            analytics: true,
+            billing: true,
+          },
+          integrations: {},
+          notifications: {
+            email: true,
+            push: false,
+            sms: false,
+          },
         },
-        body: JSON.stringify({ email, password }),
-      });
+        plan: "professional",
+        status: "active",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      const data = await response.json();
+      // Store in localStorage
+      localStorage.setItem("demo-user", JSON.stringify(demoUser));
+      localStorage.setItem("demo-tenant", JSON.stringify(demoTenant));
 
-      if (response.ok) {
-        setUser(data.user);
-        setTenant(data.user.tenant);
-        return data;
-      } else {
-        throw new Error(data.error || "Login failed");
-      }
+      setUser(demoUser);
+      setTenant(demoTenant);
+
+      console.log("Demo login successful");
+      return { user: demoUser, tenant: demoTenant };
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -82,11 +125,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      });
+      // Clear localStorage
+      localStorage.removeItem("demo-user");
+      localStorage.removeItem("demo-tenant");
       setUser(null);
       setTenant(null);
+      console.log("Demo logout successful");
     } catch (error) {
       console.error("Logout error:", error);
       throw error;
@@ -95,23 +139,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (userData: RegisterData) => {
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      console.log("Demo registration attempt:", userData.email);
+
+      // Create demo user and tenant
+      const demoUser: User = {
+        id: "demo-user-1",
+        email: userData.email,
+        name: userData.name,
+        avatar: undefined,
+        role: "owner",
+        tenantId: "demo-tenant-1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const demoTenant: Tenant = {
+        id: "demo-tenant-1",
+        name: userData.company || "Demo Company",
+        slug: "demo-company",
+        domain: "demo.rockket.dev",
+        settings: {
+          branding: {
+            primaryColor: "#f97316",
+            secondaryColor: "#fb923c",
+          },
+          features: {
+            aiGenerator: true,
+            visualBuilder: true,
+            cms: true,
+            ecommerce: true,
+            analytics: true,
+            billing: true,
+          },
+          integrations: {},
+          notifications: {
+            email: true,
+            push: false,
+            sms: false,
+          },
         },
-        body: JSON.stringify(userData),
-      });
+        plan: "professional",
+        status: "active",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      const data = await response.json();
+      // Store in localStorage
+      localStorage.setItem("demo-user", JSON.stringify(demoUser));
+      localStorage.setItem("demo-tenant", JSON.stringify(demoTenant));
 
-      if (response.ok) {
-        setUser(data.user);
-        setTenant(data.tenant);
-        return data;
-      } else {
-        throw new Error(data.error || "Registration failed");
-      }
+      setUser(demoUser);
+      setTenant(demoTenant);
+
+      console.log("Demo registration successful");
+      return { user: demoUser, tenant: demoTenant };
     } catch (error) {
       console.error("Registration error:", error);
       throw error;

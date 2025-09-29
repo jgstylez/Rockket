@@ -1,310 +1,217 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
-  Rocket,
-  User,
-  Building,
-  Settings,
-  LogOut,
-  BarChart3,
-  Palette,
-  FileText,
-  ShoppingCart,
-  Sparkles,
-  Brain,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Eye,
   Zap,
+  Clock,
+  TrendingUp,
+  CheckCircle,
+  Loader2,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function DashboardPage() {
-  const { user, tenant, logout } = useAuth();
   const router = useRouter();
+  const { user, tenant, isLoading } = useAuth();
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push("/");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
-  if (!user || !tenant) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading-spinner mx-auto mb-4"></div>
-          <p>Loading dashboard...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Loading your dashboard...</p>
       </div>
     );
   }
 
+  if (!user || !tenant) {
+    router.push("/auth/login");
+    return null;
+  }
+
+  const workingFeatures = {
+    development: [
+      {
+        title: "Visual Builder",
+        description: "Create your application visually",
+        route: "/dashboard/builder",
+        icon: "🎨",
+      },
+      {
+        title: "Content Management",
+        description: "Manage your content and pages",
+        route: "/dashboard/cms",
+        icon: "📝",
+      },
+    ],
+    analytics: [
+      {
+        title: "Analytics",
+        description: "Track your application performance",
+        route: "/dashboard/analytics",
+        icon: "📊",
+      },
+      {
+        title: "Monitoring",
+        description: "Monitor your application health",
+        route: "/dashboard/monitoring",
+        icon: "🔍",
+      },
+    ],
+    business: [
+      {
+        title: "E-commerce",
+        description: "Manage your online store",
+        route: "/dashboard/ecommerce",
+        icon: "🛍️",
+      },
+      {
+        title: "CRM",
+        description: "Manage your customers",
+        route: "/dashboard/crm",
+        icon: "👥",
+      },
+    ],
+    settings: [
+      {
+        title: "Settings",
+        description: "Configure your application",
+        route: "/dashboard/settings",
+        icon: "⚙️",
+      },
+      {
+        title: "Team",
+        description: "Manage your team members",
+        route: "/dashboard/team",
+        icon: "👥",
+      },
+    ],
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Rocket className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold gradient-text">Rockket</span>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-medium text-primary">
-                  {user.name?.charAt(0) || "U"}
-                </span>
+    <div className="container py-6 space-y-8">
+      {/* Project Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>Project Overview</CardTitle>
+            <CardDescription>
+              Your project is looking great! Here's what you can do next.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Button
+                className="flex-1"
+                onClick={() =>
+                  window.open("https://demo.rockket.dev", "_blank")
+                }
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Preview Live Site
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/dashboard/monitoring")}
+              >
+                <Zap className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 mb-1">
+                <Clock className="h-3 w-3" />
+                Last updated 2 minutes ago
               </div>
-              <div className="text-sm">
-                <div className="font-medium">{user.name}</div>
-                <div className="text-muted-foreground">{tenant.name}</div>
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-3 w-3 text-success" />
+                <span className="text-success">+12% traffic this week</span>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign out
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            Welcome back, {user.name}!
-          </h1>
-          <p className="text-muted-foreground">
-            Here's what's happening with your {tenant.name} organization.
-          </p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="p-6 bg-card rounded-lg border">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <User className="h-6 w-6 text-primary" />
+        <Card>
+          <CardHeader>
+            <CardTitle>Project Status</CardTitle>
+            <CardDescription>
+              Current project health and metrics
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Health</span>
+                <Badge
+                  variant="outline"
+                  className="text-success border-success/20"
+                >
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Healthy
+                </Badge>
               </div>
-              <div>
-                <div className="text-2xl font-bold">1</div>
-                <div className="text-sm text-muted-foreground">
-                  Team Members
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Uptime</span>
+                <span className="text-sm">99.9%</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Response Time</span>
+                <span className="text-sm">120ms</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Features */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Features</CardTitle>
+          <CardDescription>
+            Access and manage your application features
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="development" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="development">Development</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="business">Business</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
+            {Object.entries(workingFeatures).map(([category, features]) => (
+              <TabsContent key={category} value={category} className="mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {features.map((feature) => (
+                    <Card
+                      key={feature.title}
+                      className="hover:bg-card-hover cursor-pointer transition-colors"
+                      onClick={() => router.push(feature.route)}
+                    >
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <span>{feature.icon}</span>
+                          {feature.title}
+                        </CardTitle>
+                        <CardDescription>{feature.description}</CardDescription>
+                      </CardHeader>
+                    </Card>
+                  ))}
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <Building className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">{tenant.plan}</div>
-                <div className="text-sm text-muted-foreground">
-                  Current Plan
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <Settings className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <div className="text-2xl font-bold">0</div>
-                <div className="text-sm text-muted-foreground">
-                  Active Projects
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold mb-2">AI App Generator</h3>
-            <p className="text-muted-foreground mb-4">
-              Generate complete applications using AI with multiple providers.
-            </p>
-            <Button
-              className="w-full"
-              onClick={() => router.push("/dashboard/generator")}
-            >
-              <Rocket className="h-4 w-4 mr-2" />
-              Generate App
-            </Button>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-blue-600" />
-              Business Generator
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              Generate complete business applications with payments, CMS, and
-              user accounts.
-            </p>
-            <Button
-              className="w-full bg-blue-600 hover:bg-blue-700"
-              onClick={() => router.push("/dashboard/business-generator")}
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              Generate Business App
-            </Button>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold mb-2">Visual Builder</h3>
-            <p className="text-muted-foreground mb-4">
-              Drag-and-drop interface builder for creating applications
-              visually.
-            </p>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push("/dashboard/builder")}
-            >
-              <Palette className="h-4 w-4 mr-2" />
-              Open Builder
-            </Button>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
-            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-              <Brain className="h-5 w-5 text-purple-600" />
-              Enhanced Builder
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              Visual builder with business logic understanding, workflows, and
-              automation.
-            </p>
-            <Button
-              className="w-full bg-purple-600 hover:bg-purple-700"
-              onClick={() => router.push("/dashboard/enhanced-builder")}
-            >
-              <Brain className="h-4 w-4 mr-2" />
-              Open Enhanced Builder
-            </Button>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
-            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-              <Zap className="h-5 w-5 text-orange-600" />
-              Unified Platform
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              Seamlessly switch between AI, visual, and code approaches in one
-              unified platform.
-            </p>
-            <Button
-              className="w-full bg-orange-600 hover:bg-orange-700"
-              onClick={() => router.push("/dashboard/unified-platform")}
-            >
-              <Zap className="h-4 w-4 mr-2" />
-              Open Unified Platform
-            </Button>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold mb-2">Analytics Dashboard</h3>
-            <p className="text-muted-foreground mb-4">
-              Track user behavior and platform performance metrics.
-            </p>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push("/dashboard/analytics")}
-            >
-              <BarChart3 className="h-4 w-4 mr-2" />
-              View Analytics
-            </Button>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold mb-2">Team Management</h3>
-            <p className="text-muted-foreground mb-4">
-              Manage your team members, roles, and permissions.
-            </p>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push("/dashboard/team")}
-            >
-              <User className="h-4 w-4 mr-2" />
-              Manage Team
-            </Button>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold mb-2">Content Management</h3>
-            <p className="text-muted-foreground mb-4">
-              Create and manage your website content with our powerful CMS.
-            </p>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push("/dashboard/cms")}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Manage Content
-            </Button>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold mb-2">E-commerce</h3>
-            <p className="text-muted-foreground mb-4">
-              Manage products, orders, and customers for your online store.
-            </p>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push("/dashboard/ecommerce")}
-            >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              Manage Store
-            </Button>
-          </div>
-
-          <div className="p-6 bg-card rounded-lg border hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold mb-2">
-              Organization Settings
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              Manage your organization settings, billing, and preferences.
-            </p>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push("/dashboard/settings")}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Button>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-          <div className="bg-card rounded-lg border p-6">
-            <div className="text-center text-muted-foreground">
-              <Rocket className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No recent activity yet.</p>
-              <p className="text-sm">Start by creating your first project!</p>
-            </div>
-          </div>
-        </div>
-      </main>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }

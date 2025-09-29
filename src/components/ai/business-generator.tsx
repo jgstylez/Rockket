@@ -253,8 +253,8 @@ export function BusinessGenerator({
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
-          <Sparkles className="h-8 w-8 text-blue-600" />
+        <h1 className="text-3xl font-bold flex items-center justify-center gap-2 text-foreground">
+          <Sparkles className="h-8 w-8 text-primary" />
           AI Business Application Generator
         </h1>
         <p className="text-muted-foreground">
@@ -273,9 +273,11 @@ export function BusinessGenerator({
         <TabsContent value="configure" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Application Type */}
-            <Card>
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle>Application Type</CardTitle>
+                <CardTitle className="text-foreground">
+                  Application Type
+                </CardTitle>
                 <CardDescription>
                   Choose the type of business application to generate
                 </CardDescription>
@@ -287,15 +289,17 @@ export function BusinessGenerator({
                       key={type.id}
                       className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                         formData.type === type.id
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 hover:border-gray-300"
+                          ? "border-primary bg-primary/10"
+                          : "border-border hover:border-primary/20"
                       }`}
                       onClick={() =>
                         setFormData((prev) => ({ ...prev, type: type.id }))
                       }
                     >
                       <div className="text-2xl mb-2">{type.icon}</div>
-                      <h3 className="font-semibold">{type.name}</h3>
+                      <h3 className="font-semibold text-foreground">
+                        {type.name}
+                      </h3>
                       <p className="text-sm text-muted-foreground">
                         {type.description}
                       </p>
@@ -306,16 +310,20 @@ export function BusinessGenerator({
             </Card>
 
             {/* Basic Information */}
-            <Card>
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
+                <CardTitle className="text-foreground">
+                  Basic Information
+                </CardTitle>
                 <CardDescription>
                   Provide details about your application
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Application Name</Label>
+                  <Label htmlFor="name" className="text-foreground">
+                    Application Name
+                  </Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -323,10 +331,13 @@ export function BusinessGenerator({
                       setFormData((prev) => ({ ...prev, name: e.target.value }))
                     }
                     placeholder="My Business App"
+                    className="bg-card border-border text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-foreground">
+                    Description
+                  </Label>
                   <Textarea
                     id="description"
                     value={formData.description}
@@ -338,17 +349,20 @@ export function BusinessGenerator({
                     }
                     placeholder="Describe what your application should do..."
                     rows={3}
+                    className="bg-card border-border text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="industry">Industry</Label>
+                  <Label htmlFor="industry" className="text-foreground">
+                    Industry
+                  </Label>
                   <Select
                     value={formData.industry}
                     onValueChange={(value) =>
                       setFormData((prev) => ({ ...prev, industry: value }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-card border-border text-foreground">
                       <SelectValue placeholder="Select industry" />
                     </SelectTrigger>
                     <SelectContent>
@@ -365,9 +379,9 @@ export function BusinessGenerator({
           </div>
 
           {/* Features */}
-          <Card>
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle>Features</CardTitle>
+              <CardTitle className="text-foreground">Features</CardTitle>
               <CardDescription>
                 Select the features you want in your application
               </CardDescription>
@@ -380,8 +394,12 @@ export function BusinessGenerator({
                       id={feature}
                       checked={formData.features.includes(feature)}
                       onCheckedChange={() => handleFeatureToggle(feature)}
+                      className="border-border"
                     />
-                    <Label htmlFor={feature} className="text-sm">
+                    <Label
+                      htmlFor={feature}
+                      className="text-sm text-foreground"
+                    >
                       {feature}
                     </Label>
                   </div>
@@ -391,9 +409,9 @@ export function BusinessGenerator({
           </Card>
 
           {/* Integrations */}
-          <Card>
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle>Integrations</CardTitle>
+              <CardTitle className="text-foreground">Integrations</CardTitle>
               <CardDescription>
                 Choose third-party services to integrate
               </CardDescription>
@@ -411,8 +429,12 @@ export function BusinessGenerator({
                       onCheckedChange={() =>
                         handleIntegrationToggle(integration)
                       }
+                      className="border-border"
                     />
-                    <Label htmlFor={integration} className="text-sm">
+                    <Label
+                      htmlFor={integration}
+                      className="text-sm text-foreground"
+                    >
                       {integration}
                     </Label>
                   </div>
@@ -422,9 +444,9 @@ export function BusinessGenerator({
           </Card>
 
           {/* Deployment */}
-          <Card>
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle>Deployment</CardTitle>
+              <CardTitle className="text-foreground">Deployment</CardTitle>
               <CardDescription>Choose your deployment target</CardDescription>
             </CardHeader>
             <CardContent>
@@ -434,7 +456,7 @@ export function BusinessGenerator({
                   setFormData((prev) => ({ ...prev, deployment: value }))
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-card border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -449,9 +471,11 @@ export function BusinessGenerator({
         </TabsContent>
 
         <TabsContent value="generate" className="space-y-6">
-          <Card>
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle>Generate Your Application</CardTitle>
+              <CardTitle className="text-foreground">
+                Generate Your Application
+              </CardTitle>
               <CardDescription>
                 Review your configuration and generate the complete business
                 application
@@ -460,34 +484,42 @@ export function BusinessGenerator({
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-semibold mb-2">Application Details</h4>
+                  <h4 className="font-semibold mb-2 text-foreground">
+                    Application Details
+                  </h4>
                   <div className="space-y-1 text-sm">
-                    <p>
+                    <p className="text-foreground">
                       <strong>Name:</strong> {formData.name || "Not specified"}
                     </p>
-                    <p>
+                    <p className="text-foreground">
                       <strong>Type:</strong>{" "}
                       {businessTypes.find((t) => t.id === formData.type)?.name}
                     </p>
-                    <p>
+                    <p className="text-foreground">
                       <strong>Industry:</strong>{" "}
                       {formData.industry || "Not specified"}
                     </p>
-                    <p>
+                    <p className="text-foreground">
                       <strong>Features:</strong> {formData.features.length}{" "}
                       selected
                     </p>
-                    <p>
+                    <p className="text-foreground">
                       <strong>Integrations:</strong>{" "}
                       {formData.integrations.length} selected
                     </p>
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Selected Features</h4>
+                  <h4 className="font-semibold mb-2 text-foreground">
+                    Selected Features
+                  </h4>
                   <div className="flex flex-wrap gap-1">
                     {formData.features.map((feature) => (
-                      <Badge key={feature} variant="secondary">
+                      <Badge
+                        key={feature}
+                        variant="secondary"
+                        className="bg-card-hover border-border"
+                      >
                         {feature}
                       </Badge>
                     ))}
@@ -523,10 +555,10 @@ export function BusinessGenerator({
           {generatedApp ? (
             <div className="space-y-6">
               {/* Application Overview */}
-              <Card>
+              <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <CheckCircle className="h-5 w-5 text-success" />
                     {generatedApp.name}
                   </CardTitle>
                   <CardDescription>{generatedApp.description}</CardDescription>
@@ -534,28 +566,42 @@ export function BusinessGenerator({
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <h4 className="font-semibold mb-2">Tech Stack</h4>
+                      <h4 className="font-semibold mb-2 text-foreground">
+                        Tech Stack
+                      </h4>
                       <div className="flex flex-wrap gap-1">
                         {generatedApp.techStack.map((tech) => (
-                          <Badge key={tech} variant="outline">
+                          <Badge
+                            key={tech}
+                            variant="outline"
+                            className="bg-card-hover border-border"
+                          >
                             {tech}
                           </Badge>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-2">Features</h4>
+                      <h4 className="font-semibold mb-2 text-foreground">
+                        Features
+                      </h4>
                       <div className="flex flex-wrap gap-1">
                         {generatedApp.features.map((feature) => (
-                          <Badge key={feature} variant="secondary">
+                          <Badge
+                            key={feature}
+                            variant="secondary"
+                            className="bg-card-hover border-border"
+                          >
                             {feature}
                           </Badge>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-2">Business Logic</h4>
-                      <div className="space-y-1 text-sm">
+                      <h4 className="font-semibold mb-2 text-foreground">
+                        Business Logic
+                      </h4>
+                      <div className="space-y-1 text-sm text-foreground">
                         <p>
                           <strong>Workflows:</strong>{" "}
                           {generatedApp.businessLogic.workflows.length}
@@ -575,9 +621,11 @@ export function BusinessGenerator({
               </Card>
 
               {/* Code Downloads */}
-              <Card>
+              <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle>Generated Code</CardTitle>
+                  <CardTitle className="text-foreground">
+                    Generated Code
+                  </CardTitle>
                   <CardDescription>
                     Download the complete application code
                   </CardDescription>
@@ -587,7 +635,7 @@ export function BusinessGenerator({
                     <Button
                       variant="outline"
                       onClick={() => downloadCode("frontend")}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 bg-card border-border hover:bg-card-hover"
                     >
                       <Code className="h-4 w-4" />
                       Frontend
@@ -595,7 +643,7 @@ export function BusinessGenerator({
                     <Button
                       variant="outline"
                       onClick={() => downloadCode("backend")}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 bg-card border-border hover:bg-card-hover"
                     >
                       <Database className="h-4 w-4" />
                       Backend
@@ -603,7 +651,7 @@ export function BusinessGenerator({
                     <Button
                       variant="outline"
                       onClick={() => downloadCode("database")}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 bg-card border-border hover:bg-card-hover"
                     >
                       <Database className="h-4 w-4" />
                       Database
@@ -611,7 +659,7 @@ export function BusinessGenerator({
                     <Button
                       variant="outline"
                       onClick={() => downloadCode("configuration")}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 bg-card border-border hover:bg-card-hover"
                     >
                       <Zap className="h-4 w-4" />
                       Config
@@ -621,13 +669,15 @@ export function BusinessGenerator({
               </Card>
 
               {/* Deployment Instructions */}
-              <Card>
+              <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle>Deployment Instructions</CardTitle>
+                  <CardTitle className="text-foreground">
+                    Deployment Instructions
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <pre className="text-sm whitespace-pre-wrap">
+                  <div className="bg-card-hover border border-border rounded-lg p-4">
+                    <pre className="text-sm whitespace-pre-wrap text-foreground">
                       {generatedApp.deployment.instructions}
                     </pre>
                   </div>
@@ -635,10 +685,10 @@ export function BusinessGenerator({
               </Card>
             </div>
           ) : (
-            <Card>
+            <Card className="bg-card border-border">
               <CardContent className="text-center py-12">
                 <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">
                   No Application Generated Yet
                 </h3>
                 <p className="text-muted-foreground">

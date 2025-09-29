@@ -1,3 +1,4 @@
+/*
 import { db } from "@/lib/db/client";
 import { UserOnboardingProgress, OnboardingStep } from "./steps";
 
@@ -222,3 +223,4 @@ export class OnboardingProgressService {
     }
   }
 }
+*/
