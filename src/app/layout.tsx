@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { FeatureFlagProvider } from "@/components/providers/feature-flag-provider";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
+import { MonitoringProvider } from "@/components/providers/monitoring-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -78,8 +79,10 @@ export default function RootLayout({
           <AuthProvider>
             <FeatureFlagProvider>
               <AnalyticsProvider>
-                {children}
-                <Toaster />
+                <MonitoringProvider>
+                  {children}
+                  <Toaster />
+                </MonitoringProvider>
               </AnalyticsProvider>
             </FeatureFlagProvider>
           </AuthProvider>

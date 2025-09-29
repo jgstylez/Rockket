@@ -1,220 +1,378 @@
-# 🚀 Rockket Platform
+# 🚀 Rockket Platform - Multi-Tenant SaaS with Cloudflare VibeSDK
 
 **Launch your vision** — Turn your ideas into production-ready applications without the complexity, coding headaches, or months of development time.
 
-## 🎯 What is Rockket?
+## 🎨 Built with Cloudflare VibeSDK
 
-Rockket is a next-generation multi-tenant platform that combines AI-powered app generation, visual building tools, content management, and e-commerce capabilities. Built on Cloudflare's edge infrastructure with enterprise-grade feature management as a core differentiator.
+Rockket is powered by [Cloudflare VibeSDK](https://github.com/cloudflare/vibesdk), leveraging AI-powered code generation with Durable Objects, D1 database, R2 storage, and AI Gateway for a truly serverless, global platform.
 
-### Key Features
+## ✨ Features
 
-- **🤖 AI-Powered Generation**: Generate complete applications with natural language prompts
-- **🎨 Visual Builder**: Drag-and-drop interface for building beautiful, responsive applications
-- **🛒 E-commerce Platform**: Complete e-commerce solution with payment processing
-- **📝 Content Management**: Powerful CMS for managing content and digital assets
-- **📊 Analytics & Insights**: Comprehensive analytics dashboard with business intelligence
-- **🚩 Feature Management**: Enterprise-grade feature flags and A/B testing
-- **🔒 Security & Compliance**: Enterprise-grade security with SOC 2, GDPR, and HIPAA compliance
-- **🏢 Multi-Tenant Architecture**: Built for scale with complete tenant isolation
-- **🌍 Global Deployment**: Deploy to Cloudflare's edge network for global performance
+### 🎯 Core Platform
+
+- **Multi-Tenant Architecture** - Isolated tenant data and configurations
+- **Visual Builder** - Drag-and-drop page builder with real-time preview
+- **CMS System** - Content management with AI-powered generation
+- **E-commerce** - Online store with payment processing
+- **Analytics** - Business intelligence with PostHog integration
+- **AI Integration** - Multi-provider AI content generation
+
+### 🎨 VibeSDK Integration
+
+- **AI-Powered Code Generation** - Generate complete applications from natural language
+- **Real-time Progress Streaming** - WebSocket connections for live generation updates
+- **Multi-Phase Generation** - Planning, foundation, core, styling, integration, optimization
+- **Stateful AI Agents** - Durable Objects maintain generation state
+- **Global Deployment** - Generated apps deployed to Cloudflare Workers
+
+### 🛠️ Technical Infrastructure
+
+- **Cloudflare Workers** - Serverless compute platform
+- **Durable Objects** - Stateful AI agents for code generation
+- **D1 Database** - SQLite database at the edge
+- **R2 Storage** - Object storage for generated apps
+- **AI Gateway** - Unified AI API gateway
+- **KV Storage** - Caching and session management
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ and npm 9+
-- Docker Desktop
-- Git
+- Node.js 20.0.0 or higher
+- npm 10.0.0 or higher
+- Cloudflare account with Workers paid plan
 
-### Local Development Setup
+### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd rockket-platform
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/your-org/rockket.git
+cd rockket
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# Install dependencies
+npm install
 
-3. **Environment configuration**
-   ```bash
-   cp env.example .env.local
-   # Edit .env.local with your API keys and configuration
-   ```
+# Setup VibeSDK integration
+npm run vibesdk:setup
 
-4. **Start development environment**
-   ```bash
-   # Start Docker containers
-   npm run setup:local
-   
-   # Start development server
-   npm run dev
-   ```
+# Configure environment
+cp .dev.vars.example .dev.vars
+# Edit .dev.vars with your Cloudflare API tokens and AI keys
+```
 
-5. **Open your browser**
-   ```
-   http://localhost:3000
-   ```
+### Local Development
+
+```bash
+# Start local development server
+npm run cloudflare:dev
+
+# Run database migrations
+npm run d1:migrate:local
+
+# Seed development data
+npm run d1:seed
+```
 
 ### Production Deployment
 
-1. **Cloudflare setup**
-   ```bash
-   # Login to Cloudflare
-   wrangler login
-   
-   # Create D1 database
-   wrangler d1 create rockket-db
-   
-   # Create KV namespaces
-   wrangler kv:namespace create "rockket-flags"
-   wrangler kv:namespace create "rockket-cache"
-   wrangler kv:namespace create "rockket-sessions"
-   
-   # Create R2 bucket
-   wrangler r2 bucket create rockket-media
-   ```
+```bash
+# Deploy to Cloudflare
+npm run cloudflare:deploy
 
-2. **Configure secrets**
-   ```bash
-   wrangler secret put CLAUDE_API_KEY --env production
-   wrangler secret put OPENAI_API_KEY --env production
-   wrangler secret put JWT_SECRET --env production
-   # ... (see Environment Variables section)
-   ```
+# Deploy to staging
+npm run cloudflare:deploy:staging
 
-3. **Deploy**
-   ```bash
-   npm run setup:prod
-   ```
+# Deploy to production
+npm run cloudflare:deploy:production
+```
+
+## 🎨 VibeSDK Code Generation
+
+### Generate Apps with Natural Language
+
+```typescript
+// Example: Generate a todo list app
+const prompt = "Create a todo list with drag and drop and dark mode";
+const options = {
+  framework: "react",
+  styling: "tailwind",
+  features: ["drag-drop", "dark-mode", "local-storage"],
+};
+
+const generationId = await startCodeGeneration(prompt, options);
+```
+
+### Real-time Progress Updates
+
+```typescript
+// WebSocket connection for live updates
+const ws = new WebSocket("wss://rockket.dev/ws");
+ws.onmessage = (event) => {
+  const update = JSON.parse(event.data);
+  console.log(`Phase: ${update.phase}, Progress: ${update.progress}%`);
+};
+```
+
+### Generated App Examples
+
+**🎮 Fun Apps**
+
+- Todo list with drag and drop
+- Drawing app with brush tools
+- Memory card game with emojis
+
+**📊 Productivity Apps**
+
+- Expense tracker with charts
+- Pomodoro timer with task management
+- Habit tracker with streak counters
+
+**🎨 Creative Tools**
+
+- Color palette generator
+- Markdown editor with live preview
+- Meme generator with text overlays
+
+**🛠️ Utility Apps**
+
+- QR code generator and scanner
+- Password generator with custom options
+- URL shortener with click analytics
 
 ## 🏗️ Architecture
 
-### Tech Stack
-
-- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS + shadcn/ui
-- **Backend**: Cloudflare Workers + D1 Database + KV Store
-- **AI Integration**: Claude, OpenAI, Google AI with cost controls
-- **Security**: Zero-trust architecture with enterprise compliance
-- **Deployment**: Cloudflare Pages + Workers
-
-### Database Schema
-
-The platform uses Cloudflare D1 (SQLite) with the following core tables:
-
-- `tenants` - Multi-tenant organization data
-- `users` - User accounts and authentication
-- `feature_flags` - Feature flag configuration
-- `content` - CMS content and pages
-- `products` - E-commerce product catalog
-- `orders` - Order and transaction data
-- `analytics_events` - User behavior tracking
-
-### API Design
-
-- **RESTful APIs** with TypeScript interfaces
-- **Multi-tenant isolation** with row-level security
-- **Rate limiting** and authentication middleware
-- **Comprehensive error handling** and validation
-
-## 📁 Project Structure
+### System Architecture
 
 ```
-rockket-platform/
-├── src/
-│   ├── app/                 # Next.js app directory
-│   │   ├── api/            # API routes
-│   │   ├── auth/           # Authentication pages
-│   │   ├── dashboard/      # Dashboard pages
-│   │   └── onboarding/     # Onboarding flow
-│   ├── components/         # React components
-│   │   ├── ui/             # Reusable UI components
-│   │   ├── layout/         # Layout components
-│   │   ├── sections/       # Page sections
-│   │   └── providers/      # Context providers
-│   ├── lib/                # Utility libraries
-│   │   ├── auth/           # Authentication logic
-│   │   ├── db/             # Database operations
-│   │   ├── ai/             # AI integration
-│   │   └── features/       # Feature flag logic
-│   ├── hooks/              # Custom React hooks
-│   ├── types/              # TypeScript type definitions
-│   └── utils/              # Utility functions
-├── docs/                   # Documentation
-├── scripts/                # Build and deployment scripts
-├── docker-compose.yml      # Local development environment
-├── wrangler.toml           # Cloudflare Workers configuration
-└── package.json            # Dependencies and scripts
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   Cloudflare    │    │   Durable       │
+│   (Next.js)     │◄──►│   Workers       │◄──►│   Objects       │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   CDN           │    │   D1 Database    │    │   AI Gateway    │
+│   (CloudFlare)  │    │   (SQLite)       │    │   (Multi-Model) │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🔧 Development
+### Durable Objects
 
-### Available Scripts
+#### CodeGeneratorAgent
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript type checking
-- `npm run test` - Run tests
-- `npm run setup:local` - Start local development environment
-- `npm run setup:prod` - Deploy to production
+Handles AI-powered code generation with stateful connections:
+
+```typescript
+export class CodeGeneratorAgent extends DurableObject {
+  async generateCode(prompt: string, options: any) {
+    // Phase-wise generation with error recovery
+    // Real-time progress streaming to frontend
+    // Persistent state across WebSocket connections
+  }
+}
+```
+
+#### SessionManager
+
+Manages user sessions and authentication:
+
+```typescript
+export class SessionManager extends DurableObject {
+  async createSession(userId: string) {
+    // Create secure session
+    // Store session data
+    // Handle session validation
+  }
+}
+```
+
+#### AIAgent
+
+Manages AI model interactions and caching:
+
+```typescript
+export class AIAgent extends DurableObject {
+  async processRequest(prompt: string, model: string) {
+    // Route to appropriate AI model
+    // Cache responses for efficiency
+    // Handle rate limiting
+  }
+}
+```
+
+## 📊 Database Schema
+
+The platform uses D1 (SQLite) for data storage:
+
+- **tenants** - Multi-tenant organizations
+- **users** - User accounts and profiles
+- **projects** - Visual builder projects
+- **content** - CMS content and pages
+- **products** - E-commerce products
+- **orders** - E-commerce orders
+- **analytics** - Analytics events and metrics
+- **feature_flags** - Feature flag configurations
+- **code_generations** - VibeSDK generation history
+
+## 🔧 Configuration
+
+### Wrangler Configuration
+
+```toml
+# wrangler.toml
+name = "rockket"
+main = "src/index.ts"
+compatibility_date = "2024-01-15"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "rockket-db"
+
+# KV Storage
+[[kv_namespaces]]
+binding = "CACHE"
+
+# R2 Storage
+[[r2_buckets]]
+binding = "STORAGE"
+
+# Durable Objects
+[[durable_objects.bindings]]
+name = "CODE_GENERATOR"
+class_name = "CodeGeneratorAgent"
+
+# AI Gateway
+[ai]
+binding = "AI"
+```
 
 ### Environment Variables
 
-See `env.example` for all required environment variables.
+```bash
+# AI Services
+ANTHROPIC_API_KEY=your-anthropic-api-key
+OPENAI_API_KEY=your-openai-api-key
+GOOGLE_AI_STUDIO_API_KEY=your-google-ai-api-key
 
-### Database Migrations
+# Authentication
+JWT_SECRET=your-jwt-secret
+
+# External Services
+SENTRY_DSN=your-sentry-dsn
+POSTHOG_KEY=your-posthog-key
+```
+
+## 📚 Documentation
+
+- [Setup Guide](./docs/SETUP.md) - Complete setup instructions
+- [Development Guide](./docs/DEVELOPMENT.md) - Development best practices
+- [Deployment Guide](./docs/DEPLOYMENT.md) - Production deployment
+- [VibeSDK Integration](./docs/VIBESDK_INTEGRATION.md) - VibeSDK integration guide
+- [VibeSDK Examples](./docs/VIBESDK_EXAMPLES.md) - Code generation examples
+
+## 🧪 Testing
 
 ```bash
-# Apply migrations
-npm run db:migrate
+# Run all tests
+npm test
 
-# Seed database
-npm run db:seed
+# Run specific test suites
+npm run test:unit
+npm run test:integration
+npm run test:e2e
+
+# Run tests with coverage
+npm run test:coverage
 ```
+
+## 🔒 Security
+
+- **Authentication** - JWT-based authentication
+- **Multi-tenant Isolation** - Secure tenant data separation
+- **Input Validation** - Comprehensive input sanitization
+- **Rate Limiting** - API rate limiting and abuse prevention
+- **Security Headers** - Security headers for all responses
+
+## 📈 Performance
+
+- **Edge Computing** - Global distribution with Cloudflare Workers
+- **Caching** - KV storage for caching and session management
+- **CDN Integration** - Static asset delivery via Cloudflare CDN
+- **Performance Monitoring** - Real-time performance tracking
 
 ## 🚀 Deployment
 
 ### Cloudflare Workers
 
-The platform is designed to run on Cloudflare Workers with:
+```bash
+# Deploy to Cloudflare
+npm run cloudflare:deploy
 
-- **D1 Database** for multi-tenant data storage
-- **KV Store** for feature flags and caching
-- **R2 Storage** for media files and backups
-- **Workers** for serverless API endpoints
+# Deploy to staging
+npm run cloudflare:deploy:staging
 
-### Multi-Environment Setup
+# Deploy to production
+npm run cloudflare:deploy:production
+```
 
-- **Local Development**: Docker containers for consistent development
-- **Cloudflare Sandbox**: Testing environment with production-like setup
-- **Cloudflare Production**: Live production environment
+### Database Management
 
-## 📊 Monitoring & Analytics
+```bash
+# Create D1 database
+npm run d1:create
 
-- **Error Tracking**: Sentry integration
-- **Analytics**: PostHog for user behavior tracking
-- **Performance**: Cloudflare Analytics
-- **Logging**: Structured logging with Winston/Pino
+# Run migrations
+npm run d1:migrate
 
-## 🔒 Security
+# Seed data
+npm run d1:seed
+```
 
-- **Authentication**: JWT tokens with refresh mechanism
-- **Authorization**: Role-based access control (RBAC)
-- **Data Encryption**: End-to-end encryption for sensitive data
-- **Rate Limiting**: API rate limiting and abuse prevention
-- **CORS**: Proper CORS configuration
-- **Security Headers**: Comprehensive security headers
+### Storage Setup
+
+```bash
+# Create KV namespace
+npm run kv:create
+
+# Create R2 bucket
+npm run r2:create
+
+# Setup AI Gateway
+npm run ai:setup
+```
+
+## 🔍 Monitoring
+
+### Health Checks
+
+```bash
+# Check platform health
+curl https://rockket.dev/health
+
+# Check database
+curl https://rockket.dev/health/database
+
+# Check AI Gateway
+curl https://rockket.dev/health/ai
+```
+
+### Logs
+
+```bash
+# View real-time logs
+npm run tail
+
+# View specific logs
+wrangler tail --format=pretty
+```
 
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
@@ -222,21 +380,22 @@ The platform is designed to run on Cloudflare Workers with:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
-
-- **Documentation**: [docs.rockket.dev](https://docs.rockket.dev)
-- **Community**: [Discord](https://discord.gg/rockket)
-- **Email**: [hello@rockket.dev](mailto:hello@rockket.dev)
-- **Status**: [status.rockket.dev](https://status.rockket.dev)
-
 ## 🙏 Acknowledgments
 
-- [Next.js](https://nextjs.org/) for the amazing React framework
-- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
-- [shadcn/ui](https://ui.shadcn.com/) for the beautiful component library
-- [Cloudflare](https://cloudflare.com/) for the edge computing platform
-- [Vercel](https://vercel.com/) for the deployment platform
+- [Cloudflare VibeSDK](https://github.com/cloudflare/vibesdk) for AI-powered code generation
+- [Cloudflare Workers](https://workers.cloudflare.com/) for serverless compute
+- [Next.js](https://nextjs.org/) for the React framework
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+
+## 📞 Support
+
+- **Documentation**: [docs.rockket.dev](https://docs.rockket.dev)
+- **GitHub Issues**: [github.com/your-org/rockket/issues](https://github.com/your-org/rockket/issues)
+- **Discord**: [discord.gg/rockket](https://discord.gg/rockket)
+- **Email**: support@rockket.dev
 
 ---
 
-**Built with ❤️ by the Rockket Team**
+**Built with Cloudflare VibeSDK! 🎨✨**
+
+**Launch your vision today! 🚀**

@@ -11,18 +11,11 @@ import {
   Copy,
   Check,
   Sparkles,
+  Loader2,
+  Play,
+  Pause,
+  Square,
 } from "lucide-react";
-
-interface AppTemplate {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  techStack: string[];
-  features: string[];
-  complexity: string;
-  estimatedTime: string;
-}
 
 interface GeneratedApp {
   name: string;
@@ -35,81 +28,136 @@ interface GeneratedApp {
     database: string;
   };
   deployment: string;
+  url?: string;
+}
+
+interface GenerationStatus {
+  id: string;
+  status: "pending" | "generating" | "completed" | "failed";
+  progress: number;
+  phase: string;
+  result?: GeneratedApp;
+  error?: string;
 }
 
 export default function GeneratorPage() {
   const { user, tenant } = useAuth();
-  const [templates, setTemplates] = useState<AppTemplate[]>([]);
-  const [providers, setProviders] = useState<string[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-  const [selectedProvider, setSelectedProvider] = useState<string>("openai");
-  const [customPrompt, setCustomPrompt] = useState<string>("");
+  const [prompt, setPrompt] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStatus, setGenerationStatus] =
+    useState<GenerationStatus | null>(null);
   const [generatedApp, setGeneratedApp] = useState<GeneratedApp | null>(null);
   const [copiedSection, setCopiedSection] = useState<string>("");
+  const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    loadTemplates();
-    loadProviders();
+    // Check if there's a prompt from the homepage
+    const storedPrompt = sessionStorage.getItem("generationPrompt");
+    if (storedPrompt) {
+      setPrompt(storedPrompt);
+      sessionStorage.removeItem("generationPrompt");
+    }
   }, []);
 
-  const loadTemplates = async () => {
-    try {
-      const response = await fetch("/api/ai/templates");
-      if (response.ok) {
-        const data = await response.json();
-        setTemplates(data.templates);
+  useEffect(() => {
+    // Cleanup WebSocket connection on unmount
+    return () => {
+      if (wsConnection) {
+        wsConnection.close();
       }
-    } catch (error) {
-      console.error("Failed to load templates:", error);
-    }
-  };
-
-  const loadProviders = async () => {
-    try {
-      const response = await fetch("/api/ai/providers");
-      if (response.ok) {
-        const data = await response.json();
-        setProviders(data.providers);
-      }
-    } catch (error) {
-      console.error("Failed to load providers:", error);
-    }
-  };
+    };
+  }, [wsConnection]);
 
   const handleGenerate = async () => {
-    if (!selectedTemplate && !customPrompt.trim()) {
-      alert("Please select a template or enter a custom prompt");
+    if (!prompt.trim()) {
+      alert("Please enter a description of your application");
       return;
     }
 
     setIsGenerating(true);
+    setGenerationStatus({
+      id: "",
+      status: "pending",
+      progress: 0,
+      phase: "Starting generation...",
+    });
+
     try {
-      const response = await fetch("/api/ai/generate", {
+      // Start code generation using VibeSDK
+      const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          templateId: selectedTemplate || undefined,
-          prompt: customPrompt || undefined,
-          provider: selectedProvider,
+          prompt: prompt.trim(),
+          options: {
+            framework: "react",
+            styling: "tailwind",
+            features: ["responsive", "modern-ui", "interactive"],
+          },
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setGeneratedApp(data.result.data);
+        const generationId = data.generationId;
+
+        // Set up WebSocket connection for real-time updates
+        setupWebSocketConnection(generationId);
       } else {
         const error = await response.json();
-        alert(`Generation failed: ${error.error}`);
+        throw new Error(error.message || "Failed to start generation");
       }
     } catch (error) {
       console.error("Generation error:", error);
-      alert("Failed to generate application");
-    } finally {
+      setGenerationStatus({
+        id: "",
+        status: "failed",
+        progress: 0,
+        phase: "Generation failed",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
       setIsGenerating(false);
     }
+  };
+
+  const setupWebSocketConnection = (generationId: string) => {
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsUrl = `${protocol}//${window.location.host}/ws/generation/${generationId}`;
+
+    const ws = new WebSocket(wsUrl);
+    setWsConnection(ws);
+
+    ws.onopen = () => {
+      console.log("WebSocket connected for generation:", generationId);
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const update = JSON.parse(event.data);
+        setGenerationStatus(update);
+
+        if (update.status === "completed" && update.result) {
+          setGeneratedApp(update.result);
+          setIsGenerating(false);
+        } else if (update.status === "failed") {
+          setIsGenerating(false);
+        }
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket connection closed");
+      setWsConnection(null);
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      setIsGenerating(false);
+    };
   };
 
   const copyToClipboard = async (text: string, section: string) => {
@@ -120,6 +168,18 @@ export default function GeneratorPage() {
     } catch (error) {
       console.error("Failed to copy:", error);
     }
+  };
+
+  const downloadCode = (code: string, filename: string) => {
+    const blob = new Blob([code], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   if (!user || !tenant) {
@@ -134,325 +194,285 @@ export default function GeneratorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Rocket className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold gradient-text">Rockket</span>
-          </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            AI Code Generator
+          </h1>
+          <p className="text-gray-600">
+            Describe your application and we'll generate the complete code for
+            you
+          </p>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">AI App Generator</h1>
-            <p className="text-muted-foreground">
-              Generate complete applications using AI. Choose a template or
-              describe your idea.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Generator Form */}
-            <div className="space-y-6">
-              <div className="bg-card rounded-lg border p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  Generate Your App
-                </h2>
-
-                {/* AI Provider Selection */}
-                <div className="mb-4">
-                  <label className="form-label">AI Provider</label>
-                  <select
-                    value={selectedProvider}
-                    onChange={(e) => setSelectedProvider(e.target.value)}
-                    className="input-field"
-                  >
-                    {providers.map((provider) => (
-                      <option key={provider} value={provider}>
-                        {provider.charAt(0).toUpperCase() + provider.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Template Selection */}
-                <div className="mb-4">
-                  <label className="form-label">
-                    Choose a Template (Optional)
-                  </label>
-                  <select
-                    value={selectedTemplate}
-                    onChange={(e) => setSelectedTemplate(e.target.value)}
-                    className="input-field"
-                  >
-                    <option value="">Select a template...</option>
-                    {templates.map((template) => (
-                      <option key={template.id} value={template.id}>
-                        {template.name} - {template.complexity}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Custom Prompt */}
-                <div className="mb-6">
-                  <label className="form-label">Custom Prompt (Optional)</label>
-                  <textarea
-                    value={customPrompt}
-                    onChange={(e) => setCustomPrompt(e.target.value)}
-                    className="input-field min-h-[120px]"
-                    placeholder="Describe your application idea in detail..."
-                    disabled={!!selectedTemplate}
-                  />
-                  {selectedTemplate && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Custom prompt is disabled when a template is selected.
-                    </p>
-                  )}
-                </div>
-
-                <Button
-                  onClick={handleGenerate}
-                  disabled={
-                    isGenerating || (!selectedTemplate && !customPrompt.trim())
-                  }
-                  className="w-full"
-                >
-                  {isGenerating ? (
-                    <>
-                      <div className="loading-spinner mr-2"></div>
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Wand2 className="h-4 w-4 mr-2" />
-                      Generate App
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              {/* Templates Grid */}
-              <div className="bg-card rounded-lg border p-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  Popular Templates
-                </h3>
-                <div className="grid grid-cols-1 gap-4">
-                  {templates.slice(0, 4).map((template) => (
-                    <div
-                      key={template.id}
-                      className={`p-4 rounded-lg border cursor-pointer transition-colors ${
-                        selectedTemplate === template.id
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      }`}
-                      onClick={() => setSelectedTemplate(template.id)}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium">{template.name}</h4>
-                        <span className="text-xs px-2 py-1 bg-muted rounded-full">
-                          {template.complexity}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {template.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {template.techStack.slice(0, 3).map((tech) => (
-                          <span
-                            key={tech}
-                            className="text-xs px-2 py-1 bg-primary/10 text-primary rounded"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Generated App Display */}
-            <div className="space-y-6">
-              {generatedApp ? (
+        {/* Prompt Input */}
+        <div className="bg-white rounded-xl shadow-sm border p-6 mb-8">
+          <label
+            htmlFor="prompt"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Describe your application
+          </label>
+          <textarea
+            id="prompt"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="e.g., Create a todo list app with drag and drop functionality, dark mode, and local storage..."
+            className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          />
+          <div className="mt-4 flex justify-end">
+            <Button
+              onClick={handleGenerate}
+              disabled={!prompt.trim() || isGenerating}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {isGenerating ? (
                 <>
-                  <div className="bg-card rounded-lg border p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-xl font-semibold">
-                        {generatedApp.name}
-                      </h2>
-                      <div className="flex items-center space-x-2">
-                        <Sparkles className="h-5 w-5 text-primary" />
-                        <span className="text-sm text-muted-foreground">
-                          AI Generated
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-muted-foreground mb-4">
-                      {generatedApp.description}
-                    </p>
-
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium mb-2">Tech Stack</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {generatedApp.techStack.map((tech) => (
-                            <span
-                              key={tech}
-                              className="px-2 py-1 bg-primary/10 text-primary rounded text-sm"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="font-medium mb-2">Features</h4>
-                        <ul className="list-disc list-inside text-sm text-muted-foreground">
-                          {generatedApp.features.map((feature, index) => (
-                            <li key={index}>{feature}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Code Sections */}
-                  <div className="space-y-4">
-                    <div className="bg-card rounded-lg border p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold">Frontend Code</h3>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            copyToClipboard(
-                              generatedApp.code.frontend,
-                              "frontend"
-                            )
-                          }
-                        >
-                          {copiedSection === "frontend" ? (
-                            <Check className="h-4 w-4 mr-2" />
-                          ) : (
-                            <Copy className="h-4 w-4 mr-2" />
-                          )}
-                          {copiedSection === "frontend" ? "Copied!" : "Copy"}
-                        </Button>
-                      </div>
-                      <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
-                        <code>{generatedApp.code.frontend}</code>
-                      </pre>
-                    </div>
-
-                    <div className="bg-card rounded-lg border p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold">Backend Code</h3>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            copyToClipboard(
-                              generatedApp.code.backend,
-                              "backend"
-                            )
-                          }
-                        >
-                          {copiedSection === "backend" ? (
-                            <Check className="h-4 w-4 mr-2" />
-                          ) : (
-                            <Copy className="h-4 w-4 mr-2" />
-                          )}
-                          {copiedSection === "backend" ? "Copied!" : "Copy"}
-                        </Button>
-                      </div>
-                      <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
-                        <code>{generatedApp.code.backend}</code>
-                      </pre>
-                    </div>
-
-                    <div className="bg-card rounded-lg border p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold">
-                          Database Schema
-                        </h3>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            copyToClipboard(
-                              generatedApp.code.database,
-                              "database"
-                            )
-                          }
-                        >
-                          {copiedSection === "database" ? (
-                            <Check className="h-4 w-4 mr-2" />
-                          ) : (
-                            <Copy className="h-4 w-4 mr-2" />
-                          )}
-                          {copiedSection === "database" ? "Copied!" : "Copy"}
-                        </Button>
-                      </div>
-                      <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
-                        <code>{generatedApp.code.database}</code>
-                      </pre>
-                    </div>
-
-                    <div className="bg-card rounded-lg border p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold">
-                          Deployment Instructions
-                        </h3>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            copyToClipboard(
-                              generatedApp.deployment,
-                              "deployment"
-                            )
-                          }
-                        >
-                          {copiedSection === "deployment" ? (
-                            <Check className="h-4 w-4 mr-2" />
-                          ) : (
-                            <Copy className="h-4 w-4 mr-2" />
-                          )}
-                          {copiedSection === "deployment" ? "Copied!" : "Copy"}
-                        </Button>
-                      </div>
-                      <div className="bg-muted p-4 rounded-lg">
-                        <p className="text-sm whitespace-pre-wrap">
-                          {generatedApp.deployment}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generating...
                 </>
               ) : (
-                <div className="bg-card rounded-lg border p-8 text-center">
-                  <Code className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">
-                    No App Generated Yet
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Select a template or enter a custom prompt to generate your
-                    application.
-                  </p>
-                </div>
+                <>
+                  <Rocket className="h-4 w-4 mr-2" />
+                  Generate App
+                </>
               )}
-            </div>
+            </Button>
           </div>
         </div>
-      </main>
+
+        {/* Generation Status */}
+        {generationStatus && (
+          <div className="bg-white rounded-xl shadow-sm border p-6 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Generation Status
+              </h3>
+              <div className="flex items-center gap-2">
+                {generationStatus.status === "generating" && (
+                  <div className="flex items-center gap-2 text-blue-600">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm">In Progress</span>
+                  </div>
+                )}
+                {generationStatus.status === "completed" && (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <Check className="h-4 w-4" />
+                    <span className="text-sm">Completed</span>
+                  </div>
+                )}
+                {generationStatus.status === "failed" && (
+                  <div className="flex items-center gap-2 text-red-600">
+                    <Square className="h-4 w-4" />
+                    <span className="text-sm">Failed</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>{generationStatus.phase}</span>
+                <span>{generationStatus.progress}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${generationStatus.progress}%` }}
+                />
+              </div>
+            </div>
+
+            {generationStatus.error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-red-600 text-sm">{generationStatus.error}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Generated App */}
+        {generatedApp && (
+          <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  {generatedApp.name}
+                </h3>
+                <p className="text-gray-600">{generatedApp.description}</p>
+              </div>
+              {generatedApp.url && (
+                <Button
+                  onClick={() => window.open(generatedApp.url, "_blank")}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  View Live App
+                </Button>
+              )}
+            </div>
+
+            {/* Tech Stack */}
+            <div className="mb-6">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                Tech Stack
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {generatedApp.techStack.map((tech, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="mb-6">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                Features
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {generatedApp.features.map((feature, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full"
+                  >
+                    {feature}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Code Sections */}
+            <div className="space-y-6">
+              {/* Frontend Code */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium text-gray-700">
+                    Frontend Code
+                  </h4>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        copyToClipboard(generatedApp.code.frontend, "frontend")
+                      }
+                    >
+                      {copiedSection === "frontend" ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        downloadCode(generatedApp.code.frontend, "frontend.jsx")
+                      }
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                  <code>{generatedApp.code.frontend}</code>
+                </pre>
+              </div>
+
+              {/* Backend Code */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium text-gray-700">
+                    Backend Code
+                  </h4>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        copyToClipboard(generatedApp.code.backend, "backend")
+                      }
+                    >
+                      {copiedSection === "backend" ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        downloadCode(generatedApp.code.backend, "backend.js")
+                      }
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                  <code>{generatedApp.code.backend}</code>
+                </pre>
+              </div>
+
+              {/* Database Schema */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium text-gray-700">
+                    Database Schema
+                  </h4>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        copyToClipboard(generatedApp.code.database, "database")
+                      }
+                    >
+                      {copiedSection === "database" ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        downloadCode(generatedApp.code.database, "schema.sql")
+                      }
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                  <code>{generatedApp.code.database}</code>
+                </pre>
+              </div>
+
+              {/* Deployment Instructions */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                  Deployment Instructions
+                </h4>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <pre className="text-sm text-blue-800 whitespace-pre-wrap">
+                    {generatedApp.deployment}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
