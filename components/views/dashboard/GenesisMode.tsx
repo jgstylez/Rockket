@@ -74,7 +74,7 @@ const GenesisMode: React.FC<GenesisModeProps> = ({ onNavigate }) => {
             {/* Left: Mission Roadmap */}
             <div className="lg:col-span-8 space-y-8">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Genesis Pad</h2>
+                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Ideation Phase</h2>
                     <p className="text-slate-500 dark:text-slate-400 mb-6">Phase: <span className="text-indigo-500 font-bold">Ideation & Strategy</span></p>
 
                     {/* Ready for Next Phase Banner */}
@@ -87,9 +87,9 @@ const GenesisMode: React.FC<GenesisModeProps> = ({ onNavigate }) => {
                                             <Rocket size={24} />
                                         </div>
                                         <div>
-                                            <h4 className="text-lg font-bold text-orange-700 dark:text-orange-400">Genesis Phase Complete! 🎉</h4>
+                                            <h4 className="text-lg font-bold text-orange-700 dark:text-orange-400">Ideation Phase Complete! 🎉</h4>
                                             <p className="text-sm text-orange-600 dark:text-orange-300 mt-1">
-                                                Your concept is validated. Ready to move to <span className="font-bold">Ignition Pad</span> for system setup?
+                                                Your concept is validated. Ready to move to <span className="font-bold">Setup Phase</span> for system setup?
                                             </p>
                                         </div>
                                     </div>
@@ -97,7 +97,7 @@ const GenesisMode: React.FC<GenesisModeProps> = ({ onNavigate }) => {
                                         onClick={() => setStage('setup')}
                                         className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg shadow-lg transition-all hover:scale-105 flex items-center gap-2"
                                     >
-                                        Enter Ignition Pad <ArrowRight size={18} />
+                                        Enter Setup Phase <ArrowRight size={18} />
                                     </button>
                                 </div>
                             </GlassCard>
@@ -108,7 +108,7 @@ const GenesisMode: React.FC<GenesisModeProps> = ({ onNavigate }) => {
                     <div className="mb-8">
                         <div className="flex items-center space-x-2 mb-4">
                             <div className={`w-2 h-2 rounded-full ${signalStrength >= 100 ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`}></div>
-                            <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Priority Mission</h3>
+                            <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Priority Task</h3>
                         </div>
                         <div onClick={() => onNavigate && onNavigate('signal_scanner')} className="cursor-pointer group relative">
                             <div className={`absolute -inset-0.5 bg-gradient-to-r ${signalStrength >= 100 ? 'from-emerald-500 to-cyan-600' : 'from-red-500 to-indigo-600'} rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-500`}></div>
@@ -119,7 +119,7 @@ const GenesisMode: React.FC<GenesisModeProps> = ({ onNavigate }) => {
                                             <Radio size={32} />
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">Signal Scanner</h3>
+                                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">Concept Validation</h3>
                                             <p className="text-slate-500 dark:text-slate-400 text-sm">
                                                 {signalStrength >= 100 ? 'MVP Validated ✓' : 'Validate your MVP idea before building.'}
                                             </p>
@@ -179,7 +179,7 @@ const GenesisMode: React.FC<GenesisModeProps> = ({ onNavigate }) => {
                     <GlassCard className="relative overflow-visible min-h-[300px]">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-blue-500"></div>
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-white">Mission Roadmap</h3>
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-white">Project Roadmap</h3>
                             <span className="text-xs text-slate-400 italic">Click status to toggle • Hover to edit</span>
                         </div>
 
@@ -254,14 +254,14 @@ const GenesisMode: React.FC<GenesisModeProps> = ({ onNavigate }) => {
                                                             onClick={() => handleEngage(item.id)}
                                                             className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-bold shadow-md hover:bg-indigo-500 transition-colors"
                                                         >
-                                                            Engage Mission
+                                                            Start Task
                                                         </button>
                                                         <span className="text-[10px] font-mono text-indigo-500 uppercase animate-pulse">In Progress</span>
                                                     </div>
                                                 )}
                                                 {item.status === 'complete' && (
                                                     <div className="mt-3 flex items-center gap-1 text-xs font-bold text-emerald-500">
-                                                        <CheckCircle2 size={14} /> Mission Accomplished
+                                                        <CheckCircle2 size={14} /> Task Completed
                                                     </div>
                                                 )}
                                             </>
@@ -276,7 +276,7 @@ const GenesisMode: React.FC<GenesisModeProps> = ({ onNavigate }) => {
                                     onClick={handleAddStep}
                                     className="w-full py-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 hover:text-indigo-500 hover:border-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 transition-all flex items-center justify-center gap-2 font-bold text-sm"
                                 >
-                                    <Plus size={16} /> Add Mission Objective
+                                    <Plus size={16} /> Add Task
                                 </button>
                             </div>
                         </div>

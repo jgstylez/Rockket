@@ -198,11 +198,11 @@ const VelocityMode: React.FC = () => {
         <div className="space-y-8 animate-fade-in">
             {/* Header */}
             <div>
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Velocity Pad</h2>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Growth Phase</h2>
                 <p className="text-slate-500 dark:text-slate-400">Phase: <span className="text-emerald-500 font-bold">Growth & Optimization</span></p>
             </div>
 
-            {/* Telemetry Deck (Charts) */}
+            {/* Growth Metrics (Charts) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <GlassCard className="p-0 overflow-hidden group">
                     <div className="p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
@@ -284,17 +284,17 @@ const VelocityMode: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div className="lg:col-span-8 space-y-8">
-                    {/* Active Trajectories */}
+                    {/* Active Workflows */}
                     <div>
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center">
-                                <Workflow size={16} className="mr-2" /> Active Trajectories
+                                <Workflow size={16} className="mr-2" /> Active Workflows
                             </h3>
                             <button
                                 onClick={() => setShowAddTrajectory(true)}
                                 className="flex items-center gap-1 text-xs font-bold text-emerald-500 hover:text-emerald-600 transition-colors"
                             >
-                                <Plus size={14} /> Add Trajectory
+                                <Plus size={14} /> Add Workflow
                             </button>
                         </div>
 
@@ -303,7 +303,7 @@ const VelocityMode: React.FC = () => {
                                 <div className="space-y-3">
                                     <input
                                         type="text"
-                                        placeholder="Trajectory name..."
+                                        placeholder="Workflow name..."
                                         value={editForm.name}
                                         onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                                         className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-3 py-2 text-sm font-bold text-slate-900 dark:text-white outline-none focus:border-emerald-500"
@@ -329,7 +329,7 @@ const VelocityMode: React.FC = () => {
                                             onClick={handleAddTrajectory}
                                             className="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold rounded transition-colors"
                                         >
-                                            Add Trajectory
+                                            Add Workflow
                                         </button>
                                     </div>
                                 </div>
@@ -387,8 +387,8 @@ const VelocityMode: React.FC = () => {
                                                         <div className="flex items-center text-xs text-slate-500 gap-2 mt-1">
                                                             <span>{traj.type.charAt(0).toUpperCase() + traj.type.slice(1)} Protocol</span>
                                                             <span className={`flex items-center font-medium ${traj.status === 'running' ? 'text-emerald-500' :
-                                                                    traj.status === 'paused' ? 'text-orange-500' :
-                                                                        'text-slate-400'
+                                                                traj.status === 'paused' ? 'text-orange-500' :
+                                                                    'text-slate-400'
                                                                 }`}>
                                                                 {traj.status === 'running' ? <Play size={12} className="mr-1" /> :
                                                                     traj.status === 'paused' ? <Pause size={12} className="mr-1" /> :
@@ -402,7 +402,7 @@ const VelocityMode: React.FC = () => {
                                                 <div className="flex items-center gap-4">
                                                     <div className="text-right">
                                                         <div className="text-2xl font-bold text-slate-800 dark:text-white">{traj.activeNodes}</div>
-                                                        <div className="text-xs text-slate-500 uppercase font-mono">Nodes</div>
+                                                        <div className="text-xs text-slate-500 uppercase font-mono">Steps</div>
                                                     </div>
                                                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <button
@@ -552,8 +552,8 @@ const VelocityMode: React.FC = () => {
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <h4 className="font-bold text-base">{goal.name}</h4>
                                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${goal.priority === 'high' ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400' :
-                                                                    goal.priority === 'medium' ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' :
-                                                                        'bg-slate-100 dark:bg-slate-900/20 text-slate-600 dark:text-slate-400'
+                                                                goal.priority === 'medium' ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' :
+                                                                    'bg-slate-100 dark:bg-slate-900/20 text-slate-600 dark:text-slate-400'
                                                                 }`}>
                                                                 {goal.priority}
                                                             </span>
@@ -587,9 +587,9 @@ const VelocityMode: React.FC = () => {
                                                 <div className="w-full h-2 bg-white/50 dark:bg-slate-900/50 rounded-full overflow-hidden">
                                                     <div
                                                         className={`h-full transition-all duration-500 ${goal.status === 'achieved' ? 'bg-emerald-500' :
-                                                                goal.status === 'on-track' ? 'bg-cyan-500' :
-                                                                    goal.status === 'at-risk' ? 'bg-orange-500' :
-                                                                        'bg-red-500'
+                                                            goal.status === 'on-track' ? 'bg-cyan-500' :
+                                                                goal.status === 'at-risk' ? 'bg-orange-500' :
+                                                                    'bg-red-500'
                                                             }`}
                                                         style={{ width: `${progress}%` }}
                                                     ></div>
@@ -607,7 +607,7 @@ const VelocityMode: React.FC = () => {
                     {/* System Health */}
                     <GlassCard className="h-full border-t-4 border-t-emerald-500">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">System Health</h3>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Platform Health</h3>
                             <span className="text-xs font-bold text-emerald-500">Optimal</span>
                         </div>
                         <div className="space-y-6">

@@ -88,7 +88,7 @@ const IgnitionMode: React.FC<IgnitionModeProps> = ({ onNavigate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
             <div className="lg:col-span-8 space-y-8">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Ignition Pad</h2>
+                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Setup Phase</h2>
                     <p className="text-slate-500 dark:text-slate-400 mb-6">Phase: <span className="text-orange-500 font-bold">System Setup</span></p>
 
                     {/* Ready for Next Phase Banner */}
@@ -101,9 +101,9 @@ const IgnitionMode: React.FC<IgnitionModeProps> = ({ onNavigate }) => {
                                             <CheckCircle2 size={24} />
                                         </div>
                                         <div>
-                                            <h4 className="text-lg font-bold text-emerald-700 dark:text-emerald-400">Ignition Phase Complete! 🚀</h4>
+                                            <h4 className="text-lg font-bold text-emerald-700 dark:text-emerald-400">Setup Phase Complete! 🚀</h4>
                                             <p className="text-sm text-emerald-600 dark:text-emerald-300 mt-1">
-                                                All systems online. Ready to move to <span className="font-bold">Velocity Pad</span> for growth & optimization?
+                                                All systems online. Ready to move to <span className="font-bold">Growth Phase</span> for growth & optimization?
                                             </p>
                                         </div>
                                     </div>
@@ -111,7 +111,7 @@ const IgnitionMode: React.FC<IgnitionModeProps> = ({ onNavigate }) => {
                                         onClick={() => setStage('growth')}
                                         className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg transition-all hover:scale-105 flex items-center gap-2"
                                     >
-                                        Enter Velocity Pad <ArrowRight size={18} />
+                                        Enter Growth Phase <ArrowRight size={18} />
                                     </button>
                                 </div>
                             </GlassCard>
@@ -122,9 +122,9 @@ const IgnitionMode: React.FC<IgnitionModeProps> = ({ onNavigate }) => {
                     <GlassCard className="relative overflow-hidden mb-8">
                         <div className="flex justify-between items-end mb-2">
                             <div>
-                                <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">Launch Readiness</h3>
+                                <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">Setup Progress</h3>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    {completedTasks} of {totalTasks} systems online
+                                    {completedTasks} of {totalTasks} tasks completed
                                 </p>
                             </div>
                             <span className="text-2xl font-bold text-slate-900 dark:text-white">{completionPercentage}%</span>
@@ -146,7 +146,7 @@ const IgnitionMode: React.FC<IgnitionModeProps> = ({ onNavigate }) => {
                                         <CheckCircle2 size={24} />
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="text-lg font-bold text-purple-700 dark:text-purple-400 mb-3">Brand Identity Deployed</h4>
+                                        <h4 className="text-lg font-bold text-purple-700 dark:text-purple-400 mb-3">Brand Identity Saved</h4>
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div>
                                                 <span className="font-bold text-slate-700 dark:text-slate-300">Style:</span>
@@ -179,7 +179,7 @@ const IgnitionMode: React.FC<IgnitionModeProps> = ({ onNavigate }) => {
                         <div className="mb-4">
                             <div className="flex items-center space-x-2 mb-4">
                                 <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
-                                <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Priority Mission</h3>
+                                <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Priority Task</h3>
                             </div>
 
                             <div
@@ -200,8 +200,8 @@ const IgnitionMode: React.FC<IgnitionModeProps> = ({ onNavigate }) => {
                                                 </p>
                                             </div>
                                         </div>
-                                        <button className="flex-shrink-0 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-lg shadow-lg flex items-center justify-center group-hover:scale-105 transition-transform">
-                                            Enter Design Lab <ArrowRight size={18} className="ml-2" />
+                                        <button className="flex-shrink-0 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg shadow-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+                                            Enter Brand Studio <ArrowRight size={18} className="ml-2" />
                                         </button>
                                     </div>
                                 </GlassCard>
@@ -327,7 +327,7 @@ const IgnitionMode: React.FC<IgnitionModeProps> = ({ onNavigate }) => {
                 {/* System Status */}
                 <GlassCard className="h-full border-t-4 border-t-orange-500">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">System Status</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Task Status</h3>
                         <span className={`text-xs font-bold px-2 py-1 rounded ${completionPercentage === 100
                             ? 'text-emerald-500 bg-emerald-100 dark:bg-emerald-900/20'
                             : completionPercentage > 0

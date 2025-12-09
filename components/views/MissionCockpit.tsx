@@ -2,15 +2,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GlassCard } from '../ui/GlassCard';
 import { Send, Bot, FileText, Save, ArrowLeft, Mic, StopCircle, RefreshCw, Check } from 'lucide-react';
-import { streamMissionChat } from '../../services/geminiService';
+import { streamMissionChat, generateStrategyFromPlan } from '../../services/geminiService';
+import { useMission } from '../../context/MissionContext';
 
-const MissionCockpit: React.FC = () => {
+import { View } from '../../types';
+
+interface MissionCockpitProps {
+  onNavigate: (view: View) => void;
+}
+
+const MissionCockpit: React.FC<MissionCockpitProps> = ({ onNavigate }) => {
+  const { businessPlan, setBusinessPlan, setBusinessStrategy } = useMission();
   const [messages, setMessages] = useState<{ role: 'user' | 'model', text: string }[]>([
-    { role: 'model', text: 'Systems initialized. I am your Mission Specialist. We are drafting the "Market Entry Strategy" today. Who is our primary target demographic?' }
+    { role: 'model', text: 'Systems ready. I am your Business Assistant. We are drafting the "Market Entry Strategy" today. Who is our primary target demographic?' }
   ]);
   const [input, setInput] = useState('');
   const [docContent, setDocContent] = useState<string>(
-    "# MISSION: MARKET ENTRY\n\n## 1. Executive Summary\n[Pending Input]\n\n## 2. Target Demographics\n[Pending Input]\n\n## 3. Competitive Advantage\n[Pending Input]\n"
+    businessPlan || "# BUSINESS PLAN: MARKET ENTRY\n\n## 1. Executive Summary\n[Pending Input]\n\n## 2. Target Demographics\n[Pending Input]\n\n## 3. Competitive Advantage\n[Pending Input]\n"
   );
   const [isStreaming, setIsStreaming] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -62,9 +70,27 @@ const MissionCockpit: React.FC = () => {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
-    setTimeout(() => setIsSaving(false), 1500);
+
+    // 1. Save locally to context
+    setBusinessPlan(docContent);
+
+    try {
+      // 2. Generate Mission Kit Strategy from the Plan
+      // We do this silently or with a "Generating..." indicator.
+      // For now, we'll keep the "Saved" loader visible while this happens.
+      const strategy = await generateStrategyFromPlan(docContent);
+
+      // 3. Save Strategy to Context
+      setBusinessStrategy(strategy);
+
+    } catch (e) {
+      console.error("Strategy generation failed", e);
+    }
+
+    setIsSaving(false);
+    onNavigate('missionkits');
   };
 
   return (
@@ -77,7 +103,7 @@ const MissionCockpit: React.FC = () => {
               <Bot size={18} />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm">Co-Pilot Link</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm">AI Assistant</h3>
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono uppercase">Online</span>
@@ -93,14 +119,14 @@ const MissionCockpit: React.FC = () => {
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
               <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold ${msg.role === 'user'
-                  ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-                  : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
+                ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
                 }`}>
                 {msg.role === 'user' ? 'CP' : 'AI'}
               </div>
               <div className={`p-3 rounded-2xl text-sm max-w-[85%] leading-relaxed ${msg.role === 'user'
-                  ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-tr-none shadow-sm'
-                  : 'bg-indigo-600 text-white rounded-tl-none shadow-md shadow-indigo-500/10'
+                ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-tr-none shadow-sm'
+                : 'bg-indigo-600 text-white rounded-tl-none shadow-md shadow-indigo-500/10'
                 }`}>
                 {msg.text}
               </div>
@@ -116,7 +142,7 @@ const MissionCockpit: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Transmit orders..."
+              placeholder="Type a message..."
               className="w-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl py-3 pl-4 pr-12 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-400"
             />
             <button
@@ -139,7 +165,7 @@ const MissionCockpit: React.FC = () => {
               <FileText size={20} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Mission Blueprint</h2>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Business Plan</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">Market Entry Strategy.md</p>
             </div>
           </div>
@@ -151,7 +177,7 @@ const MissionCockpit: React.FC = () => {
               className="flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
             >
               {isSaving ? <Check size={18} className="mr-2" /> : <Save size={18} className="mr-2" />}
-              {isSaving ? 'Saved' : 'Deploy'}
+              {isSaving ? 'Saved' : 'Save Plan'}
             </button>
           </div>
         </div>
@@ -176,7 +202,7 @@ const MissionCockpit: React.FC = () => {
           {isStreaming && (
             <div className="absolute bottom-4 right-4 flex items-center gap-2 px-3 py-1.5 bg-indigo-600/90 text-white text-xs rounded-full shadow-lg backdrop-blur animate-fade-in">
               <RefreshCw size={12} className="animate-spin" />
-              <span>Co-Pilot Writing...</span>
+              <span>AI Writing...</span>
             </div>
           )}
         </GlassCard>

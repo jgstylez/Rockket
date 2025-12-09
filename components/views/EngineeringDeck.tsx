@@ -36,7 +36,7 @@ const EngineeringDeck: React.FC<EngineeringDeckProps> = ({ onNavigate, activeTab
                   <Workflow size={18} />
                   <span className="text-xs font-mono font-bold uppercase tracking-widest">Engineering Deck</span>
                </div>
-               <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Operations Core</h2>
+               <h2 className="text-3xl font-bold text-slate-900 dark:text-white">System Operations</h2>
             </div>
 
             <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">

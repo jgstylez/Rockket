@@ -129,7 +129,10 @@ const FlightPlans: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in h-full">
             <div className="lg:col-span-2 space-y-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Active Flight Plan</h2>
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Flight Plan</h2>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Daily Operations & Task Management</p>
+                    </div>
                     <button
                         onClick={() => setShowAddModal(true)}
                         className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-lg shadow-orange-500/30 dark:shadow-[0_0_15px_rgba(249,115,22,0.3)] w-full md:w-auto justify-center"
@@ -182,16 +185,16 @@ const FlightPlans: React.FC = () => {
 
                 <GlassCard className="p-0 overflow-hidden">
                     <div className="bg-slate-100 dark:bg-slate-800/50 p-4 border-b border-slate-200 dark:border-slate-700 flex text-xs font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                        <div className="w-12 text-center">Stat</div>
-                        <div className="flex-1 px-4">Objective</div>
+                        <div className="w-12 text-center">Status</div>
+                        <div className="flex-1 px-4">Task</div>
                         <div className="w-24">Priority</div>
-                        <div className="w-32 text-right">ETA</div>
+                        <div className="w-32 text-right">Due Date</div>
                         <div className="w-10"></div>
                     </div>
                     <div className="divide-y divide-slate-200 dark:divide-slate-800">
                         {filteredTasks.length === 0 ? (
                             <div className="p-8 text-center text-slate-500 dark:text-slate-400">
-                                <p>No maneuvers found matching current filters.</p>
+                                <p>No tasks found matching current filters.</p>
                                 <button onClick={clearFilters} className="text-indigo-500 hover:underline text-sm mt-2">Clear filters</button>
                             </div>
                         ) : (

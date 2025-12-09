@@ -1,4 +1,4 @@
-// Signal Scanner - AI-Powered Startup Validation System
+// Signal Scanner - Startup Validation System
 // Implements the 8-Dimension Validation Framework
 
 export interface ValidationDimension {
@@ -121,7 +121,7 @@ export const validationPrompts = {
     },
 };
 
-// AI Prompt template for validation
+// Prompt template for validation
 export const generateValidationPrompt = (
     ideaDescription: string,
     dimension: keyof typeof validationPrompts
@@ -233,7 +233,7 @@ export const generateNextSteps = (report: ValidationReport): string[] => {
     return steps.slice(0, 5); // Return top 5 steps
 };
 
-// Mock AI validation function (replace with actual AI API call)
+// Mock validation function (replace with actual API call)
 export const mockAIValidation = async (
     ideaDescription: string,
     dimension: keyof typeof validationPrompts
@@ -256,7 +256,7 @@ export const mockAIValidation = async (
         differentiation: {
             verdict: 'Strong',
             score: 8,
-            reasoning: 'Unique AI-powered approach creates defensible moat. Network effects possible. Difficult for competitors to replicate without similar data.',
+            reasoning: 'Unique innovative approach creates defensible moat. Network effects possible. Difficult for competitors to replicate without similar data.',
         },
         targetCustomer: {
             verdict: 'Strong',

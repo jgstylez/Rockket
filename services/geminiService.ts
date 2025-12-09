@@ -62,6 +62,66 @@ export const generateMissionStrategy = async (input: MissionInput): Promise<Gene
   }
 };
 
+export const generateStrategyFromPlan = async (planContent: string): Promise<GeneratedStrategy> => {
+  const prompt = `
+    Act as a world-class business strategist. Analyze the following Business Plan and extract/generate a "Mission Kit" strategy document.
+    
+    BUSINESS PLAN CONTENT:
+    ${planContent}
+
+    Generate JSON with these exact fields:
+    1. missionStatement: A powerful, concise mission statement derived from the plan.
+    2. vision: A futuristic vision statement.
+    3. coreValues: Array of 3-5 core values implied by the plan.
+    4. elevatorPitch: A concise 2-sentence elevator pitch for the business.
+    5. businessName: The likely name of the business (extract from plan or infer).
+    6. industry: The industry sector.
+    7. targetAudience: The primary target audience description.
+    8. keyDifferentiator: The main unique selling proposition.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: MODEL_ID,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            missionStatement: { type: Type.STRING },
+            vision: { type: Type.STRING },
+            coreValues: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
+            },
+            elevatorPitch: { type: Type.STRING },
+            businessName: { type: Type.STRING },
+            industry: { type: Type.STRING },
+            targetAudience: { type: Type.STRING },
+            keyDifferentiator: { type: Type.STRING }
+          },
+          required: ["missionStatement", "vision", "coreValues", "elevatorPitch"]
+        }
+      }
+    });
+
+    const text = response.text;
+    if (!text) throw new Error("No response from AI");
+
+    return JSON.parse(text) as GeneratedStrategy;
+
+  } catch (error) {
+    console.error("Gemini Strategy Extraction Error:", error);
+    return {
+      missionStatement: "To execute the business plan with precision and excellence.",
+      vision: "A market leader in the defined sector.",
+      coreValues: ["Execution", "Strategy", "Result-Oriented"],
+      elevatorPitch: "We are building a solution based on a solid market entry strategy."
+    };
+  }
+};
+
 export const generateLandingCopy = async (problem: string, solution: string, audience: string) => {
   const prompt = `
     Act as a world-class direct-response copywriter specializing in high-converting landing pages.

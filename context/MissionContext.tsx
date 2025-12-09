@@ -102,7 +102,10 @@ export interface MissionData {
     growthMetrics: GrowthMetrics | null;
     trajectories: Trajectory[];
     optimizationGoals: OptimizationGoal[];
+    onboardingCompleted: boolean;
+    businessPlan: string;
 }
+
 
 // New: Metadata for the mission list
 export interface MissionMetadata {
@@ -139,6 +142,9 @@ interface MissionContextType {
     addMissionStep: (step: MissionStep) => void;
     deleteMissionStep: (id: number) => void;
 
+    businessPlan: string;
+    setBusinessPlan: (plan: string) => void;
+
     mvpData: MVPData | null;
     setMvpData: (data: MVPData | null) => void;
     businessStrategy: BusinessStrategy | null;
@@ -164,6 +170,9 @@ interface MissionContextType {
     updateOptimizationGoal: (id: string, updates: Partial<OptimizationGoal>) => void;
     addOptimizationGoal: (goal: OptimizationGoal) => void;
     deleteOptimizationGoal: (id: string) => void;
+
+    onboardingCompleted: boolean;
+    setOnboardingCompleted: (completed: boolean) => void;
 
     // Multi-Mission & Auth
     user: UserProfile | null;
@@ -206,7 +215,7 @@ const INITIAL_GOALS: OptimizationGoal[] = [
     { id: 'churn-reduction', name: 'Reduce Customer Churn', metric: 'Monthly Churn Rate', currentValue: 5.2, targetValue: 3.0, deadline: '2025-04-30', status: 'on-track', priority: 'medium' },
 ];
 
-const createDefaultMission = (name: string = 'New Mission'): MissionData => ({
+const createDefaultMission = (name: string = 'New Project'): MissionData => ({
     id: Date.now().toString(),
     createdAt: Date.now(),
     lastUpdated: Date.now(),
@@ -224,6 +233,8 @@ const createDefaultMission = (name: string = 'New Mission'): MissionData => ({
     growthMetrics: null,
     trajectories: INITIAL_TRAJECTORIES,
     optimizationGoals: INITIAL_GOALS,
+    onboardingCompleted: false,
+    businessPlan: '',
 });
 
 // --- Context ---
@@ -305,6 +316,8 @@ export const MissionProvider: React.FC<{ children: ReactNode }> = ({ children })
     const setBusinessStrategy = (businessStrategy: BusinessStrategy | null) => updateMission({ businessStrategy });
     const setBrandIdentity = (brandIdentity: BrandIdentity | null) => updateMission({ brandIdentity });
     const setGrowthMetrics = (growthMetrics: GrowthMetrics | null) => updateMission({ growthMetrics });
+    const setOnboardingCompleted = (onboardingCompleted: boolean) => updateMission({ onboardingCompleted });
+    const setBusinessPlan = (businessPlan: string) => updateMission({ businessPlan });
 
     const setMissionRoadmap = (action: React.SetStateAction<MissionStep[]>) => {
         setCurrentMission(prev => ({
@@ -429,7 +442,7 @@ export const MissionProvider: React.FC<{ children: ReactNode }> = ({ children })
             if (reloadedMissions.length > 0) {
                 switchMission(reloadedMissions[0].id);
             } else {
-                createMission('New Mission');
+                createMission('New Project');
             }
         }
     };
@@ -473,6 +486,7 @@ export const MissionProvider: React.FC<{ children: ReactNode }> = ({ children })
             growthMetrics: currentMission.growthMetrics,
             trajectories: currentMission.trajectories,
             optimizationGoals: currentMission.optimizationGoals,
+            onboardingCompleted: currentMission.onboardingCompleted,
 
             // Setters
             setMissionName,
@@ -499,6 +513,9 @@ export const MissionProvider: React.FC<{ children: ReactNode }> = ({ children })
             updateOptimizationGoal,
             addOptimizationGoal,
             deleteOptimizationGoal,
+            setOnboardingCompleted,
+            businessPlan: currentMission.businessPlan,
+            setBusinessPlan,
 
             // New Features
             user,

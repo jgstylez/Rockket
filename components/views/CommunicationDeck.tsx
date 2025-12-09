@@ -68,9 +68,9 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
 
    const [messages, setMessages] = useState([
       { id: 1, conversationId: 1, role: 'user' as 'user' | 'ai', text: 'Hi, I saw your pricing page but had a question.', time: '10:30 AM' },
-      { id: 2, conversationId: 1, role: 'ai' as 'user' | 'ai', text: 'Hello! I\'m the AI assistant for Rockket. I\'d be happy to help clarify our pricing. What specific question did you have?', time: '10:30 AM', agent: 'Hunter Protocol' },
+      { id: 2, conversationId: 1, role: 'ai' as 'user' | 'ai', text: 'Hello! I\'m the AI assistant for Rockket. I\'d be happy to help clarify our pricing. What specific question did you have?', time: '10:30 AM', agent: 'Sales Agent' },
       { id: 3, conversationId: 1, role: 'user' as 'user' | 'ai', text: 'Do you offer custom enterprise plans?', time: '10:32 AM' },
-      { id: 4, conversationId: 1, role: 'ai' as 'user' | 'ai', text: 'Yes, we absolutely do. Our Velocity tier is designed for scaling teams, but for larger enterprise needs, we can build a custom Flight Plan. Would you like me to have a specialist contact you?', time: '10:32 AM', agent: 'Hunter Protocol' },
+      { id: 4, conversationId: 1, role: 'ai' as 'user' | 'ai', text: 'Yes, we absolutely do. Our Velocity tier is designed for scaling teams, but for larger enterprise needs, we can build a custom Flight Plan. Would you like me to have a specialist contact you?', time: '10:32 AM', agent: 'Sales Agent' },
       { id: 5, conversationId: 1, role: 'user' as 'user' | 'ai', text: 'Yes, I am interested in the enterprise plan.', time: '10:33 AM' },
    ]);
 
@@ -264,7 +264,7 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
                      </div>
                      <div className="flex items-center gap-2">
                         <button className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 px-3 py-1.5 rounded-lg font-bold flex items-center gap-2 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors">
-                           <Zap size={14} className="fill-current" /> AI Takeover Active
+                           <Zap size={14} className="fill-current" /> AI Active
                         </button>
                         <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                            <MoreVertical size={18} />
@@ -463,7 +463,7 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
                      <Zap size={32} />
                   </div>
                   <div>
-                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Hunter Protocol</h3>
+                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Sales Agent</h3>
                      <p className="text-sm text-slate-500">Sales & Lead Qualification Bot</p>
                   </div>
                </div>
@@ -475,7 +475,7 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
 
             <div className="space-y-6 flex-1">
                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Personality Calibration</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Agent Personality</label>
                   <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
                      <div className="w-1/3 h-full bg-slate-300 dark:bg-slate-700"></div>
                      <div className="w-1/3 h-full bg-orange-500"></div>
@@ -489,7 +489,7 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
                </div>
 
                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Voice Synthesis</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Voice Settings</label>
                   <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-orange-500 transition-colors">
                      <div className="p-2 bg-slate-200 dark:bg-slate-800 rounded-lg">
                         <Volume2 size={16} className="text-slate-600 dark:text-slate-300" />
@@ -505,14 +505,14 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
                <div className="p-4 bg-orange-50 dark:bg-orange-900/10 rounded-xl border border-orange-100 dark:border-orange-900/20">
                   <h4 className="font-bold text-orange-800 dark:text-orange-400 text-sm mb-1">Knowledge Base Linked</h4>
                   <p className="text-xs text-orange-700 dark:text-orange-500/70">
-                     Hunter has access to your Pricing Page, FAQ, and Case Studies.
+                     Sales Agent has access to your Pricing Page, FAQ, and Case Studies.
                   </p>
                </div>
             </div>
 
             <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
                <button className="w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:opacity-90 transition-opacity">
-                  Configure Logic
+                  Agent Settings
                </button>
             </div>
          </GlassCard>
@@ -527,7 +527,7 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
                      <Shield size={32} />
                   </div>
                   <div>
-                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Guardian Protocol</h3>
+                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Support Agent</h3>
                      <p className="text-sm text-slate-500">Support & Success Bot</p>
                   </div>
                </div>
@@ -539,7 +539,7 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
 
             <div className="space-y-6 flex-1">
                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Personality Calibration</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Agent Personality</label>
                   <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
                      <div className="w-1/3 h-full bg-blue-500"></div>
                      <div className="w-1/3 h-full bg-slate-300 dark:bg-slate-700"></div>
@@ -553,7 +553,7 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
                </div>
 
                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Voice Synthesis</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Voice Settings</label>
                   <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-blue-500 transition-colors">
                      <div className="p-2 bg-slate-200 dark:bg-slate-800 rounded-lg">
                         <Volume2 size={16} className="text-slate-600 dark:text-slate-300" />
@@ -569,14 +569,14 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
                <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/20">
                   <h4 className="font-bold text-blue-800 dark:text-blue-400 text-sm mb-1">Knowledge Base Linked</h4>
                   <p className="text-xs text-blue-700 dark:text-blue-500/70">
-                     Guardian has access to your Documentation, API Refs, and Order History.
+                     Support Agent has access to your Documentation, API Refs, and Order History.
                   </p>
                </div>
             </div>
 
             <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
                <button className="w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl hover:opacity-90 transition-opacity">
-                  Configure Logic
+                  Agent Settings
                </button>
             </div>
          </GlassCard>
@@ -592,7 +592,7 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
                   <MessageSquare size={18} />
                   <span className="text-xs font-mono font-bold uppercase tracking-widest">Communication Deck</span>
                </div>
-               <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Subspace Array</h2>
+               <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Inbox & Agents</h2>
             </div>
 
             {/* Navigation Tabs */}
@@ -615,7 +615,7 @@ const CommunicationDeck: React.FC<CommunicationDeckProps> = ({ activeTab: extern
                      }`}
                >
                   <Bot size={14} />
-                  Synth-Agents
+                  AI Agents
                </button>
                <button
                   onClick={() => handleTabChange('settings')}

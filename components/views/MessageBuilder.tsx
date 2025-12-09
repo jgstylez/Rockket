@@ -55,13 +55,13 @@ const MessageBuilder: React.FC<MessageBuilderProps> = ({ onNavigate, missionCont
                     >
                         <ArrowLeft size={20} className="text-slate-500" />
                     </button>
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Message Core</h2>
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Message Editor</h2>
                 </div>
 
                 {/* AI Command Center */}
                 <GlassCard className="p-4 bg-indigo-50 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-500/30">
                     <label className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-2 flex items-center">
-                        <Sparkles size={14} className="mr-1" /> AI Command Uplink
+                        <Sparkles size={14} className="mr-1" /> AI Instructions
                     </label>
                     <div className="relative">
                         <textarea
@@ -119,22 +119,22 @@ const MessageBuilder: React.FC<MessageBuilderProps> = ({ onNavigate, missionCont
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <Layout size={20} className="text-cyan-500" />
-                        Holographic Projection
+                        Preview
                     </h2>
 
                     {/* Quantum Personalization Toggle */}
                     <div
                         onClick={() => setIsQuantumPersonalized(!isQuantumPersonalized)}
                         className={`cursor-pointer flex items-center gap-3 px-4 py-2 rounded-full border transition-all select-none ${isQuantumPersonalized
-                                ? 'bg-purple-900/20 border-purple-500 text-purple-600 dark:text-purple-300'
-                                : 'bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-400'
+                            ? 'bg-purple-900/20 border-purple-500 text-purple-600 dark:text-purple-300'
+                            : 'bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-400'
                             }`}
                     >
                         <div className="relative">
                             <Zap size={16} className={isQuantumPersonalized ? "fill-current" : ""} />
                             {isQuantumPersonalized && <div className="absolute inset-0 blur-sm bg-purple-500 opacity-50"></div>}
                         </div>
-                        <span className="text-xs font-bold uppercase">Quantum Personalization</span>
+                        <span className="text-xs font-bold uppercase">Smart Personalization</span>
                         <div className={`w-8 h-4 rounded-full relative transition-colors ${isQuantumPersonalized ? 'bg-purple-500' : 'bg-slate-300 dark:bg-slate-600'}`}>
                             <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${isQuantumPersonalized ? 'left-4.5' : 'left-0.5'}`} style={{ left: isQuantumPersonalized ? '18px' : '2px' }}></div>
                         </div>
@@ -179,7 +179,7 @@ const MessageBuilder: React.FC<MessageBuilderProps> = ({ onNavigate, missionCont
 
                         {/* Main Content */}
                         <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
-                            {content || <span className="text-slate-400 italic">Content projection awaiting input...</span>}
+                            {content || <span className="text-slate-400 italic">Content awaiting input...</span>}
                         </div>
 
                         {/* Smart Blocks */}
@@ -248,7 +248,7 @@ const MessageBuilder: React.FC<MessageBuilderProps> = ({ onNavigate, missionCont
                 <div className="mt-4 flex justify-end">
                     <button className="flex items-center px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-indigo-600/20 transition-transform hover:scale-105">
                         <Send size={18} className="mr-2" />
-                        Prepare Launch
+                        Save Draft
                     </button>
                 </div>
             </div>

@@ -78,8 +78,8 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                   <Radio size={24} className={isSimulating ? "animate-ping" : ""} />
                </div>
                <div>
-                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Signal Scanner</h2>
-                  <p className="text-slate-500 dark:text-slate-400 font-mono text-sm uppercase">MVP Validation Suite</p>
+                  <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Business Validation</h2>
+                  <p className="text-slate-500 dark:text-slate-400 font-mono text-sm uppercase">Concept Testing Suite</p>
                </div>
             </div>
 
@@ -98,9 +98,9 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                   </div>
                </div>
                <div>
-                  <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Signal Strength</div>
+                  <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Validation Score</div>
                   <div className={`text-sm font-bold ${signalStrength === 100 ? 'text-emerald-500' : 'text-red-500'}`}>
-                     {signalStrength === 100 ? 'VALIDATED' : 'WEAK SIGNAL'}
+                     {signalStrength === 100 ? 'VALIDATED' : 'LOW SCORE'}
                   </div>
                </div>
             </div>
@@ -114,10 +114,10 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                {step === 1 && (
                   <GlassCard className="space-y-6">
                      <div>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Define Mission Parameters</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Define Business Concept</h3>
                         <div className="space-y-4">
                            <div>
-                              <label className="block text-xs font-mono uppercase text-slate-500 mb-2">The Problem (Friction)</label>
+                              <label className="block text-xs font-mono uppercase text-slate-500 mb-2">The Problem</label>
                               <textarea
                                  value={formData.problem}
                                  onChange={(e) => setFormData({ ...formData, problem: e.target.value })}
@@ -126,16 +126,16 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                               />
                            </div>
                            <div>
-                              <label className="block text-xs font-mono uppercase text-slate-500 mb-2">The Solution (Payload)</label>
+                              <label className="block text-xs font-mono uppercase text-slate-500 mb-2">The Solution</label>
                               <textarea
                                  value={formData.solution}
                                  onChange={(e) => setFormData({ ...formData, solution: e.target.value })}
-                                 placeholder="e.g. An AI-powered debit card that auto-categorizes every swipe instantly."
+                                 placeholder="e.g. A smart debit card that auto-categorizes every swipe instantly."
                                  className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-3 text-slate-900 dark:text-white outline-none focus:border-red-500 h-24"
                               />
                            </div>
                            <div>
-                              <label className="block text-xs font-mono uppercase text-slate-500 mb-2">Target Sector (Audience)</label>
+                              <label className="block text-xs font-mono uppercase text-slate-500 mb-2">Target Audience</label>
                               <input
                                  type="text"
                                  value={formData.audience}
@@ -151,7 +151,7 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                         disabled={!formData.problem || !formData.solution}
                         className="w-full py-4 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold shadow-lg shadow-red-600/20 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                      >
-                        <Radar className="mr-2" /> INITIATE SMOKE TEST
+                        <Radar className="mr-2" /> ANALYZE CONCEPT
                      </button>
                   </GlassCard>
                )}
@@ -164,8 +164,8 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                         <Radar size={48} className="absolute inset-0 m-auto text-red-500 animate-pulse" />
                      </div>
                      <div>
-                        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Scanning Frequencies...</h3>
-                        <p className="text-slate-500 mt-2 font-mono">Simulating market response for "{formData.audience}"</p>
+                        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Analyzing Market Fit...</h3>
+                        <p className="text-slate-500 mt-2 font-mono">Generating projected response for "{formData.audience}"</p>
                      </div>
                      <div className="w-full max-w-md bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                         <div className="h-full bg-red-500 transition-all duration-300" style={{ width: `${signalStrength}%` }}></div>
@@ -181,7 +181,7 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                         </div>
                         <div>
                            <h3 className="font-bold text-slate-900 dark:text-white">Validation Complete</h3>
-                           <p className="text-sm text-slate-600 dark:text-slate-300">Signal strength is strong enough to proceed to launch.</p>
+                           <p className="text-sm text-slate-600 dark:text-slate-300">Market interest is strong enough to proceed to launch.</p>
                         </div>
                      </div>
 
@@ -235,7 +235,7 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                            className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 animate-pulse-slow"
                         >
                            <Rocket size={20} />
-                           UNLOCK LAUNCH PAD
+                           UNLOCK SETUP PHASE
                         </button>
                      </div>
                   </div>
@@ -256,15 +256,15 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                   {step === 1 && (
                      <div className="text-center space-y-4 max-w-xs relative z-10">
                         <Activity size={64} className="mx-auto text-slate-700" />
-                        <h3 className="text-xl font-bold text-slate-500">Awaiting Signal Data</h3>
-                        <p className="text-sm text-slate-600">Enter mission parameters to begin holographic analysis.</p>
+                        <h3 className="text-xl font-bold text-slate-500">Awaiting Data</h3>
+                        <p className="text-sm text-slate-600">Enter business concept to begin detailed analysis.</p>
                      </div>
                   )}
 
                   {(step === 2 || step === 3) && (
                      <div className="w-full h-full relative z-10 animate-fade-in">
                         <h3 className="absolute top-0 left-0 text-xs font-mono text-red-500 uppercase font-bold tracking-widest flex items-center">
-                           <Target size={14} className="mr-1" /> Market Resonance
+                           <Target size={14} className="mr-1" /> Market Fit Analysis
                         </h3>
                         <ResponsiveContainer width="100%" height="100%">
                            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
@@ -272,7 +272,7 @@ const SignalScanner: React.FC<SignalScannerProps> = ({ onNavigate, onValidationC
                               <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 12 }} />
                               <PolarRadiusAxis angle={30} domain={[0, 150]} tick={false} axisLine={false} />
                               <RechartsRadar
-                                 name="Signal"
+                                 name="Score"
                                  dataKey="A"
                                  stroke="#ef4444"
                                  strokeWidth={3}

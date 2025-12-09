@@ -27,7 +27,7 @@ const BrandIdentityLab: React.FC<BrandIdentityLabProps> = ({ onNavigate }) => {
 
     // State
     const [vibe, setVibe] = useState('Minimalist');
-    const [palette, setPalette] = useState('Deep Space');
+    const [palette, setPalette] = useState('Midnight');
     const [isGenerating, setIsGenerating] = useState(false);
     const [hasGenerated, setHasGenerated] = useState(false);
     const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
@@ -107,8 +107,8 @@ const BrandIdentityLab: React.FC<BrandIdentityLabProps> = ({ onNavigate }) => {
                         <Palette size={24} />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Visual Synthesis</h2>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-widest">Brand Identity Lab</p>
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Brand Generator</h2>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-widest">Brand Studio</p>
                     </div>
                 </div>
 
@@ -130,7 +130,7 @@ const BrandIdentityLab: React.FC<BrandIdentityLabProps> = ({ onNavigate }) => {
 
                 {/* Vibe Selectors */}
                 <div>
-                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-3">Aesthetic Modulators</label>
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-3">Design Style</label>
                     <div className="grid grid-cols-2 gap-2">
                         {['Minimalist', 'Bold', 'Geometric', 'Retro'].map((v) => (
                             <button
@@ -149,13 +149,13 @@ const BrandIdentityLab: React.FC<BrandIdentityLabProps> = ({ onNavigate }) => {
 
                 {/* Chromatic Preference */}
                 <div>
-                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-3">Chromatic Preference</label>
+                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-3">Color Palette</label>
                     <div className="space-y-2">
                         {[
-                            { name: 'Deep Space', colors: ['bg-slate-900', 'bg-indigo-500', 'bg-cyan-400'] },
-                            { name: 'Nebula', colors: ['bg-purple-900', 'bg-fuchsia-500', 'bg-pink-400'] },
-                            { name: 'Supernova', colors: ['bg-orange-900', 'bg-orange-500', 'bg-yellow-400'] },
-                            { name: 'Starlight', colors: ['bg-slate-800', 'bg-slate-400', 'bg-white'] },
+                            { name: 'Midnight', colors: ['bg-slate-900', 'bg-indigo-500', 'bg-cyan-400'] },
+                            { name: 'Royal', colors: ['bg-purple-900', 'bg-fuchsia-500', 'bg-pink-400'] },
+                            { name: 'Warm', colors: ['bg-orange-900', 'bg-orange-500', 'bg-yellow-400'] },
+                            { name: 'Clean', colors: ['bg-slate-800', 'bg-slate-400', 'bg-white'] },
                         ].map((p) => (
                             <button
                                 key={p.name}
@@ -187,11 +187,11 @@ const BrandIdentityLab: React.FC<BrandIdentityLabProps> = ({ onNavigate }) => {
                     >
                         {isGenerating ? (
                             <>
-                                <Loader2 className="animate-spin mr-2" /> PROCESSING...
+                                <Loader2 className="animate-spin mr-2" /> GENERATING...
                             </>
                         ) : (
                             <>
-                                <Sparkles className="mr-2 fill-current" /> SYNTHESIZE INSIGNIA
+                                <Sparkles className="mr-2 fill-current" /> GENERATE LOGO
                             </>
                         )}
                     </button>
@@ -215,8 +215,8 @@ const BrandIdentityLab: React.FC<BrandIdentityLabProps> = ({ onNavigate }) => {
                             <div className="w-32 h-32 mx-auto border-4 border-slate-300 dark:border-slate-700 border-dashed rounded-full flex items-center justify-center mb-6 animate-[spin_10s_linear_infinite]">
                                 <Box size={48} className="text-slate-300 dark:text-slate-700" />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300">Holographic Deck Online</h3>
-                            <p className="text-slate-500 dark:text-slate-500 mt-2">Awaiting Input Data...</p>
+                            <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300">Design Studio Ready</h3>
+                            <p className="text-slate-500 dark:text-slate-500 mt-2">Waiting for input...</p>
                         </div>
                     )}
 
@@ -228,9 +228,9 @@ const BrandIdentityLab: React.FC<BrandIdentityLabProps> = ({ onNavigate }) => {
                                 <div className="absolute inset-8 rounded-full bg-indigo-500/20 blur-xl animate-pulse"></div>
                             </div>
                             <div className="space-y-2 font-mono text-xs text-cyan-500">
-                                <p className="animate-fade-in">Parsing Vibe Vectors...</p>
-                                <p className="animate-fade-in delay-75">Constructing Geometry...</p>
-                                <p className="animate-fade-in delay-150">Applying Chromatic Layer...</p>
+                                <p className="animate-fade-in">Analyzing Style...</p>
+                                <p className="animate-fade-in delay-75">Creating Shapes...</p>
+                                <p className="animate-fade-in delay-150">Applying Colors...</p>
                             </div>
                         </div>
                     )}
@@ -287,7 +287,7 @@ const BrandIdentityLab: React.FC<BrandIdentityLabProps> = ({ onNavigate }) => {
                                         onClick={handleDeploy}
                                         className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg shadow-emerald-500/20 flex items-center transition-transform hover:scale-105"
                                     >
-                                        <Save size={18} className="mr-2" /> Deploy Brand Assets
+                                        <Save size={18} className="mr-2" /> Save Brand Identity
                                     </button>
                                 </div>
                             ) : (

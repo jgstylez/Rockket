@@ -4,14 +4,16 @@ import { GlassCard } from '../ui/GlassCard';
 import { generateMissionStrategy } from '../../services/geminiService';
 import { MissionInput, GeneratedStrategy, View } from '../../types';
 import { Bot, FileText, CheckCircle2, Sparkles, AlertCircle, Copy, Loader2, ArrowRight } from 'lucide-react';
+import { useMission } from '../../context/MissionContext';
 
 interface MissionKitsProps {
   onNavigate?: (view: View) => void;
 }
 
 const MissionKits: React.FC<MissionKitsProps> = ({ onNavigate }) => {
+  const { businessStrategy, setBusinessStrategy } = useMission();
   const [loading, setLoading] = useState(false);
-  const [strategy, setStrategy] = useState<GeneratedStrategy | null>(null);
+  const [strategy, setStrategy] = useState<GeneratedStrategy | null>(businessStrategy);
   const [input, setInput] = useState<MissionInput>({
     businessName: '',
     industry: '',
@@ -19,12 +21,20 @@ const MissionKits: React.FC<MissionKitsProps> = ({ onNavigate }) => {
     keyDifferentiator: ''
   });
 
+  // Sync prop strategy -> local strategy
+  React.useEffect(() => {
+    if (businessStrategy) {
+      setStrategy(businessStrategy);
+    }
+  }, [businessStrategy]);
+
   const handleGenerate = async () => {
     if (!input.businessName || !input.industry) return;
     setLoading(true);
     try {
       const result = await generateMissionStrategy(input);
       setStrategy(result);
+      setBusinessStrategy(result);
     } catch (e) {
       console.error(e);
     } finally {
@@ -44,14 +54,14 @@ const MissionKits: React.FC<MissionKitsProps> = ({ onNavigate }) => {
               <Bot className="text-indigo-600 dark:text-indigo-400" size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Mission Strategist</h2>
-              <p className="text-slate-500 dark:text-slate-400 text-sm">AI-Powered Business Intelligence</p>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Business Strategist</h2>
+              <p className="text-slate-500 dark:text-slate-400 text-sm">Business Intelligence</p>
             </div>
           </div>
 
           <div className="space-y-5 flex-1 overflow-y-auto pr-2 custom-scroll">
             <div>
-              <label className="block text-slate-500 dark:text-slate-400 text-xs font-mono uppercase mb-2">Vessel Name (Business)</label>
+              <label className="block text-slate-500 dark:text-slate-400 text-xs font-mono uppercase mb-2">Business Name</label>
               <input
                 type="text"
                 value={input.businessName}
@@ -62,7 +72,7 @@ const MissionKits: React.FC<MissionKitsProps> = ({ onNavigate }) => {
             </div>
 
             <div>
-              <label className="block text-slate-500 dark:text-slate-400 text-xs font-mono uppercase mb-2">Sector (Industry)</label>
+              <label className="block text-slate-500 dark:text-slate-400 text-xs font-mono uppercase mb-2">Industry (Sector)</label>
               <select
                 value={input.industry}
                 onChange={(e) => setInput({ ...input, industry: e.target.value })}
@@ -78,7 +88,7 @@ const MissionKits: React.FC<MissionKitsProps> = ({ onNavigate }) => {
             </div>
 
             <div>
-              <label className="block text-slate-500 dark:text-slate-400 text-xs font-mono uppercase mb-2">Target Lifeforms (Audience)</label>
+              <label className="block text-slate-500 dark:text-slate-400 text-xs font-mono uppercase mb-2">Target Audience</label>
               <textarea
                 value={input.targetAudience}
                 onChange={(e) => setInput({ ...input, targetAudience: e.target.value })}
@@ -88,7 +98,7 @@ const MissionKits: React.FC<MissionKitsProps> = ({ onNavigate }) => {
             </div>
 
             <div>
-              <label className="block text-slate-500 dark:text-slate-400 text-xs font-mono uppercase mb-2">Warp Drive (Differentiator)</label>
+              <label className="block text-slate-500 dark:text-slate-400 text-xs font-mono uppercase mb-2">Unique Differentiator</label>
               <textarea
                 value={input.keyDifferentiator}
                 onChange={(e) => setInput({ ...input, keyDifferentiator: e.target.value })}
@@ -103,17 +113,17 @@ const MissionKits: React.FC<MissionKitsProps> = ({ onNavigate }) => {
               onClick={handleGenerate}
               disabled={loading || !isFormValid}
               className={`w-full py-4 rounded-xl flex items-center justify-center font-bold tracking-wide transition-all ${loading || !isFormValid
-                  ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-indigo-900/50 hover:shadow-indigo-600/50'
+                ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/30 dark:shadow-indigo-900/50 hover:shadow-indigo-600/50'
                 }`}
             >
               {loading ? (
                 <>
-                  <Loader2 className="animate-spin mr-2" /> Computing Strategy...
+                  <Loader2 className="animate-spin mr-2" /> Generating Strategy...
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2" /> GENERATE MISSION KIT
+                  <Sparkles className="mr-2" /> GENERATE STRATEGY
                 </>
               )}
             </button>
@@ -159,13 +169,13 @@ const MissionKits: React.FC<MissionKitsProps> = ({ onNavigate }) => {
                 </div>
 
                 <div className="bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700/50 rounded-lg p-5">
-                  <h4 className="text-purple-600 dark:text-purple-400 text-xs font-mono uppercase mb-2">Vision Trajectory</h4>
+                  <h4 className="text-purple-600 dark:text-purple-400 text-xs font-mono uppercase mb-2">Vision Statement</h4>
                   <p className="text-slate-700 dark:text-slate-300 italic">{strategy.vision}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700/50 rounded-lg p-5">
-                    <h4 className="text-orange-600 dark:text-orange-400 text-xs font-mono uppercase mb-3">Core Engine Values</h4>
+                    <h4 className="text-orange-600 dark:text-orange-400 text-xs font-mono uppercase mb-3">Core Values</h4>
                     <ul className="space-y-2">
                       {strategy.coreValues.map((val, i) => (
                         <li key={i} className="flex items-start text-slate-700 dark:text-slate-300 text-sm">

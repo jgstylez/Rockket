@@ -103,11 +103,11 @@ const MissionManager: React.FC<MissionManagerProps> = ({
     const getStageLabel = (stage: string) => {
         switch (stage) {
             case 'ideation':
-                return 'Genesis';
+                return 'Ideation';
             case 'setup':
-                return 'Ignition';
+                return 'Setup';
             case 'growth':
-                return 'Velocity';
+                return 'Growth';
             default:
                 return stage;
         }
@@ -121,10 +121,10 @@ const MissionManager: React.FC<MissionManagerProps> = ({
                     <div>
                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <Rocket size={24} className="text-indigo-500" />
-                            Mission Control
+                            Project Manager
                         </h2>
                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Manage your business missions
+                            Manage your projects
                         </p>
                     </div>
                     <button
@@ -144,7 +144,7 @@ const MissionManager: React.FC<MissionManagerProps> = ({
                             className="w-full mb-6 p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 transition-all flex items-center justify-center gap-2 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-bold"
                         >
                             <Plus size={20} />
-                            Create New Mission
+                            Create New Project
                         </button>
                     )}
 
@@ -152,12 +152,12 @@ const MissionManager: React.FC<MissionManagerProps> = ({
                     {showCreateForm && (
                         <GlassCard className="mb-6 p-6">
                             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
-                                New Mission
+                                New Project
                             </h3>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                                        Mission Name
+                                        Project Name
                                     </label>
                                     <input
                                         type="text"
@@ -185,7 +185,7 @@ const MissionManager: React.FC<MissionManagerProps> = ({
                                         className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2"
                                     >
                                         <Check size={16} />
-                                        Create Mission
+                                        Create Project
                                     </button>
                                     <button
                                         onClick={() => setShowCreateForm(false)}
@@ -203,7 +203,7 @@ const MissionManager: React.FC<MissionManagerProps> = ({
                         <div className="text-center py-12">
                             <Rocket size={48} className="mx-auto text-slate-300 dark:text-slate-700 mb-4" />
                             <p className="text-slate-500 dark:text-slate-400">
-                                No missions yet. Create your first mission to get started!
+                                No projects yet. Create your first project to get started!
                             </p>
                         </div>
                     ) : (
@@ -212,8 +212,8 @@ const MissionManager: React.FC<MissionManagerProps> = ({
                                 <GlassCard
                                     key={mission.id}
                                     className={`p-5 transition-all cursor-pointer ${currentMissionId === mission.id
-                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/10'
-                                            : 'hover:border-indigo-300'
+                                        ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/10'
+                                        : 'hover:border-indigo-300'
                                         }`}
                                     onClick={() => onSelectMission(mission.id)}
                                 >
@@ -249,7 +249,7 @@ const MissionManager: React.FC<MissionManagerProps> = ({
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <TrendingUp size={12} />
-                                            Signal: {mission.data.signalStrength}%
+                                            Validation: {mission.data.signalStrength}%
                                         </div>
                                     </div>
 

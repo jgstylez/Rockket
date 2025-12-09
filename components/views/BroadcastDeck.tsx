@@ -45,7 +45,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
 
    // Campaign State
    const [campaignsList, setCampaignsList] = useState([
-      { id: 1, name: 'Alpha Launch Announcement', subject: 'The wait is over. Rockket is live.', status: 'Broadcasting', type: 'Email Blast', audience: 'Waitlist (All)', total: 5000, sent: 1420, openRate: 42.5, clickRate: 12.4, scheduledFor: '' },
+      { id: 1, name: 'Alpha Launch Announcement', subject: 'The wait is over. Rockket is live.', status: 'Sending', type: 'Email Blast', audience: 'Waitlist (All)', total: 5000, sent: 1420, openRate: 42.5, clickRate: 12.4, scheduledFor: '' },
       { id: 2, name: 'Onboarding Nurture Seq.', subject: 'Day 1: Calibrating your engine', status: 'Active', type: 'Automation', audience: 'New Signups', total: 1240, sent: 1240, openRate: 68.2, clickRate: 24.1, scheduledFor: '' },
       { id: 3, name: 'Q4 Product Update', subject: 'New boosters available', status: 'Scheduled', type: 'Newsletter', audience: 'Pro Users', total: 850, sent: 0, openRate: 0, clickRate: 0, scheduledFor: '2023-11-24 09:00' },
       { id: 4, name: 'Unfinished Setup Poke', subject: 'Your mission is paused...', status: 'Drafting', type: 'Recovery', audience: 'Incomplete Setup', total: 0, sent: 0, openRate: 0, clickRate: 0, scheduledFor: '' }
@@ -61,7 +61,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
    useEffect(() => {
       const interval = setInterval(() => {
          setCampaignsList(prev => prev.map(c => {
-            if (c.status === 'Broadcasting') {
+            if (c.status === 'Sending') {
                const newSent = Math.min(c.total, c.sent + Math.floor(Math.random() * 9) + 3);
                return { ...c, sent: newSent };
             }
@@ -98,7 +98,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
 
    const getStatusColor = (status: string) => {
       switch (status) {
-         case 'Broadcasting': return 'text-emerald-500 border-emerald-500/50 bg-emerald-500/10 animate-pulse';
+         case 'Sending': return 'text-emerald-500 border-emerald-500/50 bg-emerald-500/10 animate-pulse';
          case 'Active': return 'text-blue-500 border-blue-500/50 bg-blue-500/10';
          case 'Scheduled': return 'text-orange-500 border-orange-500/50 bg-orange-500/10';
          default: return 'text-slate-500 border-slate-500/50 bg-slate-500/10';
@@ -196,7 +196,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
                </h3>
                <div className="flex items-center gap-1 text-xs">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]"></span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">Optimal Launch Window</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">Best Time to Send</span>
                </div>
             </div>
             <div className="p-6 overflow-x-auto">
@@ -227,10 +227,10 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
                      <div className="p-5 flex flex-col md:flex-row items-center gap-6">
                         <div className="flex items-center gap-4 w-full md:w-1/4">
                            <div className={`p-3 rounded-xl border ${getStatusColor(camp.status)}`}>
-                              {camp.status === 'Broadcasting' ? <Send size={20} /> : camp.status === 'Scheduled' ? <Calendar size={20} /> : <CheckCircle2 size={20} />}
+                              {camp.status === 'Sending' ? <Send size={20} /> : camp.status === 'Scheduled' ? <Calendar size={20} /> : <CheckCircle2 size={20} />}
                            </div>
                            <div>
-                              <div className={`text-xs font-bold uppercase tracking-wider mb-1 ${camp.status === 'Broadcasting' ? 'text-emerald-500' : 'text-slate-500'}`}>{camp.status}</div>
+                              <div className={`text-xs font-bold uppercase tracking-wider mb-1 ${camp.status === 'Sending' ? 'text-emerald-500' : 'text-slate-500'}`}>{camp.status}</div>
                               <div className="text-xs text-slate-400 font-mono">{camp.type}</div>
                            </div>
                         </div>
@@ -239,7 +239,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
                            <p className="text-sm text-slate-500 dark:text-slate-400 truncate max-w-md">{camp.subject}</p>
                         </div>
                         <div className="w-full md:w-1/3">
-                           {camp.status === 'Broadcasting' ? (
+                           {camp.status === 'Sending' ? (
                               <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
                                  <div className="flex justify-between items-end mb-2">
                                     <span className="text-xs text-slate-500 uppercase font-bold">Progress</span>
@@ -252,7 +252,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
                            ) : camp.status === 'Scheduled' ? (
                               <div className="bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-900/30 rounded-lg p-3 flex items-center justify-between">
                                  <div>
-                                    <span className="text-xs text-orange-600 dark:text-orange-400 font-bold uppercase block mb-0.5">Target T-Minus</span>
+                                    <span className="text-xs text-orange-600 dark:text-orange-400 font-bold uppercase block mb-0.5">Scheduled For</span>
                                     <div className="text-sm font-mono text-slate-800 dark:text-slate-200">{camp.scheduledFor || 'Pending...'}</div>
                                  </div>
                                  <button
@@ -297,8 +297,8 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
                      <div className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-500 flex items-center justify-center mb-4">
                         <Clock size={24} />
                      </div>
-                     <h3 className="text-xl font-bold text-slate-900 dark:text-white">Launch Sequencer</h3>
-                     <p className="text-sm text-slate-500 dark:text-slate-400">Set specific date and time for transmission activation.</p>
+                     <h3 className="text-xl font-bold text-slate-900 dark:text-white">Scheduler</h3>
+                     <p className="text-sm text-slate-500 dark:text-slate-400">Set specific date and time for sending this campaign.</p>
                   </div>
 
                   <div className="space-y-4 mb-6">
@@ -315,7 +315,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
                         </div>
                      </div>
                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Launch Time</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Send Time</label>
                         <div className="relative">
                            <Clock size={18} className="absolute left-3 top-3 text-slate-400" />
                            <input
@@ -360,7 +360,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Campaign Templates</h3>
-               <p className="text-sm text-slate-500 dark:text-slate-400">Manage your library of holographic blueprints.</p>
+               <p className="text-sm text-slate-500 dark:text-slate-400">Manage your library of professional templates.</p>
             </div>
             <button
                onClick={() => onNavigate && onNavigate('message_builder')}
@@ -467,7 +467,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
             <GlassCard className="lg:col-span-2">
                <div className="flex items-center justify-between mb-6">
                   <h3 className="font-bold text-slate-900 dark:text-white flex items-center">
-                     <TrendingUp size={18} className="mr-2 text-indigo-500" /> Signal Propagation
+                     <TrendingUp size={18} className="mr-2 text-indigo-500" /> Campaign Performance
                   </h3>
                   <select className="bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-xs font-bold px-3 py-1">
                      <option>Last 7 Days</option>
@@ -500,7 +500,7 @@ const BroadcastDeck: React.FC<BroadcastDeckProps> = ({ onNavigate, activeTab: ex
             {/* Device Breakdown */}
             <GlassCard>
                <h3 className="font-bold text-slate-900 dark:text-white mb-6 flex items-center">
-                  <PieChart size={18} className="mr-2 text-purple-500" /> Reception Devices
+                  <PieChart size={18} className="mr-2 text-purple-500" /> Device Breakdown
                </h3>
                <div className="h-48 w-full relative">
                   <ResponsiveContainer width="100%" height="100%">

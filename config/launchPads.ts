@@ -89,7 +89,7 @@ export const launchPads: Record<string, LaunchPadConfig> = {
             },
             trajectories: [
                 { id: 'abandoned-cart', name: 'Abandoned Cart Recovery', type: 'automation', description: 'Email sequences for cart abandonment' },
-                { id: 'product-recommendations', name: 'Product Recommendations', type: 'marketing', description: 'AI-powered upsell and cross-sell' },
+                { id: 'product-recommendations', name: 'Product Recommendations', type: 'marketing', description: 'Smart upsell and cross-sell' },
                 { id: 'inventory-alerts', name: 'Inventory Alerts', type: 'operations', description: 'Low stock notifications and reordering' },
             ],
             goals: [
